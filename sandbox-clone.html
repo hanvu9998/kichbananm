@@ -1184,9 +1184,12 @@
    Phone scales to fit, side panel → bottom drawer
    ============================================== */
 @media (max-width:700px) {
-  /* Topbar: shorter title */
-  #mob-topbar h2{font-size:13px;letter-spacing:0}
+  /* Topbar: compact height so phone frame has more room */
+  #mob-topbar{height:40px}
+  #mob-topbar h2{font-size:12px;letter-spacing:0}
   #mob-topbar h2 .mob-title-long{display:none}
+  #mob-topbar button{padding:5px 12px;font-size:12px}
+  #mob-stage{top:40px}
 
   /* Stage: column layout — phone top, panel slides from bottom */
   #mob-stage{flex-direction:column;align-items:center;justify-content:flex-start;overflow:hidden}
@@ -1196,7 +1199,7 @@
     flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
     width:100%;
-    padding-top:8px;
+    padding-top:4px;
   }
   #mob-phone{
     transform-origin:top center;
@@ -1211,14 +1214,15 @@
     border-top:1px solid rgba(255,255,255,.15);
     border-radius:20px 20px 0 0;
     box-shadow:0 -8px 32px rgba(0,0,0,.6);
-    z-index:20;
-    max-height:56px;
+    z-index:100;
+    max-height:52px;
     overflow:hidden;
     transition:max-height .35s cubic-bezier(.4,0,.2,1);
     flex-direction:column;
     gap:0;
   }
-  #mob-side-panel.mob-panel-open{max-height:55vh}
+  /* Khi mở: che lên phần điện thoại, chiếm 65% màn hình */
+  #mob-side-panel.mob-panel-open{max-height:65vh}
 
   /* Drag handle */
   #mob-panel-handle{
@@ -1226,29 +1230,32 @@
     padding:10px 16px 8px;cursor:pointer;flex-shrink:0;
     user-select:none;-webkit-user-select:none;
   }
-  #mob-panel-grip{width:36px;height:4px;background:rgba(255,255,255,.25);border-radius:2px;margin-right:10px;flex-shrink:0}
-  #mob-panel-handle-label{color:#ffd60a;font-size:12px;font-weight:700;flex:1;text-transform:uppercase;letter-spacing:.5px}
-  #mob-panel-arrow{color:rgba(255,255,255,.5);font-size:11px;transition:transform .3s}
+  #mob-panel-grip{width:40px;height:4px;background:rgba(255,255,255,.3);border-radius:2px;margin-right:10px;flex-shrink:0}
+  #mob-panel-handle-label{color:#ffd60a;font-size:13px;font-weight:700;flex:1;text-transform:uppercase;letter-spacing:.5px}
+  #mob-panel-arrow{color:rgba(255,255,255,.6);font-size:13px;transition:transform .3s}
   #mob-side-panel.mob-panel-open #mob-panel-arrow{transform:rotate(180deg)}
 
-  /* Scroll area inside drawer */
+  /* Scroll area inside drawer — dạng danh sách dọc khi mở */
   #mob-panel-scroll{
-    overflow-y:auto;padding:0 12px 16px;
-    flex-direction:row;flex-wrap:wrap;gap:8px;
+    overflow-y:auto;padding:0 14px 20px;
+    flex-direction:column;gap:0;
     display:flex;
   }
-  .mob-panel-section{flex:1;min-width:140px}
-  .mob-scen-btn{font-size:11px;padding:7px 8px}
+  .mob-panel-section{flex:none;width:100%;min-width:unset;margin-bottom:10px}
+  .mob-panel-section-title{font-size:12px;margin-bottom:8px}
+  /* Nút kịch bản/bài học to rõ hơn */
+  .mob-scen-btn{font-size:14px;padding:12px 14px;margin-bottom:8px;border-radius:10px}
 }
 
 /* ══════════════════════════════════════════════
    RESPONSIVE — Very small (≤380px)
    ============================================== */
 @media (max-width:380px) {
-  #mob-topbar{height:44px}
-  #mob-topbar h2{font-size:12px}
-  #mob-topbar button{padding:5px 10px;font-size:12px}
-  #mob-stage{top:44px}
+  #mob-topbar{height:36px}
+  #mob-topbar h2{font-size:11px}
+  #mob-topbar button{padding:4px 10px;font-size:11px}
+  #mob-stage{top:36px}
+  .mob-scen-btn{font-size:13px;padding:11px 12px}
 }
 </style>
 
@@ -1714,9 +1721,9 @@
       </div>
       <div class="mob-panel-section">
         <div class="mob-panel-section-title mob-panel-section-green">📚 Bài học</div>
-        <button onclick="mobShowEdu('smishing')" class="mob-scen-btn mob-scen-green">💬 Smishing là gì?</button>
-        <button onclick="mobShowEdu('vishing')" class="mob-scen-btn mob-scen-green">📞 Vishing / Cuộc gọi giả</button>
-        <button onclick="mobShowEdu('otp')" class="mob-scen-btn mob-scen-green">🔑 Bảo vệ OTP & mật khẩu</button>
+        <button onclick="mobTriggerEdu('smishing')" class="mob-scen-btn mob-scen-green">💬 Smishing là gì?</button>
+        <button onclick="mobTriggerEdu('vishing')" class="mob-scen-btn mob-scen-green">📞 Vishing / Cuộc gọi giả</button>
+        <button onclick="mobTriggerEdu('otp')" class="mob-scen-btn mob-scen-green">🔑 Bảo vệ OTP & mật khẩu</button>
       </div>
     </div>
   </div>
@@ -2564,11 +2571,11 @@ function mobCalcScale() {
         phone.style.marginBottom = '';
         return;
     }
-    // Available height = stage height minus bottom drawer (56px collapsed) minus top padding
+    // Available height = stage height minus bottom drawer (52px collapsed) minus padding
     const panel = document.getElementById('mob-side-panel');
-    const panelH = panel ? 56 : 0;
-    const availH = stage.clientHeight - panelH - 16;
-    const availW = stage.clientWidth - 16;
+    const panelH = panel ? 52 : 0;
+    const availH = stage.clientHeight - panelH - 20;
+    const availW = stage.clientWidth - 20;
     const phoneW = 320, phoneH = 650;
     const scaleH = availH / phoneH;
     const scaleW = availW / phoneW;
@@ -2920,6 +2927,11 @@ function mobCallAccept() {
         setTimeout(showNextLine, 2200);
     }
     setTimeout(showNextLine, 600);
+}
+// ── EDU TRIGGER (auto-collapse panel) ─────────
+function mobTriggerEdu(id) {
+    document.getElementById('mob-side-panel').classList.remove('mob-panel-open');
+    setTimeout(()=>mobShowEdu(id), 200);
 }
 // ── SCENARIO TRIGGERS ────────────────────────
 function mobTriggerScenario(sc) {
