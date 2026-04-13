@@ -1179,33 +1179,57 @@
   #mob-topbar h2{font-size:13px}
 }
 
+/* ── Nút thoát nổi (chỉ hiện trên mobile) ─────── */
+#mob-float-exit{
+  display:none;
+  position:absolute;
+  top:10px;right:10px;
+  z-index:500;
+  background:rgba(0,0,0,.52);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22);
+  color:rgba(255,255,255,.88);
+  border-radius:20px;
+  padding:7px 13px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  white-space:nowrap;
+  box-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+#mob-float-exit:active{background:rgba(239,68,68,.7)}
+
 /* ══════════════════════════════════════════════
    RESPONSIVE — Mobile (≤700px)
    Phone scales to fit, side panel → bottom drawer
    ============================================== */
 @media (max-width:700px) {
-  /* Topbar: compact height so phone frame has more room */
-  #mob-topbar{height:40px}
-  #mob-topbar h2{font-size:12px;letter-spacing:0}
-  #mob-topbar h2 .mob-title-long{display:none}
-  #mob-topbar button{padding:5px 12px;font-size:12px}
-  #mob-stage{top:40px}
+  /* Ẩn hoàn toàn topbar → phone chiếm toàn bộ chiều cao */
+  #mob-topbar{display:none}
+  /* Stage từ top:0 → nhiều chỗ hơn cho phone */
+  #mob-stage{top:0;flex-direction:column;align-items:center;justify-content:flex-start;overflow:hidden}
+  /* Hiện nút thoát nổi */
+  #mob-float-exit{display:block}
 
-  /* Stage: column layout — phone top, panel slides from bottom */
-  #mob-stage{flex-direction:column;align-items:center;justify-content:flex-start;overflow:hidden}
-
-  /* Scale phone to fit viewport width with padding */
+  /* Scale phone to fit viewport width */
   #mob-phone-wrap{
     flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
     width:100%;
-    padding-top:4px;
+    padding-top:6px;
   }
   #mob-phone{
     transform-origin:top center;
     transform:scale(var(--mob-scale,1));
     margin:0 auto;
   }
+
+  /* App icon to hơn trong phone frame */
+  .mob-icon-img{width:58px;height:58px;font-size:28px;border-radius:15px}
+  .mob-app-label{font-size:12px}
+  #mob-app-grid{gap:14px;padding:28px 14px 10px}
+  #mob-home-time .mob-big-time{font-size:62px}
 
   /* Bottom drawer panel */
   #mob-side-panel{
@@ -1235,7 +1259,7 @@
   #mob-panel-arrow{color:rgba(255,255,255,.6);font-size:13px;transition:transform .3s}
   #mob-side-panel.mob-panel-open #mob-panel-arrow{transform:rotate(180deg)}
 
-  /* Scroll area inside drawer — dạng danh sách dọc khi mở */
+  /* Scroll area inside drawer — danh sách dọc */
   #mob-panel-scroll{
     overflow-y:auto;padding:0 14px 20px;
     flex-direction:column;gap:0;
@@ -1243,7 +1267,6 @@
   }
   .mob-panel-section{flex:none;width:100%;min-width:unset;margin-bottom:10px}
   .mob-panel-section-title{font-size:12px;margin-bottom:8px}
-  /* Nút kịch bản/bài học to rõ hơn */
   .mob-scen-btn{font-size:14px;padding:12px 14px;margin-bottom:8px;border-radius:10px}
 }
 
@@ -1251,19 +1274,21 @@
    RESPONSIVE — Very small (≤380px)
    ============================================== */
 @media (max-width:380px) {
-  #mob-topbar{height:36px}
-  #mob-topbar h2{font-size:11px}
-  #mob-topbar button{padding:4px 10px;font-size:11px}
-  #mob-stage{top:36px}
+  .mob-icon-img{width:52px;height:52px;font-size:24px}
+  .mob-app-label{font-size:11px}
+  #mob-app-grid{gap:12px;padding:24px 12px 8px}
   .mob-scen-btn{font-size:13px;padding:11px 12px}
 }
 </style>
 
-<!-- ── TOP BAR ── -->
+<!-- ── TOP BAR (desktop only) ── -->
 <div id="mob-topbar">
   <h2>📱 Mobile Sandbox<span class="mob-title-long"> — An ninh mạng di động</span></h2>
   <button onclick="closeMobileSandbox()">✕ Thoát về Menu</button>
 </div>
+
+<!-- ── NÚT THOÁT NỔI (mobile only) ── -->
+<button id="mob-float-exit" onclick="closeMobileSandbox()">✕ Thoát</button>
 
 <!-- ── STAGE ── -->
 <div id="mob-stage">
@@ -2571,15 +2596,16 @@ function mobCalcScale() {
         phone.style.marginBottom = '';
         return;
     }
-    // Available height = stage height minus bottom drawer (52px collapsed) minus padding
+    // Available height = stage height (top:0, no topbar) minus collapsed drawer (52px) minus small padding
     const panel = document.getElementById('mob-side-panel');
     const panelH = panel ? 52 : 0;
-    const availH = stage.clientHeight - panelH - 20;
-    const availW = stage.clientWidth - 20;
+    const availH = stage.clientHeight - panelH - 10;
+    const availW = stage.clientWidth - 12;
     const phoneW = 320, phoneH = 650;
     const scaleH = availH / phoneH;
     const scaleW = availW / phoneW;
-    const scale  = Math.min(scaleH, scaleW, 1);
+    // Cho phép scale tới 1.08 để phone to hơn trên màn hình rộng
+    const scale  = Math.min(scaleH, scaleW, 1.08);
     phone.style.transform = 'scale('+scale+') translateY(-'+(phoneH*(1-scale)/2)+'px)';
     phone.style.marginBottom = -(phoneH*(1-scale))+'px';
 }
