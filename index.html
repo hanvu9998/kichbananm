@@ -1386,7 +1386,7 @@
     <!-- ── SAFARI SCREEN ── -->
     <div id="mob-scr-safari" class="mob-screen">
       <div id="mob-safari-bar">
-        <button onclick="mobGoHome()">‹</button>
+        <button onclick="mobSafariBack()">‹</button>
         <input id="mob-safari-url" placeholder="Tìm kiếm hoặc nhập URL" onkeydown="if(event.key==='Enter')mobSafariNav(this.value)"/>
         <button onclick="mobSafariNav(document.getElementById('mob-safari-url').value)">Go</button>
       </div>
@@ -1467,7 +1467,11 @@
 
     <!-- ── ZALO SCREEN ── -->
     <div id="mob-scr-zalo" class="mob-screen">
-      <div class="mob-zalo-hdr">Zalo</div>
+      <div class="mob-screen-nav" style="background:#0190f3;border-bottom:1px solid rgba(0,0,0,.1)">
+        <button onclick="mobGoHome()" style="color:#fff">‹ Về nhà</button>
+        <h3 style="color:#fff;text-align:center">Zalo</h3>
+        <div style="width:60px"></div>
+      </div>
       <div style="background:#f0f7ff;flex:1;overflow-y:auto">
         <div style="padding:8px 16px;font-size:12px;color:#666;border-bottom:1px solid rgba(0,0,0,.06)">Tin nhắn</div>
         <div class="mob-msg-thread" onclick="mobOpenChat('zalo-police')">
@@ -1495,7 +1499,6 @@
           <div class="mob-msg-time">1 giờ</div>
         </div>
       </div>
-      <button onclick="mobGoHome()" style="margin:12px;padding:12px;background:#0190f3;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer">Về màn hình chính</button>
     </div>
 
     <!-- ── QR SCANNER SCREEN ── -->
@@ -1596,6 +1599,16 @@
           </div>
           <button class="mob-app-store-btn mob-fake" onclick="mobInstallFakeApp('spy')">Tải</button>
         </div>
+        <div style="padding:6px 16px;font-size:12px;color:#666">ỨNG DỤNG MỚI</div>
+        <div class="mob-app-store-item">
+          <div class="mob-app-store-icon" style="background:linear-gradient(135deg,#ff6b35,#e55a2b)">🔏</div>
+          <div class="mob-app-store-info">
+            <div class="mob-app-store-name">ID Verify — Xác minh Danh tính ⚠️</div>
+            <div class="mob-app-store-desc">Hỗ trợ KYC ngân hàng, xác minh CCCD nhanh nhất</div>
+            <div class="mob-app-store-rating">★★★★☆ 4.3 (5.6K)</div>
+          </div>
+          <button class="mob-app-store-btn mob-fake" onclick="mobInstallFakeApp('idverify')">Tải</button>
+        </div>
       </div>
     </div>
 
@@ -1617,6 +1630,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.95 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012.85 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91"/></svg>
           Nghe
         </button>
+      </div>
+      <!-- Call dialogue (hiện khi đang nghe) -->
+      <div id="mob-call-active" style="display:none;width:100%;flex:1;overflow-y:auto;padding:0 16px;margin-top:8px;max-height:220px">
+        <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.45);margin-bottom:10px">🔴 Đang nghe — Loa ngoài</div>
+        <div id="mob-call-lines" style="display:flex;flex-direction:column;gap:8px"></div>
       </div>
     </div>
 
@@ -2390,6 +2408,17 @@ const MOB_QUIZ = {
         badNote:'❌ Sai! Kẻ lừa đảo đang dùng OTP đó để chuyển tiền hoặc chiếm tài khoản của bạn ngay lúc đó.',
         edu:'otp'
     },
+    'safari-fb': {
+        q: 'URL trên thanh Safari là "facebook.com.login-verify.net" — có chứa "facebook.com". Đây có phải Facebook thật không?',
+        opts:[
+            {t:'Có, vì địa chỉ có "facebook.com" trong đó'},
+            {t:'Không — tên miền thực sự là "login-verify.net", không phải facebook.com',ok:true},
+            {t:'Có thể, thử đăng nhập để kiểm tra cho chắc'}
+        ],
+        note:'✅ Đúng! Kẻ lừa đảo đặt "facebook.com" làm subdomain để đánh lừa. Tên miền THỰC là phần sau dấu chấm cuối trước dấu /.',
+        badNote:'❌ Sai! "facebook.com.login-verify.net" nghĩa là tên miền thật là "login-verify.net". Hãy đọc từ phải sang trái: .net → login-verify → đó là tên miền gốc.',
+        edu:'phishing-site'
+    },
     'bank-transfer': {
         q: '"Cơ quan điều tra" yêu cầu bạn chuyển tiền vào tài khoản bảo vệ tài sản qua app ngân hàng. Đây là:',
         opts:[
@@ -2664,26 +2693,23 @@ function mobDoOpenChat(id) {
     box.scrollTop = box.scrollHeight;
     document.getElementById('mob-chat-view').classList.add('mob-active');
     if (data.warn) {
-        setTimeout(()=>mobShowPopup(
-            '⚠️ Đây là tin nhắn lừa đảo!',
-            'Tin nhắn này có dấu hiệu của kẻ tấn công: giả mạo cơ quan nhà nước / ngân hàng, tạo áp lực tâm lý, yêu cầu chuyển tiền hoặc cung cấp thông tin cá nhân.',
-            [{text:'Học thêm',cls:'mob-pop-ok',fn:'mobShowEdu("smishing")'},
-             {text:'Đã hiểu',cls:'mob-pop-cancel',fn:'mobPopClose()'}]
-        ),600);
+        const quizMap = {
+            police:'police', bank:'bank', prize:'prize', friend:'friend',
+            'zalo-police':'zalo-police', 'zalo-job':'zalo-job', 'zalo-friend':'zalo-friend'
+        };
+        const qid = quizMap[id];
+        if (qid && MOB_QUIZ[qid]) {
+            setTimeout(()=>mobShowQuiz(qid, ()=>mobShowPopup(
+                '⚠️ Đây là tin nhắn lừa đảo!',
+                'Tin nhắn này có dấu hiệu của kẻ tấn công: giả mạo cơ quan nhà nước / ngân hàng, tạo áp lực tâm lý, yêu cầu chuyển tiền hoặc cung cấp thông tin cá nhân.',
+                [{text:'Học thêm',cls:'mob-pop-ok',fn:'mobShowEdu("smishing")'},
+                 {text:'Đã hiểu',cls:'mob-pop-cancel',fn:'mobPopClose()'}]
+            )), 1800);
+        }
     }
 }
 function mobOpenChat(id) {
-    // Map chat id → quiz id
-    const quizMap = {
-        police:'police', bank:'bank', prize:'prize', friend:'friend',
-        'zalo-police':'zalo-police', 'zalo-job':'zalo-job', 'zalo-friend':'zalo-friend'
-    };
-    const qid = quizMap[id];
-    if (qid && MOB_QUIZ[qid]) {
-        mobShowQuiz(qid, ()=>mobDoOpenChat(id));
-    } else {
-        mobDoOpenChat(id);
-    }
+    mobDoOpenChat(id);
 }
 function mobCloseChat() {
     document.getElementById('mob-chat-view').classList.remove('mob-active');
@@ -2711,14 +2737,12 @@ function mobDoSafariNav(url, pageId) {
     document.querySelectorAll('.mob-safari-page').forEach(p=>p.classList.remove('mob-active'));
     document.getElementById(pageId).classList.add('mob-active');
     mobOpenApp('safari');
-    if (pageId==='mob-sp-bank'||pageId==='mob-sp-fb') {
-        setTimeout(()=>mobShowPopup(
-            '⚠️ Trang web giả mạo!',
-            'Bạn vừa mở trang phishing! Địa chỉ URL không khớp với website chính thức. KHÔNG nhập thông tin vào đây!',
-            [{text:'Học nhận diện phishing',cls:'mob-pop-ok',fn:'mobShowEdu("phishing-site")'},
-             {text:'Thoát trang này',cls:'mob-pop-cancel',fn:'mobGoHome()'}]
-        ),600);
-    }
+}
+function mobSafariBack() {
+    mobPopClose();
+    document.querySelectorAll('.mob-safari-page').forEach(p=>p.classList.remove('mob-active'));
+    document.getElementById('mob-sp-newtab').classList.add('mob-active');
+    document.getElementById('mob-safari-url').value = '';
 }
 function mobSafariNav(url) {
     url = url.toLowerCase().trim();
@@ -2726,18 +2750,29 @@ function mobSafariNav(url) {
     if (url.includes('vietinbank-secure') || url.includes('bank-verify')) pageId='mob-sp-bank';
     else if (url.includes('facebook.com.') || url.includes('login-verify')) pageId='mob-sp-fb';
     else if (url.includes('google')) pageId='mob-sp-google';
-
-    if (pageId==='mob-sp-bank'||pageId==='mob-sp-fb') {
-        mobShowQuiz('safari-phish', ()=>mobDoSafariNav(url, pageId));
-    } else {
-        mobDoSafariNav(url, pageId);
+    // Hiện trang trước, sau đó mới hiện quiz
+    mobDoSafariNav(url, pageId);
+    if (pageId==='mob-sp-bank') {
+        setTimeout(()=>mobShowQuiz('safari-phish', ()=>mobShowPopup(
+            '⚠️ Trang giả mạo VietinBank!',
+            'Domain "vietinbank-secure.xyz" KHÔNG phải trang chính thức. VietinBank thật ở vietinbank.vn. KHÔNG nhập thông tin tại đây!',
+            [{text:'Học nhận diện phishing',cls:'mob-pop-ok',fn:'mobShowEdu("phishing-site")'},
+             {text:'Thoát trang này',cls:'mob-pop-cancel',fn:'mobSafariBack()'}]
+        )), 1500);
+    } else if (pageId==='mob-sp-fb') {
+        setTimeout(()=>mobShowQuiz('safari-fb', ()=>mobShowPopup(
+            '⚠️ Trang giả mạo Facebook!',
+            '"facebook.com.login-verify.net" không phải Facebook thật! Tên miền thực là "login-verify.net". KHÔNG đăng nhập tại đây!',
+            [{text:'Học nhận diện phishing',cls:'mob-pop-ok',fn:'mobShowEdu("phishing-site")'},
+             {text:'Thoát trang này',cls:'mob-pop-cancel',fn:'mobSafariBack()'}]
+        )), 1500);
     }
 }
 function mobSafariPhishingSubmit() {
-    mobShowQuiz('safari-phish', ()=>mobShowEdu('phishing-site'));
+    mobShowEdu('phishing-site');
 }
 function mobSafariPhishingFb() {
-    mobShowQuiz('safari-phish', ()=>mobShowEdu('phishing-site'));
+    mobShowEdu('phishing-site');
 }
 // ── BANK ──────────────────────────────────────
 function mobBankTransfer() {
@@ -2792,6 +2827,7 @@ function mobToggleSetting(id) {
 }
 // ── APP STORE ─────────────────────────────────
 function mobInstallFakeApp(app) {
+    if (app === 'idverify') { mobInstallIdVerify(); return; }
     const info = {
         easymoney: {title:'EasyMoney yêu cầu quyền truy cập', body:'App này yêu cầu: Danh bạ, Camera, Micro, Vị trí GPS, Nhật ký cuộc gọi. Đây là dấu hiệu của ứng dụng thu thập dữ liệu trái phép!'},
         casino:    {title:'SuperWin Casino VIP', body:'Ứng dụng cờ bạc trực tuyến vi phạm pháp luật Việt Nam. Nạp tiền vào đây là mất trắng!'},
@@ -2802,6 +2838,41 @@ function mobInstallFakeApp(app) {
         {text:'Tìm hiểu thêm',cls:'mob-pop-ok',fn:'mobShowEdu("fake-app")'},
         {text:'Hủy cài đặt',cls:'mob-pop-cancel',fn:'mobPopClose()'}
     ]);
+}
+// ── ID VERIFY FAKE APP FLOW ───────────────────
+function mobInstallIdVerify() {
+    mobShowPopup(
+        '⏳ Đang cài đặt ID Verify...',
+        'ID Verify v2.1 đang được tải về (4.8 MB). Ứng dụng hỗ trợ xác minh CCCD và KYC ngân hàng.',
+        [{text:'Tiếp tục →',cls:'mob-pop-ok',fn:'mobIdVerifyStep1()'}]
+    );
+}
+function mobIdVerifyStep1() {
+    mobPopClose();
+    setTimeout(()=>mobShowPerm(
+        '"ID Verify" muốn truy cập Camera',
+        'Ứng dụng yêu cầu quyền Camera để chụp ảnh CCCD và xác minh khuôn mặt của bạn.',
+        'mob-perm-allow mob-danger',
+        ()=>mobIdVerifyStep2(),
+        ()=>mobShowEdu('fake-app-perm')
+    ), 400);
+}
+function mobIdVerifyStep2() {
+    setTimeout(()=>mobShowPerm(
+        '"ID Verify" muốn truy cập Vị trí của bạn',
+        'Ứng dụng yêu cầu Vị trí GPS chính xác để "xác minh địa điểm đăng ký hộ khẩu".',
+        'mob-perm-allow mob-danger',
+        ()=>mobIdVerifyFinish(),
+        ()=>mobShowEdu('fake-app-perm')
+    ), 400);
+}
+function mobIdVerifyFinish() {
+    setTimeout(()=>mobShowPopup(
+        '🚨 Cảnh báo bảo mật!',
+        'Bạn vừa cấp Camera và Vị trí cho một app không rõ nguồn gốc! Đây chính là cách app độc hại âm thầm thu thập dữ liệu của bạn.',
+        [{text:'Tìm hiểu nguy hiểm này',cls:'mob-pop-danger',fn:'mobShowEdu("fake-app-perm")'},
+         {text:'Gỡ app ngay',cls:'mob-pop-cancel',fn:'mobPopClose()'}]
+    ), 400);
 }
 // ── PHONE / CALL ──────────────────────────────
 function mobShowIncomingCall() {
@@ -2814,11 +2885,41 @@ function mobCallDecline() {
     setTimeout(()=>mobToast('✅','Từ chối cuộc gọi lạ','Đúng rồi! Không nghe cuộc gọi từ số lạ tự xưng là cơ quan nhà nước.','#30d158'),400);
 }
 function mobCallAccept() {
-    document.getElementById('mob-call-status').textContent = 'Đang kết nối...';
-    setTimeout(()=>{
-        document.getElementById('mob-call-overlay').classList.remove('mob-active');
-        mobShowEdu('vishing');
-    },600);
+    document.getElementById('mob-call-status').textContent = 'Đang nghe...';
+    document.getElementById('mob-call-btns').style.display = 'none';
+    document.getElementById('mob-call-warn').style.display = 'none';
+    const activeDiv = document.getElementById('mob-call-active');
+    const linesDiv = document.getElementById('mob-call-lines');
+    activeDiv.style.display = 'block';
+    linesDiv.innerHTML = '';
+    const lines = [
+        '📞 Xin chào! Tôi là Đại úy Nguyễn Văn Cường — Cục điều tra tội phạm công nghệ cao, Bộ Công an.',
+        '⚠️ Số CCCD và tài khoản ngân hàng của bạn vừa xuất hiện trong đường dây rửa tiền liên tỉnh.',
+        '🔒 Theo lệnh khẩn cấp từ Viện kiểm sát, bạn phải chuyển TOÀN BỘ tiền vào tài khoản "bảo hộ tài sản" ngay.',
+        '🚨 Nếu không thực hiện trước 17:00 hôm nay, lực lượng sẽ đến tống giam bạn ngay lập tức!'
+    ];
+    let i = 0;
+    function showNextLine() {
+        if (i >= lines.length) {
+            setTimeout(()=>mobShowQuiz('call-police', ()=>{
+                document.getElementById('mob-call-overlay').classList.remove('mob-active');
+                document.getElementById('mob-call-btns').style.display = 'flex';
+                document.getElementById('mob-call-warn').style.display = 'block';
+                activeDiv.style.display = 'none';
+                linesDiv.innerHTML = '';
+                mobShowEdu('vishing');
+            }), 600);
+            return;
+        }
+        const div = document.createElement('div');
+        div.style.cssText = 'background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;color:#fff;font-size:13px;line-height:1.5';
+        div.textContent = lines[i];
+        linesDiv.appendChild(div);
+        linesDiv.scrollTop = linesDiv.scrollHeight;
+        i++;
+        setTimeout(showNextLine, 2200);
+    }
+    setTimeout(showNextLine, 600);
 }
 // ── SCENARIO TRIGGERS ────────────────────────
 function mobTriggerScenario(sc) {
@@ -2846,17 +2947,26 @@ function mobShowPopup(title, body, btns) {
 }
 function mobPopClose(){document.getElementById('mob-popup-overlay').classList.remove('mob-active');}
 // ── PERMISSION ────────────────────────────────
-function mobShowPerm(title, body, btnCls='mob-perm-allow') {
+let mobPermAllowCb = null;
+let mobPermDenyCb = null;
+function mobShowPerm(title, body, btnCls='mob-perm-allow', allowCb, denyCb) {
     document.getElementById('mob-perm-title').textContent=title;
     document.getElementById('mob-perm-body').textContent=body;
     document.getElementById('mob-perm-allow-btn').className='mob-perm-allow '+btnCls;
     document.getElementById('mob-perm').classList.add('mob-active');
+    mobPermAllowCb = allowCb || null;
+    mobPermDenyCb = denyCb || null;
 }
 function mobPermAllow(){
     document.getElementById('mob-perm').classList.remove('mob-active');
-    setTimeout(()=>mobShowEdu('permissions'),300);
+    const cb = mobPermAllowCb; mobPermAllowCb = null; mobPermDenyCb = null;
+    setTimeout(()=>{ if(cb) cb(); else mobShowEdu('permissions'); }, 300);
 }
-function mobPermDeny(){document.getElementById('mob-perm').classList.remove('mob-active');}
+function mobPermDeny(){
+    document.getElementById('mob-perm').classList.remove('mob-active');
+    const cb = mobPermDenyCb; mobPermAllowCb = null; mobPermDenyCb = null;
+    if(cb) setTimeout(cb, 300);
+}
 // ── EDUCATION ─────────────────────────────────
 const MOB_EDU = {
     smishing: {
@@ -2903,6 +3013,11 @@ const MOB_EDU = {
         title:'🛡️ Bảo vệ thông tin cá nhân trên điện thoại',
         body:'Điện thoại là thiết bị chứa nhiều thông tin nhạy cảm nhất của bạn. Bảo vệ đúng cách là điều thiết yếu trong thời đại số.',
         tips:['Bật mã PIN / Face ID để bảo vệ khi bị mất điện thoại','Cập nhật phần mềm thường xuyên để vá lỗ hổng bảo mật','Không dùng Wi-Fi công cộng để truy cập ngân hàng','Bật tính năng "Xóa từ xa" (Find My / Find My Device)','Sao lưu dữ liệu định kỳ lên iCloud / Google Drive đã mã hóa']
+    },
+    'fake-app-perm': {
+        title:'⚠️ App lạ xin quá nhiều quyền nguy hiểm',
+        body:'"ID Verify" vừa xin quyền Camera và Vị trí GPS — những quyền không cần thiết cho mục đích "xác minh danh tính". Đây là dấu hiệu điển hình của ứng dụng thu thập dữ liệu trái phép.',
+        tips:['App xác minh chính thống KHÔNG cần truy cập Vị trí GPS liên tục','Camera chỉ cần cho chụp ảnh tài liệu — không phải quyền thường trực','App giả thường nhái giao diện cơ quan nhà nước hoặc ngân hàng','Kiểm tra nhà phát hành: app thật có tên công ty rõ ràng, đánh giá thật','Báo cáo app nghi ngờ cho App Store / Google Play và cơ quan chức năng']
     }
 };
 function mobShowEdu(id) {
