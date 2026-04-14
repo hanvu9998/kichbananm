@@ -337,8 +337,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
           </div>
         </div>
 
-        <!-- Windows layer -->
-        <div id="clt-windows-layer" style="position:absolute;inset:0;bottom:42px">
+        <!-- Windows layer — pointer-events:none so desktop icons underneath stay clickable -->
+        <div id="clt-windows-layer" style="position:absolute;inset:0;bottom:42px;pointer-events:none">
 
           <!-- ── OUTLOOK WINDOW ── -->
           <div id="clt-win-outlook" style="display:none;position:absolute;top:18px;left:58px;width:min(680px,calc(100% - 70px));height:min(430px,calc(100% - 55px));background:#1e1e1e;border-radius:7px;box-shadow:0 20px 60px rgba(0,0,0,.85);overflow:hidden;z-index:100;pointer-events:all" class="clt-win">
