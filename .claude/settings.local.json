@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.sotayanm.com)",
+      "Bash(gh auth:*)",
+      "Bash(git --version)",
+      "Bash(git config:*)"
+    ]
+  }
+}
