@@ -308,6 +308,212 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
         </div>
         <div id="log-output"></div>
       </div>
+      <!-- CLIENT DESKTOP OVERLAY — inside mach-content so tabs/sidebar remain visible -->
+      <div id="client-desktop">
+
+        <!-- Desktop icons (single-click) -->
+        <div id="clt-icons" style="position:absolute;inset:0;bottom:42px;padding:10px;pointer-events:none">
+          <!-- Outlook -->
+          <div class="clt-icon" style="top:10px;left:10px;pointer-events:all" onclick="cltOpenOutlook()">
+            <div class="clt-icon-img">📧
+              <div id="clt-outlook-badge" style="position:absolute;top:-2px;right:-2px;background:#e53e3e;color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 0 6px rgba(229,62,62,.7)">1</div>
+            </div>
+            <span class="clt-icon-lbl">Outlook</span>
+          </div>
+          <!-- File Explorer -->
+          <div class="clt-icon" style="top:110px;left:10px;pointer-events:all" onclick="cltOpenExplorer()">
+            <div class="clt-icon-img">📁</div>
+            <span class="clt-icon-lbl">File Explorer</span>
+          </div>
+          <!-- Task Manager -->
+          <div class="clt-icon" style="top:210px;left:10px;pointer-events:all" onclick="cltOpenTaskMgr()">
+            <div class="clt-icon-img">📊</div>
+            <span class="clt-icon-lbl">Task Manager</span>
+          </div>
+          <!-- This PC -->
+          <div class="clt-icon" style="top:310px;left:10px;pointer-events:all">
+            <div class="clt-icon-img">🖥️</div>
+            <span class="clt-icon-lbl">This PC</span>
+          </div>
+        </div>
+
+        <!-- Windows layer -->
+        <div id="clt-windows-layer" style="position:absolute;inset:0;bottom:42px">
+
+          <!-- ── OUTLOOK WINDOW ── -->
+          <div id="clt-win-outlook" style="display:none;position:absolute;top:18px;left:58px;width:min(680px,calc(100% - 70px));height:min(430px,calc(100% - 55px));background:#1e1e1e;border-radius:7px;box-shadow:0 20px 60px rgba(0,0,0,.85);overflow:hidden;z-index:100;pointer-events:all" class="clt-win">
+            <div class="clt-win-tb" onclick="cltFocusWin('outlook')">
+              <div style="display:flex;gap:5px;flex-shrink:0"><div class="clt-wbtn cl" onclick="cltCloseWin('outlook')"></div><div class="clt-wbtn mn"></div><div class="clt-wbtn mx"></div></div>
+              <span style="font-size:11px;color:#bbb">📧 Outlook — nhanvien01@corp.local</span>
+            </div>
+            <div style="display:flex;flex:1;overflow:hidden;min-height:0">
+              <!-- Nav -->
+              <div style="width:130px;background:#131320;border-right:1px solid #2d2d2d;padding:8px 0;flex-shrink:0;overflow:hidden">
+                <div style="padding:4px 10px;font-size:10px;color:#4ec9b0;font-weight:700;margin-bottom:6px">nhanvien01</div>
+                <div style="padding:6px 10px;font-size:11px;color:#fff;background:rgba(59,130,246,.2);border-left:2px solid #3b82f6;display:flex;align-items:center;gap:4px">
+                  📥 Hộp thư <span id="clt-inbox-badge" style="background:#e53e3e;color:#fff;border-radius:8px;padding:0 5px;font-size:10px;font-weight:700">1</span>
+                </div>
+                <div style="padding:6px 10px;font-size:11px;color:#888">📤 Đã gửi</div>
+                <div style="padding:6px 10px;font-size:11px;color:#888">📝 Nháp</div>
+                <div style="padding:6px 10px;font-size:11px;color:#888">🗑️ Đã xóa</div>
+              </div>
+              <!-- Email list -->
+              <div style="width:200px;background:#1a1a2c;border-right:1px solid #2d2d2d;overflow-y:auto;flex-shrink:0">
+                <div id="clt-eml-phish" onclick="cltReadPhishEmail()" style="padding:10px 10px 8px;border-bottom:1px solid #252535;cursor:pointer;background:rgba(248,81,73,.07);border-left:3px solid #f85149">
+                  <div style="font-size:11px;color:#f85149;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">UBND Quảng Ninh</div>
+                  <div style="font-size:11px;color:#fff;font-weight:700;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📎 Báo cáo TC Q1/2024</div>
+                  <div style="font-size:10px;color:#666">09:47 — Hôm nay</div>
+                </div>
+                <div onclick="cltReadNormalEmail('IT Support','Lịch bảo trì tháng 4','it.support@corp.local','Hệ thống sẽ bảo trì vào Thứ Bảy 13/04 từ 22:00–02:00. Vui lòng lưu công việc trước đó. Trân trọng, Phòng IT.')" style="padding:10px 10px 8px;border-bottom:1px solid #252535;cursor:pointer">
+                  <div style="font-size:11px;color:#999">IT Support</div>
+                  <div style="font-size:11px;color:#ccc;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Lịch bảo trì tháng 4</div>
+                  <div style="font-size:10px;color:#666">08:02</div>
+                </div>
+                <div onclick="cltReadNormalEmail('HR Dept','Đăng ký nghỉ phép','hr@corp.local','Kính gửi toàn thể nhân viên, vui lòng đăng ký nghỉ phép trước ngày 20/04 qua cổng nhân sự nội bộ. Trân trọng.')" style="padding:10px 10px 8px;border-bottom:1px solid #252535;cursor:pointer">
+                  <div style="font-size:11px;color:#999">HR Dept</div>
+                  <div style="font-size:11px;color:#ccc;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Đăng ký nghỉ phép</div>
+                  <div style="font-size:10px;color:#666">07:30</div>
+                </div>
+              </div>
+              <!-- Preview pane -->
+              <div id="clt-email-preview" style="flex:1;padding:14px;overflow-y:auto;background:#17172a;font-size:12px;color:#ccc;min-width:0">
+                <div style="color:#444;text-align:center;margin-top:50px;font-size:13px">📩 Chọn email để xem nội dung</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── FILE EXPLORER WINDOW ── -->
+          <div id="clt-win-explorer" style="display:none;position:absolute;top:35px;left:90px;width:min(580px,calc(100% - 70px));height:min(370px,calc(100% - 55px));background:#1e1e1e;border-radius:7px;box-shadow:0 20px 60px rgba(0,0,0,.85);overflow:hidden;z-index:90;pointer-events:all" class="clt-win">
+            <div class="clt-win-tb" onclick="cltFocusWin('explorer')">
+              <div style="display:flex;gap:5px;flex-shrink:0"><div class="clt-wbtn cl" onclick="cltCloseWin('explorer')"></div><div class="clt-wbtn mn"></div><div class="clt-wbtn mx"></div></div>
+              <span style="font-size:11px;color:#bbb">📁 File Explorer</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 8px;background:#252525;border-bottom:1px solid #333;flex-shrink:0">
+              <button style="background:transparent;border:none;color:#888;font-size:13px;cursor:pointer;padding:2px 5px;border-radius:3px">←</button>
+              <button style="background:transparent;border:none;color:#888;font-size:13px;cursor:pointer;padding:2px 5px;border-radius:3px">→</button>
+              <div style="flex:1;background:#333;border:1px solid #444;color:#ccc;padding:3px 8px;border-radius:4px;font-size:11px">C:\Users\nhanvien01\Downloads</div>
+            </div>
+            <div style="display:flex;flex:1;overflow:hidden;min-height:0">
+              <div style="width:140px;background:#191919;border-right:1px solid #2d2d2d;padding:6px 0;flex-shrink:0">
+                <div style="padding:4px 10px;font-size:10px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Truy cập nhanh</div>
+                <div style="padding:5px 14px;font-size:11px;color:#ccc;cursor:pointer">🖥️ Desktop</div>
+                <div style="padding:5px 14px;font-size:11px;color:#60a5fa;background:rgba(59,130,246,.1);border-left:2px solid #3b82f6;cursor:pointer">⬇️ Downloads</div>
+                <div style="padding:5px 14px;font-size:11px;color:#ccc;cursor:pointer">📄 Documents</div>
+                <div style="padding:4px 10px;font-size:10px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 3px">Máy tính này</div>
+                <div style="padding:5px 14px;font-size:11px;color:#ccc;cursor:pointer">💿 Local Disk (C:)</div>
+              </div>
+              <div style="flex:1;padding:10px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;overflow-y:auto" id="clt-explorer-files">
+                <div style="color:#444;font-size:12px;padding:30px;width:100%;text-align:center">Thư mục trống</div>
+              </div>
+            </div>
+            <div style="padding:3px 10px;background:#222;border-top:1px solid #2d2d2d;font-size:10px;color:#555;flex-shrink:0" id="clt-exp-status">0 mục</div>
+          </div>
+
+          <!-- ── TASK MANAGER WINDOW ── -->
+          <div id="clt-win-taskmgr" style="display:none;position:absolute;top:25px;left:75px;width:min(500px,calc(100% - 70px));height:min(350px,calc(100% - 55px));background:#1e1e1e;border-radius:7px;box-shadow:0 20px 60px rgba(0,0,0,.85);overflow:hidden;z-index:80;pointer-events:all" class="clt-win">
+            <div class="clt-win-tb" onclick="cltFocusWin('taskmgr')">
+              <div style="display:flex;gap:5px;flex-shrink:0"><div class="clt-wbtn cl" onclick="cltCloseWin('taskmgr')"></div><div class="clt-wbtn mn"></div><div class="clt-wbtn mx"></div></div>
+              <span style="font-size:11px;color:#bbb">📊 Task Manager</span>
+            </div>
+            <div style="display:flex;border-bottom:1px solid #2d2d2d;background:#252525;flex-shrink:0">
+              <div style="padding:6px 14px;font-size:11px;color:#60a5fa;border-bottom:2px solid #3b82f6;cursor:pointer">Tiến trình</div>
+              <div style="padding:6px 14px;font-size:11px;color:#888;cursor:pointer">Hiệu suất</div>
+              <div style="padding:6px 14px;font-size:11px;color:#888;cursor:pointer">Khởi động</div>
+              <div style="padding:6px 14px;font-size:11px;color:#888;cursor:pointer">Mạng</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 56px 70px 90px;background:#1a1a1a;border-bottom:1px solid #2d2d2d;padding:4px 10px;font-size:10px;color:#777;font-weight:700;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0">
+              <span>Tên tiến trình</span><span>CPU</span><span>Bộ nhớ</span><span>Trạng thái</span>
+            </div>
+            <div style="flex:1;overflow-y:auto" id="clt-taskmgr-list"></div>
+          </div>
+
+          <!-- ── DOWNLOAD BAR ── -->
+          <div id="clt-dlbar" style="display:none;position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#1e1e2e;border:1px solid #3a3a4e;border-radius:8px;padding:12px 14px;box-shadow:0 8px 32px rgba(0,0,0,.7);min-width:320px;pointer-events:all;z-index:400;animation:clt-infection .25s ease">
+            <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:8px">⬇️ Tải xuống hoàn tất</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span style="font-size:22px">📄</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:11px;color:#ffd700;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">BaoCaoTaiChinh_Q1-2024.pdf.exe</div>
+                <div style="font-size:10px;color:#666">1.02 MB · C:\Users\nhanvien01\Downloads</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button onclick="cltOpenDownloadedFile()" style="background:#e53e3e;color:#fff;border:none;border-radius:5px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;flex:1">▶ Mở file</button>
+              <button onclick="cltOpenExplorer()" style="background:#2d2d3e;color:#bbb;border:1px solid #444;border-radius:5px;padding:5px 10px;font-size:11px;cursor:pointer">📁 Thư mục</button>
+              <button onclick="document.getElementById('clt-dlbar').style.display='none'" style="background:transparent;color:#666;border:none;font-size:16px;cursor:pointer;padding:0 4px">✕</button>
+            </div>
+          </div>
+
+          <!-- ── SMARTSCREEN DIALOG ── -->
+          <div id="clt-dlg-security" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:600;align-items:center;justify-content:center;pointer-events:all">
+            <div style="background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:10px;max-width:360px;width:90%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.8)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+                <div style="width:38px;height:38px;background:#1a3a5f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🛡️</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px">Windows bảo vệ máy tính của bạn</div>
+                  <div style="font-size:11px;color:#666">Microsoft Defender SmartScreen</div>
+                </div>
+              </div>
+              <div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.35);border-radius:6px;padding:12px;margin-bottom:14px">
+                <div style="font-size:12px;color:#f87171;font-weight:700;margin-bottom:6px">⚠ Ứng dụng không rõ nguồn gốc bị chặn</div>
+                <div style="font-size:11px;color:#aaa;line-height:1.7">
+                  <b style="color:#ffd700">BaoCaoTaiChinh_Q1-2024.pdf.exe</b><br>
+                  Nhà xuất bản: <span style="color:#f87171">Không xác định</span><br>
+                  Nguồn gốc: Tệp đính kèm email<br>
+                  Rủi ro: <span style="color:#f87171">Cao</span>
+                </div>
+              </div>
+              <div style="font-size:11px;color:#777;line-height:1.6;margin-bottom:16px">Windows Defender đã chặn file này. Chạy có thể gây thiệt hại nghiêm trọng cho máy tính của bạn.</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <button onclick="cltDlgRunAnyway()" style="background:transparent;color:#777;border:none;font-size:11px;cursor:pointer;text-decoration:underline">Thông tin thêm ▸ Chạy dù sao</button>
+                <button onclick="document.getElementById('clt-dlg-security').style.display='none'" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Đừng chạy ✓</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── FAKE PDF DECOY ── -->
+          <div id="clt-dlg-pdf" style="display:none;position:absolute;inset:0;z-index:350;flex-direction:column;pointer-events:all">
+            <div style="background:#2d3748;padding:7px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0">
+              <div style="display:flex;gap:4px"><div style="width:12px;height:12px;border-radius:50%;background:#ff5f57;cursor:pointer" onclick="document.getElementById('clt-dlg-pdf').style.display='none'"></div><div style="width:12px;height:12px;border-radius:50%;background:#febc2e"></div><div style="width:12px;height:12px;border-radius:50%;background:#28c840"></div></div>
+              <span style="color:#bbb;font-size:11px;flex:1">📄 BaoCaoTaiChinh_Q1-2024.pdf — Adobe Acrobat Reader</span>
+              <div style="font-size:10px;color:#555">Trang 1/4</div>
+            </div>
+            <div style="flex:1;background:#525659;display:flex;align-items:center;justify-content:center;overflow:auto;padding:20px">
+              <div style="background:#fff;width:480px;max-width:100%;padding:40px 44px;box-shadow:0 4px 24px rgba(0,0,0,.5);font-family:Georgia,serif">
+                <div style="text-align:center;border-bottom:2px solid #1a365d;padding-bottom:14px;margin-bottom:18px">
+                  <div style="font-size:12px;color:#1a365d;font-weight:700;text-transform:uppercase;letter-spacing:1px">UBND TỈNH QUẢNG NINH</div>
+                  <div style="font-size:11px;color:#666;margin-top:2px">Phòng Tài chính — Kế hoạch</div>
+                  <div style="font-size:14px;font-weight:700;color:#1a365d;margin-top:10px">BÁO CÁO TÀI CHÍNH QUÝ I NĂM 2024</div>
+                  <div style="font-size:11px;color:#888;margin-top:4px">Tài liệu hạn chế phổ biến</div>
+                </div>
+                <div style="font-size:12px;color:#222;line-height:2">
+                  <p><b>I. TỔNG THU NGÂN SÁCH:</b> 12.450 tỷ đồng (đạt 103% kế hoạch)</p>
+                  <p><b>II. TỔNG CHI NGÂN SÁCH:</b> 10.230 tỷ đồng (đạt 97,4%)</p>
+                  <p><b>III. DỰ ÁN ĐẦU TƯ CÔNG:</b> 58 dự án đang triển khai</p>
+                  <p><b>IV. THU HÚT ĐẦU TƯ:</b> 8 dự án FDI mới, tổng vốn 1,2 tỷ USD</p>
+                </div>
+                <div style="text-align:center;margin-top:20px;font-size:10px;color:#bbb;border-top:1px solid #eee;padding-top:10px">Trang 1/4 · UBND Quảng Ninh · 10/04/2024</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /#clt-windows-layer -->
+
+        <!-- ── TASKBAR ── -->
+        <div id="clt-taskbar" style="position:absolute;bottom:0;left:0;right:0;height:42px;background:rgba(10,10,26,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 5px;gap:3px;z-index:500;pointer-events:all">
+          <div style="padding:4px 10px;border-radius:5px;background:rgba(59,130,246,.15);color:#60a5fa;font-size:12px;cursor:pointer;border:1px solid rgba(59,130,246,.2);flex-shrink:0">⊞ Start</div>
+          <div id="clt-tb-search" style="padding:4px 10px;border-radius:5px;background:rgba(255,255,255,.06);color:#999;font-size:11px;cursor:text;border:1px solid rgba(255,255,255,.06);flex-shrink:0">🔍 Tìm kiếm</div>
+          <div id="clt-tb-outlook" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(59,130,246,.15);color:#60a5fa;font-size:11px;cursor:pointer;border-bottom:2px solid #3b82f6" onclick="cltToggleWin('outlook')">📧 Outlook</div>
+          <div id="clt-tb-explorer" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,.06);color:#aaa;font-size:11px;cursor:pointer;border-bottom:2px solid transparent" onclick="cltToggleWin('explorer')">📁 File Explorer</div>
+          <div id="clt-tb-taskmgr" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,.06);color:#aaa;font-size:11px;cursor:pointer;border-bottom:2px solid transparent" onclick="cltToggleWin('taskmgr')">📊 Task Manager</div>
+          <div id="clt-tb-malware" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(248,81,73,.18);color:#f85149;font-size:11px;cursor:pointer;border-bottom:2px solid #f85149;animation:clt-blink 1.5s infinite;flex-shrink:0">⚠ svchost32.exe [C2]</div>
+          <div style="margin-left:auto;color:#bbb;font-size:11px;padding:0 8px;text-align:right;line-height:1.5;flex-shrink:0" id="clt-clock">10:38<br>10/04/2024</div>
+        </div>
+
+        <!-- ── DESKTOP NOTIFICATIONS ── -->
+        <div id="clt-notifs" style="position:absolute;top:8px;right:8px;z-index:600;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:290px"></div>
+
+      </div><!-- /#client-desktop -->
     </div>
   </div>
 
@@ -334,221 +540,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
   </div>
 
 </div><!-- /#drill-main -->
-
-<!-- ══════════════════════════════════════════════
-     CLIENT WINDOWS DESKTOP (overlay in mach-content)
-     ══════════════════════════════════════════════ -->
-<div id="client-desktop">
-
-  <!-- Desktop icons -->
-  <div id="clt-icons" style="position:absolute;inset:0;bottom:42px;padding:10px;pointer-events:none">
-    <!-- Outlook -->
-    <div class="clt-icon" style="top:10px;left:10px;pointer-events:all" ondblclick="cltOpenOutlook()">
-      <div class="clt-icon-img">📧
-        <div id="clt-outlook-badge" style="position:absolute;top:-2px;right:-2px;background:#e53e3e;color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 0 6px rgba(229,62,62,.7)">1</div>
-      </div>
-      <span class="clt-icon-lbl">Outlook</span>
-    </div>
-    <!-- File Explorer -->
-    <div class="clt-icon" style="top:110px;left:10px;pointer-events:all" ondblclick="cltOpenExplorer()">
-      <div class="clt-icon-img">📁</div>
-      <span class="clt-icon-lbl">File Explorer</span>
-    </div>
-    <!-- Task Manager -->
-    <div class="clt-icon" style="top:210px;left:10px;pointer-events:all" ondblclick="cltOpenTaskMgr()">
-      <div class="clt-icon-img">📊</div>
-      <span class="clt-icon-lbl">Task Manager</span>
-    </div>
-    <!-- This PC -->
-    <div class="clt-icon" style="top:310px;left:10px;pointer-events:all">
-      <div class="clt-icon-img">🖥️</div>
-      <span class="clt-icon-lbl">This PC</span>
-    </div>
-  </div>
-
-  <!-- Windows layer -->
-  <div id="clt-windows-layer" style="position:absolute;inset:0;bottom:42px">
-
-    <!-- ── OUTLOOK WINDOW ── -->
-    <div id="clt-win-outlook" style="display:none;position:absolute;top:18px;left:58px;width:min(680px,calc(100% - 70px));height:min(430px,calc(100% - 55px));background:#1e1e1e;border-radius:7px;box-shadow:0 20px 60px rgba(0,0,0,.85);overflow:hidden;z-index:100;pointer-events:all" class="clt-win">
-      <div class="clt-win-tb" onclick="cltFocusWin('outlook')">
-        <div style="display:flex;gap:5px;flex-shrink:0"><div class="clt-wbtn cl" onclick="cltCloseWin('outlook')"></div><div class="clt-wbtn mn"></div><div class="clt-wbtn mx"></div></div>
-        <span style="font-size:11px;color:#bbb">📧 Outlook — nhanvien01@corp.local</span>
-      </div>
-      <div style="display:flex;flex:1;overflow:hidden;min-height:0">
-        <!-- Nav -->
-        <div style="width:130px;background:#131320;border-right:1px solid #2d2d2d;padding:8px 0;flex-shrink:0;overflow:hidden">
-          <div style="padding:4px 10px;font-size:10px;color:#4ec9b0;font-weight:700;margin-bottom:6px">nhanvien01</div>
-          <div style="padding:6px 10px;font-size:11px;color:#fff;background:rgba(59,130,246,.2);border-left:2px solid #3b82f6;display:flex;align-items:center;gap:4px">
-            📥 Hộp thư <span id="clt-inbox-badge" style="background:#e53e3e;color:#fff;border-radius:8px;padding:0 5px;font-size:10px;font-weight:700">1</span>
-          </div>
-          <div style="padding:6px 10px;font-size:11px;color:#888">📤 Đã gửi</div>
-          <div style="padding:6px 10px;font-size:11px;color:#888">📝 Nháp</div>
-          <div style="padding:6px 10px;font-size:11px;color:#888">🗑️ Đã xóa</div>
-        </div>
-        <!-- Email list -->
-        <div style="width:200px;background:#1a1a2c;border-right:1px solid #2d2d2d;overflow-y:auto;flex-shrink:0">
-          <!-- Phishing email -->
-          <div id="clt-eml-phish" onclick="cltReadPhishEmail()" style="padding:10px 10px 8px;border-bottom:1px solid #252535;cursor:pointer;background:rgba(248,81,73,.07);border-left:3px solid #f85149">
-            <div style="font-size:11px;color:#f85149;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">UBND Quảng Ninh</div>
-            <div style="font-size:11px;color:#fff;font-weight:700;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📎 Báo cáo TC Q1/2024</div>
-            <div style="font-size:10px;color:#666">09:47 — Hôm nay</div>
-          </div>
-          <!-- Normal emails -->
-          <div onclick="cltReadNormalEmail('IT Support','Lịch bảo trì tháng 4','it.support@corp.local','Hệ thống sẽ bảo trì vào Thứ Bảy 13/04 từ 22:00–02:00. Vui lòng lưu công việc trước đó. Trân trọng, Phòng IT.')" style="padding:10px 10px 8px;border-bottom:1px solid #252535;cursor:pointer">
-            <div style="font-size:11px;color:#999">IT Support</div>
-            <div style="font-size:11px;color:#ccc;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Lịch bảo trì tháng 4</div>
-            <div style="font-size:10px;color:#666">08:02</div>
-          </div>
-          <div onclick="cltReadNormalEmail('HR Dept','Đăng ký nghỉ phép','hr@corp.local','Kính gửi toàn thể nhân viên, vui lòng đăng ký nghỉ phép trước ngày 20/04 qua cổng nhân sự nội bộ. Trân trọng.')" style="padding:10px 10px 8px;border-bottom:1px solid #252535;cursor:pointer">
-            <div style="font-size:11px;color:#999">HR Dept</div>
-            <div style="font-size:11px;color:#ccc;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Đăng ký nghỉ phép</div>
-            <div style="font-size:10px;color:#666">07:30</div>
-          </div>
-        </div>
-        <!-- Preview pane -->
-        <div id="clt-email-preview" style="flex:1;padding:14px;overflow-y:auto;background:#17172a;font-size:12px;color:#ccc;min-width:0">
-          <div style="color:#444;text-align:center;margin-top:50px;font-size:13px">📩 Chọn email để xem nội dung</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── FILE EXPLORER WINDOW ── -->
-    <div id="clt-win-explorer" style="display:none;position:absolute;top:35px;left:90px;width:min(580px,calc(100% - 70px));height:min(370px,calc(100% - 55px));background:#1e1e1e;border-radius:7px;box-shadow:0 20px 60px rgba(0,0,0,.85);overflow:hidden;z-index:90;pointer-events:all" class="clt-win">
-      <div class="clt-win-tb" onclick="cltFocusWin('explorer')">
-        <div style="display:flex;gap:5px;flex-shrink:0"><div class="clt-wbtn cl" onclick="cltCloseWin('explorer')"></div><div class="clt-wbtn mn"></div><div class="clt-wbtn mx"></div></div>
-        <span style="font-size:11px;color:#bbb">📁 File Explorer</span>
-      </div>
-      <!-- Toolbar -->
-      <div style="display:flex;align-items:center;gap:4px;padding:4px 8px;background:#252525;border-bottom:1px solid #333;flex-shrink:0">
-        <button style="background:transparent;border:none;color:#888;font-size:13px;cursor:pointer;padding:2px 5px;border-radius:3px">←</button>
-        <button style="background:transparent;border:none;color:#888;font-size:13px;cursor:pointer;padding:2px 5px;border-radius:3px">→</button>
-        <div style="flex:1;background:#333;border:1px solid #444;color:#ccc;padding:3px 8px;border-radius:4px;font-size:11px">C:\Users\nhanvien01\Downloads</div>
-      </div>
-      <div style="display:flex;flex:1;overflow:hidden;min-height:0">
-        <!-- Sidebar -->
-        <div style="width:140px;background:#191919;border-right:1px solid #2d2d2d;padding:6px 0;flex-shrink:0">
-          <div style="padding:4px 10px;font-size:10px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Truy cập nhanh</div>
-          <div style="padding:5px 14px;font-size:11px;color:#ccc;cursor:pointer">🖥️ Desktop</div>
-          <div style="padding:5px 14px;font-size:11px;color:#60a5fa;background:rgba(59,130,246,.1);border-left:2px solid #3b82f6;cursor:pointer">⬇️ Downloads</div>
-          <div style="padding:5px 14px;font-size:11px;color:#ccc;cursor:pointer">📄 Documents</div>
-          <div style="padding:4px 10px;font-size:10px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 3px">Máy tính này</div>
-          <div style="padding:5px 14px;font-size:11px;color:#ccc;cursor:pointer">💿 Local Disk (C:)</div>
-        </div>
-        <!-- File area -->
-        <div style="flex:1;padding:10px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;overflow-y:auto" id="clt-explorer-files">
-          <div style="color:#444;font-size:12px;padding:30px;width:100%;text-align:center">Thư mục trống</div>
-        </div>
-      </div>
-      <div style="padding:3px 10px;background:#222;border-top:1px solid #2d2d2d;font-size:10px;color:#555;flex-shrink:0" id="clt-exp-status">0 mục</div>
-    </div>
-
-    <!-- ── TASK MANAGER WINDOW ── -->
-    <div id="clt-win-taskmgr" style="display:none;position:absolute;top:25px;left:75px;width:min(500px,calc(100% - 70px));height:min(350px,calc(100% - 55px));background:#1e1e1e;border-radius:7px;box-shadow:0 20px 60px rgba(0,0,0,.85);overflow:hidden;z-index:80;pointer-events:all" class="clt-win">
-      <div class="clt-win-tb" onclick="cltFocusWin('taskmgr')">
-        <div style="display:flex;gap:5px;flex-shrink:0"><div class="clt-wbtn cl" onclick="cltCloseWin('taskmgr')"></div><div class="clt-wbtn mn"></div><div class="clt-wbtn mx"></div></div>
-        <span style="font-size:11px;color:#bbb">📊 Task Manager</span>
-      </div>
-      <div style="display:flex;border-bottom:1px solid #2d2d2d;background:#252525;flex-shrink:0">
-        <div style="padding:6px 14px;font-size:11px;color:#60a5fa;border-bottom:2px solid #3b82f6;cursor:pointer">Tiến trình</div>
-        <div style="padding:6px 14px;font-size:11px;color:#888;cursor:pointer">Hiệu suất</div>
-        <div style="padding:6px 14px;font-size:11px;color:#888;cursor:pointer">Khởi động</div>
-        <div style="padding:6px 14px;font-size:11px;color:#888;cursor:pointer">Mạng</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 56px 70px 90px;background:#1a1a1a;border-bottom:1px solid #2d2d2d;padding:4px 10px;font-size:10px;color:#777;font-weight:700;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0">
-        <span>Tên tiến trình</span><span>CPU</span><span>Bộ nhớ</span><span>Trạng thái</span>
-      </div>
-      <div style="flex:1;overflow-y:auto" id="clt-taskmgr-list"></div>
-    </div>
-
-    <!-- ── DOWNLOAD BAR (bottom toast) ── -->
-    <div id="clt-dlbar" style="display:none;position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#1e1e2e;border:1px solid #3a3a4e;border-radius:8px;padding:12px 14px;box-shadow:0 8px 32px rgba(0,0,0,.7);min-width:320px;pointer-events:all;z-index:400;animation:clt-infection .25s ease">
-      <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:8px">⬇️ Tải xuống hoàn tất</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="font-size:22px">📄</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:11px;color:#ffd700;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">BaoCaoTaiChinh_Q1-2024.pdf.exe</div>
-          <div style="font-size:10px;color:#666">1.02 MB · C:\Users\nhanvien01\Downloads</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button onclick="cltOpenDownloadedFile()" style="background:#e53e3e;color:#fff;border:none;border-radius:5px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;flex:1">▶ Mở file</button>
-        <button onclick="cltOpenExplorer()" style="background:#2d2d3e;color:#bbb;border:1px solid #444;border-radius:5px;padding:5px 10px;font-size:11px;cursor:pointer">📁 Thư mục</button>
-        <button onclick="document.getElementById('clt-dlbar').style.display='none'" style="background:transparent;color:#666;border:none;font-size:16px;cursor:pointer;padding:0 4px">✕</button>
-      </div>
-    </div>
-
-    <!-- ── SMARTSCREEN SECURITY DIALOG ── -->
-    <div id="clt-dlg-security" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:600;align-items:center;justify-content:center;pointer-events:all">
-      <div style="background:#1a1a2e;border:1px solid rgba(255,255,255,.12);border-radius:10px;max-width:360px;width:90%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.8)">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-          <div style="width:38px;height:38px;background:#1a3a5f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🛡️</div>
-          <div>
-            <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px">Windows bảo vệ máy tính của bạn</div>
-            <div style="font-size:11px;color:#666">Microsoft Defender SmartScreen</div>
-          </div>
-        </div>
-        <div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.35);border-radius:6px;padding:12px;margin-bottom:14px">
-          <div style="font-size:12px;color:#f87171;font-weight:700;margin-bottom:6px">⚠ Ứng dụng không rõ nguồn gốc bị chặn</div>
-          <div style="font-size:11px;color:#aaa;line-height:1.7">
-            <b style="color:#ffd700">BaoCaoTaiChinh_Q1-2024.pdf.exe</b><br>
-            Nhà xuất bản: <span style="color:#f87171">Không xác định</span><br>
-            Nguồn gốc: Tệp đính kèm email<br>
-            Rủi ro: <span style="color:#f87171">Cao</span>
-          </div>
-        </div>
-        <div style="font-size:11px;color:#777;line-height:1.6;margin-bottom:16px">Windows Defender đã chặn file này. Chạy có thể gây thiệt hại nghiêm trọng cho máy tính của bạn.</div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <button onclick="cltDlgRunAnyway()" style="background:transparent;color:#777;border:none;font-size:11px;cursor:pointer;text-decoration:underline">Thông tin thêm ▸ Chạy dù sao</button>
-          <button onclick="document.getElementById('clt-dlg-security').style.display='none'" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Đừng chạy ✓</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── FAKE PDF DECOY ── -->
-    <div id="clt-dlg-pdf" style="display:none;position:absolute;inset:0;z-index:350;flex-direction:column;pointer-events:all">
-      <div style="background:#2d3748;padding:7px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0">
-        <div style="display:flex;gap:4px"><div style="width:12px;height:12px;border-radius:50%;background:#ff5f57;cursor:pointer" onclick="document.getElementById('clt-dlg-pdf').style.display='none'"></div><div style="width:12px;height:12px;border-radius:50%;background:#febc2e"></div><div style="width:12px;height:12px;border-radius:50%;background:#28c840"></div></div>
-        <span style="color:#bbb;font-size:11px;flex:1">📄 BaoCaoTaiChinh_Q1-2024.pdf — Adobe Acrobat Reader</span>
-        <div style="font-size:10px;color:#555">Trang 1/4</div>
-      </div>
-      <div style="flex:1;background:#525659;display:flex;align-items:center;justify-content:center;overflow:auto;padding:20px">
-        <div style="background:#fff;width:480px;max-width:100%;padding:40px 44px;box-shadow:0 4px 24px rgba(0,0,0,.5);font-family:Georgia,serif">
-          <div style="text-align:center;border-bottom:2px solid #1a365d;padding-bottom:14px;margin-bottom:18px">
-            <div style="font-size:12px;color:#1a365d;font-weight:700;text-transform:uppercase;letter-spacing:1px">UBND TỈNH QUẢNG NINH</div>
-            <div style="font-size:11px;color:#666;margin-top:2px">Phòng Tài chính — Kế hoạch</div>
-            <div style="font-size:14px;font-weight:700;color:#1a365d;margin-top:10px">BÁO CÁO TÀI CHÍNH QUÝ I NĂM 2024</div>
-            <div style="font-size:11px;color:#888;margin-top:4px">Tài liệu hạn chế phổ biến</div>
-          </div>
-          <div style="font-size:12px;color:#222;line-height:2">
-            <p><b>I. TỔNG THU NGÂN SÁCH:</b> 12.450 tỷ đồng (đạt 103% kế hoạch)</p>
-            <p><b>II. TỔNG CHI NGÂN SÁCH:</b> 10.230 tỷ đồng (đạt 97,4%)</p>
-            <p><b>III. DỰ ÁN ĐẦU TƯ CÔNG:</b> 58 dự án đang triển khai</p>
-            <p><b>IV. THU HÚT ĐẦU TƯ:</b> 8 dự án FDI mới, tổng vốn 1,2 tỷ USD</p>
-          </div>
-          <div style="text-align:center;margin-top:20px;font-size:10px;color:#bbb;border-top:1px solid #eee;padding-top:10px">Trang 1/4 · UBND Quảng Ninh · 10/04/2024</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /#clt-windows-layer -->
-
-  <!-- ── TASKBAR ── -->
-  <div id="clt-taskbar" style="position:absolute;bottom:0;left:0;right:0;height:42px;background:rgba(10,10,26,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 5px;gap:3px;z-index:500;pointer-events:all">
-    <div style="padding:4px 10px;border-radius:5px;background:rgba(59,130,246,.15);color:#60a5fa;font-size:12px;cursor:pointer;border:1px solid rgba(59,130,246,.2);flex-shrink:0">⊞ Start</div>
-    <div id="clt-tb-search" style="padding:4px 10px;border-radius:5px;background:rgba(255,255,255,.06);color:#999;font-size:11px;cursor:text;border:1px solid rgba(255,255,255,.06);flex-shrink:0">🔍 Tìm kiếm</div>
-    <div id="clt-tb-outlook" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(59,130,246,.15);color:#60a5fa;font-size:11px;cursor:pointer;border-bottom:2px solid #3b82f6" onclick="cltToggleWin('outlook')">📧 Outlook</div>
-    <div id="clt-tb-explorer" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,.06);color:#aaa;font-size:11px;cursor:pointer;border-bottom:2px solid transparent" onclick="cltToggleWin('explorer')">📁 File Explorer</div>
-    <div id="clt-tb-taskmgr" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,.06);color:#aaa;font-size:11px;cursor:pointer;border-bottom:2px solid transparent" onclick="cltToggleWin('taskmgr')">📊 Task Manager</div>
-    <div id="clt-tb-malware" style="display:none;padding:4px 8px;border-radius:4px;background:rgba(248,81,73,.18);color:#f85149;font-size:11px;cursor:pointer;border-bottom:2px solid #f85149;animation:clt-blink 1.5s infinite;flex-shrink:0">⚠ svchost32.exe [C2]</div>
-    <div style="margin-left:auto;color:#bbb;font-size:11px;padding:0 8px;text-align:right;line-height:1.5;flex-shrink:0" id="clt-clock">10:38<br>10/04/2024</div>
-  </div>
-
-  <!-- ── DESKTOP NOTIFICATIONS ── -->
-  <div id="clt-notifs" style="position:absolute;top:8px;right:8px;z-index:600;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:290px"></div>
-
-</div><!-- /#client-desktop -->
-
 
 <!-- STEP QUIZ MODAL -->
 <div id="quiz-overlay">
@@ -1514,8 +1505,6 @@ let cltWinZ = { outlook:100, explorer:90, taskmgr:80 };
 let cltClockTimer = null;
 
 function cltShowDesktop(){
-  const sv = document.getElementById('screen-view');
-  sv.style.cssText = 'position:relative;overflow:hidden;padding:0;flex:1';
   const d = document.getElementById('client-desktop');
   d.style.display = 'block';
   cltUpdateTaskMgr();
@@ -1524,8 +1513,6 @@ function cltShowDesktop(){
 function cltHideDesktop(){
   const d = document.getElementById('client-desktop');
   if(d) d.style.display = 'none';
-  const sv = document.getElementById('screen-view');
-  if(sv) sv.style.cssText = '';
   if(cltClockTimer){ clearInterval(cltClockTimer); cltClockTimer=null; }
 }
 function cltStartClock(){
@@ -1710,20 +1697,17 @@ function cltAddNotif(icon, title, msg, type){
   setTimeout(()=>{ div.style.transition='opacity .4s'; div.style.opacity='0'; setTimeout(()=>div.remove(),400); },6000);
 }
 
-// Override refreshMachineView to show/hide desktop
-// Patch refreshMachineView to handle client desktop
+// Patch refreshMachineView: show client desktop when on client+screen
 const _origRefreshMachineView = refreshMachineView;
 refreshMachineView = function(){
+  _origRefreshMachineView();
   if(currentMachine==='client' && currentTab==='screen'){
-    cltHideDesktop(); // clear first
-    _origRefreshMachineView();
     cltShowDesktop();
   } else {
     cltHideDesktop();
-    _origRefreshMachineView();
   }
 };
-// Also patch switchTab to handle desktop
+// Patch switchTab: toggle client desktop based on active tab
 const _origSwitchTab = switchTab;
 switchTab = function(t){
   _origSwitchTab(t);
