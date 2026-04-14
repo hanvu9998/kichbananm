@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Diễn Tập An Ninh Mạng — APT Kill Chain</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --red:#f85149;--red-dim:#3d1c1c;
+  --blue:#58a6ff;--blue-dim:#1c2d3d;
+  --green:#3fb950;--green-dim:#1c2d1c;
+  --yellow:#d29922;--yellow-dim:#2d2008;
+  --purple:#bc8cff;--orange:#ffa657;
+  --term-bg:#0d1117;--term-green:#39d353;--term-prompt:#58a6ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ── TOPBAR ── */
+#drill-top{display:flex;align-items:center;gap:10px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:52px;flex-shrink:0;z-index:10}
+#drill-top .logo{font-weight:800;font-size:15px;color:#fff;white-space:nowrap;display:flex;align-items:center;gap:8px}
+#drill-top .logo span{font-size:18px}
+#phase-track{display:flex;align-items:center;gap:4px;flex:1;overflow:hidden}
+.phase-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid var(--border);color:var(--text3);background:var(--bg3);flex-shrink:0;transition:all .3s;cursor:default}
+.phase-dot.active{border-color:var(--yellow);color:var(--yellow);background:var(--yellow-dim)}
+.phase-dot.done{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.phase-line{height:2px;flex:1;background:var(--border);max-width:20px;flex-shrink:0}
+.phase-line.done{background:var(--green)}
+#step-counter{font-size:12px;color:var(--text2);white-space:nowrap;flex-shrink:0}
+#mode-toggle{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
+.mode-btn{padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .2s}
+.mode-btn.active-red{background:var(--red-dim);color:var(--red)}
+.mode-btn.active-blue{background:var(--blue-dim);color:var(--blue)}
+.mode-btn.active-both{background:var(--bg3);color:#fff}
+#btn-exit{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap}
+#btn-exit:hover{border-color:var(--red);color:var(--red)}
+
+/* ── MAIN LAYOUT ── */
+#drill-main{display:flex;flex:1;overflow:hidden}
+
+/* ── LEFT: machine list ── */
+#machine-list{width:200px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:0;flex-shrink:0;overflow-y:auto}
+#machine-list h3{padding:12px 14px 8px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+.mach-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .2s;user-select:none}
+.mach-btn:hover{background:var(--bg3)}
+.mach-btn.active{background:var(--bg3);border-left-color:var(--blue)}
+.mach-status{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--green)}
+.mach-status.warn{background:var(--yellow)}
+.mach-status.danger{background:var(--red);box-shadow:0 0 6px var(--red)}
+.mach-info{flex:1;min-width:0}
+.mach-name{font-size:13px;font-weight:600;color:var(--text)}
+.mach-ip{font-size:11px;color:var(--text3)}
+.mach-badge{font-size:10px;padding:1px 6px;border-radius:8px;font-weight:700;flex-shrink:0}
+.mach-badge.safe{background:var(--green-dim);color:var(--green)}
+.mach-badge.warn{background:var(--yellow-dim);color:var(--yellow)}
+.mach-badge.pwned{background:var(--red-dim);color:var(--red)}
+
+#machine-list hr{border:none;border-top:1px solid var(--border);margin:4px 0}
+#net-map{padding:10px 14px}
+#net-map h4{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.net-node{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);padding:3px 0}
+.net-dot{width:6px;height:6px;border-radius:50%}
+
+/* ── CENTER: machine view ── */
+#machine-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#mach-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 12px;flex-shrink:0}
+.mach-tab{padding:10px 16px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;transition:all .2s}
+.mach-tab:hover{color:var(--text)}
+.mach-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+#mach-content{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* Screen view */
+#screen-view{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+
+/* Terminal */
+#term-view{flex:1;display:none;flex-direction:column;background:var(--term-bg);overflow:hidden}
+#term-output{flex:1;overflow-y:auto;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.7;color:#c9d1d9}
+#term-output .t-prompt{color:var(--term-prompt)}
+#term-output .t-cmd{color:#fff}
+#term-output .t-out{color:#8b949e}
+#term-output .t-err{color:var(--red)}
+#term-output .t-warn{color:var(--yellow)}
+#term-output .t-good{color:var(--green)}
+#term-output .t-hi{color:var(--red);font-weight:700}
+#term-input-row{display:flex;align-items:center;padding:8px 16px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+#term-prompt-label{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--term-prompt);white-space:nowrap;margin-right:6px}
+#term-input{flex:1;background:transparent;border:none;outline:none;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#fff;caret-color:var(--green)}
+
+/* Logs view */
+#log-view{flex:1;display:none;flex-direction:column;overflow:hidden}
+#log-header{display:flex;gap:8px;padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.log-src-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .2s}
+.log-src-btn.active{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+#log-output{flex:1;overflow-y:auto;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--text2)}
+.log-line{padding:2px 0;border-bottom:1px solid rgba(48,54,61,.5)}
+.log-line.log-warn{color:var(--yellow)}
+.log-line.log-danger{color:var(--red);font-weight:600}
+.log-line.log-info{color:var(--blue)}
+
+/* ── RIGHT: narrative ── */
+#narrative{width:320px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+#narr-header{padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+#narr-phase{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+#narr-title{font-size:14px;font-weight:700;color:#fff;line-height:1.4}
+#narr-time{font-size:11px;color:var(--text3);margin-top:4px}
+#narr-body{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.narr-block{border-radius:8px;padding:12px;font-size:12.5px;line-height:1.6}
+.narr-block h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.narr-red{background:var(--red-dim);border:1px solid rgba(248,81,73,.3)}
+.narr-red h4{color:var(--red)}
+.narr-blue{background:var(--blue-dim);border:1px solid rgba(88,166,255,.3)}
+.narr-blue h4{color:var(--blue)}
+.narr-ioc{background:var(--bg3);border:1px solid var(--border)}
+.narr-ioc h4{color:var(--yellow)}
+.ioc-item{display:flex;align-items:flex-start;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 0;color:var(--text2)}
+.ioc-item span:first-child{color:var(--red);flex-shrink:0}
+.hint-box{background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.3);border-radius:8px;padding:10px;font-size:12px;color:var(--green);line-height:1.6}
+#narr-footer{padding:12px 14px;border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+#btn-next-step{background:linear-gradient(135deg,#1a73e8,#0d5bba);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;width:100%;transition:all .2s}
+#btn-next-step:hover{background:linear-gradient(135deg,#1e84ff,#1a6ae8);transform:translateY(-1px)}
+#btn-next-step:disabled{background:var(--bg3);color:var(--text3);cursor:default;transform:none}
+#step-instruction{font-size:11px;color:var(--text3);text-align:center;line-height:1.5}
+
+/* ── QUIZ MODAL ── */
+#quiz-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center}
+#quiz-overlay.show{display:flex}
+#quiz-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;max-width:560px;width:93%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto}
+#quiz-phase-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+#quiz-q{font-size:15px;font-weight:600;color:#fff;margin-bottom:18px;line-height:1.6}
+.q-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--text);transition:all .15s;margin-bottom:8px;line-height:1.5}
+.q-opt:hover{background:var(--bg3);border-color:var(--blue)}
+.q-opt.correct{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.q-opt.wrong{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.q-opt-letter{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+#quiz-result{display:none;padding:14px;border-radius:8px;font-size:13px;line-height:1.6;margin-top:4px}
+#quiz-result.correct{background:var(--green-dim);border:1px solid rgba(63,185,80,.4);color:#7ee787}
+#quiz-result.wrong{background:var(--red-dim);border:1px solid rgba(248,81,73,.3);color:#ff8b8b}
+#quiz-next{display:none;margin-top:14px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+
+/* ── FINAL QUIZ ── */
+#fq-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;align-items:center;justify-content:center}
+#fq-overlay.show{display:flex}
+#fq-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:620px;width:94%;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:92vh;overflow-y:auto}
+#fq-box h2{font-size:20px;font-weight:800;margin-bottom:4px}
+#fq-box .fq-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+#fq-questions{display:flex;flex-direction:column;gap:18px}
+.fq-q-block{padding:14px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)}
+.fq-q-text{font-size:13px;font-weight:600;color:#fff;margin-bottom:10px;line-height:1.6}
+.fq-opts{display:flex;flex-direction:column;gap:6px}
+.fq-opt{display:flex;align-items:flex-start;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:12.5px;line-height:1.5;color:var(--text);transition:all .15s}
+.fq-opt:hover{background:rgba(88,166,255,.08);border-color:var(--blue)}
+.fq-opt.selected{background:var(--blue-dim);border-color:var(--blue)}
+.fq-opt.correct{background:var(--green-dim);border-color:var(--green);color:#7ee787}
+.fq-opt.wrong{background:var(--red-dim);border-color:var(--red);color:#ff8b8b}
+#fq-submit{margin-top:20px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%}
+#fq-result-box{display:none;margin-top:16px;padding:16px;background:var(--bg3);border-radius:8px;text-align:center}
+
+/* ── COMPLETE SCREEN ── */
+#complete-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:700;align-items:center;justify-content:center}
+#complete-overlay.show{display:flex}
+#complete-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:500px;width:92%;padding:36px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+
+/* ── MACHINE SCREENS ── */
+.win-desktop{background:#1a2744;border-radius:6px;overflow:hidden;font-family:'Inter',sans-serif;min-height:300px}
+.win-taskbar{background:#16213a;padding:6px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.08)}
+.win-start{background:#0078d4;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;cursor:default}
+.win-taskitem{background:rgba(255,255,255,.1);padding:3px 10px;border-radius:3px;font-size:11px;color:#ccc;cursor:default}
+.win-taskitem.active-win{background:rgba(0,120,212,.5);color:#fff;border-bottom:2px solid #0078d4}
+.win-clock{margin-left:auto;font-size:11px;color:#ccc}
+.win-body{padding:10px;min-height:240px;position:relative}
+.win-window{background:#2a2f3e;border:1px solid rgba(255,255,255,.12);border-radius:6px;overflow:hidden;margin-bottom:8px}
+.win-window-title{background:#1e2235;padding:5px 10px;display:flex;align-items:center;gap:6px;font-size:11px;color:#aaa}
+.win-window-title .dots{display:flex;gap:4px}
+.win-window-title .dots span{width:10px;height:10px;border-radius:50%}
+.win-window-body{padding:10px;font-size:12px;color:#ccc}
+.email-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);cursor:default}
+.email-item.unread .email-subject{font-weight:700;color:#fff}
+.email-from{font-size:11px;color:#aaa;width:120px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.email-subject{font-size:12px;flex:1}
+.email-time{font-size:10px;color:#666;flex-shrink:0}
+.alert-box{background:rgba(248,81,73,.12);border:1px solid rgba(248,81,73,.4);border-radius:6px;padding:10px;font-size:12px;color:#ff8b8b;display:flex;align-items:flex-start;gap:8px}
+.info-box{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:6px;padding:10px;font-size:12px;color:#7ab8ff;display:flex;align-items:flex-start;gap:8px}
+.process-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-family:'JetBrains Mono',monospace;font-size:11px}
+.process-row.bad{color:var(--red)}
+.process-row .pid{color:#666;width:40px;flex-shrink:0}
+.process-row .cpu{color:#aaa;width:40px;flex-shrink:0;text-align:right}
+
+/* scrollbars */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#444d56}
+
+/* responsive */
+@media(max-width:900px){
+  #machine-list{width:56px}
+  .mach-name,.mach-ip,.mach-badge,#machine-list h3,#net-map{display:none}
+  .mach-btn{padding:12px;justify-content:center}
+  #narrative{width:260px}
+}
+@media(max-width:700px){
+  #narrative{display:none}
+  #machine-list{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="drill-top">
+  <div class="logo"><span>🛡️</span>APT Kill Chain</div>
+  <div id="phase-track"></div>
+  <div id="step-counter">Bước 0/9</div>
+  <div id="mode-toggle">
+    <button class="mode-btn" onclick="setMode('red')" id="mbtn-red">🔴 Red</button>
+    <button class="mode-btn active-both" onclick="setMode('both')" id="mbtn-both">⚔️ Cả hai</button>
+    <button class="mode-btn" onclick="setMode('blue')" id="mbtn-blue">🔵 Blue</button>
+  </div>
+  <button id="btn-exit" onclick="window.location.href='index.html'">✕ Thoát</button>
+</div>
+
+<!-- MAIN -->
+<div id="drill-main">
+
+  <!-- LEFT: machine list -->
+  <div id="machine-list">
+    <h3>Máy trong mạng</h3>
+    <div class="mach-btn active" onclick="selectMachine('client')" id="mb-client">
+      <div class="mach-status" id="ms-client"></div>
+      <div class="mach-info">
+        <div class="mach-name">CLIENT-PC</div>
+        <div class="mach-ip">192.168.1.100</div>
+      </div>
+      <span class="mach-badge safe" id="mb-client-badge">OK</span>
+    </div>
+    <div class="mach-btn" onclick="selectMachine('web')" id="mb-web">
+      <div class="mach-status" id="ms-web"></div>
+      <div class="mach-info">
+        <div class="mach-name">WEB-SERVER</div>
+        <div class="mach-ip">192.168.1.10</div>
+      </div>
+      <span class="mach-badge safe" id="mb-web-badge">OK</span>
+    </div>
+    <div class="mach-btn" onclick="selectMachine('db')" id="mb-db">
+      <div class="mach-status" id="ms-db"></div>
+      <div class="mach-info">
+        <div class="mach-name">DB-SERVER</div>
+        <div class="mach-ip">192.168.1.20</div>
+      </div>
+      <span class="mach-badge safe" id="mb-db-badge">OK</span>
+    </div>
+    <hr>
+    <div id="net-map">
+      <h4>Sơ đồ mạng</h4>
+      <div class="net-node"><div class="net-dot" style="background:#58a6ff"></div>192.168.1.0/24</div>
+      <div class="net-node"><div class="net-dot" style="background:#3fb950"></div>.100 - Client</div>
+      <div class="net-node"><div class="net-dot" style="background:#3fb950"></div>.10 - Web</div>
+      <div class="net-node"><div class="net-dot" style="background:#3fb950"></div>.20 - DB</div>
+      <div class="net-node"><div class="net-dot" style="background:#6e7681"></div>GW: .1</div>
+      <div class="net-node"><div class="net-dot" style="background:#f85149"></div>ATK: 45.134.x.x</div>
+    </div>
+  </div>
+
+  <!-- CENTER: machine area -->
+  <div id="machine-area">
+    <div id="mach-tabs">
+      <div class="mach-tab active" onclick="switchTab('screen')" id="tab-screen">🖥️ Màn hình</div>
+      <div class="mach-tab" onclick="switchTab('term')" id="tab-term">💻 Terminal</div>
+      <div class="mach-tab" onclick="switchTab('log')" id="tab-log">📋 Logs</div>
+    </div>
+    <div id="mach-content">
+      <!-- Screen -->
+      <div id="screen-view"></div>
+      <!-- Terminal -->
+      <div id="term-view">
+        <div id="term-output"></div>
+        <div id="term-input-row">
+          <div id="term-prompt-label"></div>
+          <input id="term-input" autocomplete="off" spellcheck="false" placeholder="Nhập lệnh...">
+        </div>
+      </div>
+      <!-- Logs -->
+      <div id="log-view">
+        <div id="log-header">
+          <button class="log-src-btn active" onclick="setLogSrc('sys')" id="lbtn-sys">System</button>
+          <button class="log-src-btn" onclick="setLogSrc('net')" id="lbtn-net">Network/IDS</button>
+          <button class="log-src-btn" onclick="setLogSrc('app')" id="lbtn-app">App/Auth</button>
+        </div>
+        <div id="log-output"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: narrative -->
+  <div id="narrative">
+    <div id="narr-header">
+      <div id="narr-phase">Chưa bắt đầu</div>
+      <div id="narr-title">Nhấn "Bắt đầu diễn tập" để khởi động kịch bản</div>
+      <div id="narr-time"></div>
+    </div>
+    <div id="narr-body">
+      <div class="hint-box" style="color:var(--text2)">
+        <b style="color:#fff">Hướng dẫn:</b><br>
+        • Chọn chế độ xem: <b style="color:var(--red)">Red Team</b> (tấn công), <b style="color:var(--blue)">Blue Team</b> (phòng thủ), hoặc Cả hai<br>
+        • Nhấn Terminal để gõ lệnh thật trên từng máy<br>
+        • Nhấn Logs để xem nhật ký hệ thống<br>
+        • Trả lời câu hỏi sau mỗi bước để tiến tiếp
+      </div>
+    </div>
+    <div id="narr-footer">
+      <div id="step-instruction">Sẵn sàng bắt đầu diễn tập</div>
+      <button id="btn-next-step" onclick="nextStep()">▶ Bắt đầu diễn tập</button>
+    </div>
+  </div>
+
+</div><!-- /#drill-main -->
+
+<!-- STEP QUIZ MODAL -->
+<div id="quiz-overlay">
+  <div id="quiz-box">
+    <div id="quiz-phase-badge"></div>
+    <div id="quiz-q"></div>
+    <div id="quiz-opts"></div>
+    <div id="quiz-result"></div>
+    <button id="quiz-next" onclick="quizNext()">Tiếp tục →</button>
+  </div>
+</div>
+
+<!-- FINAL QUIZ MODAL -->
+<div id="fq-overlay">
+  <div id="fq-box">
+    <h2>🏁 Quiz Tổng Hợp</h2>
+    <div class="fq-sub">Kiểm tra kiến thức toàn bộ kịch bản APT Kill Chain — 10 câu hỏi</div>
+    <div id="fq-questions"></div>
+    <button id="fq-submit" onclick="fqSubmit()">Nộp bài ✓</button>
+    <div id="fq-result-box"></div>
+  </div>
+</div>
+
+<!-- COMPLETE -->
+<div id="complete-overlay">
+  <div id="complete-box">
+    <div style="font-size:52px;margin-bottom:14px">🏆</div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:8px">Diễn tập hoàn thành!</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px">Bạn đã trải qua toàn bộ chuỗi tấn công APT từ phishing đến data exfiltration. Kiến thức này giúp nhận biết và ngăn chặn các mối đe dọa thực tế.</div>
+    <div style="background:var(--bg3);border-radius:8px;padding:16px;margin-bottom:20px">
+      <div id="final-score" style="font-size:32px;font-weight:800;color:var(--blue)">9/9</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:4px">bước hoàn thành</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="document.getElementById('complete-overlay').classList.remove('show');document.getElementById('fq-overlay').classList.add('show');renderFinalQuiz()" style="flex:1;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">📝 Làm Quiz Tổng Hợp</button>
+      <button onclick="window.location.href='index.html'" style="flex:1;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">← Menu chính</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let drillMode = 'both'; // 'red' | 'blue' | 'both'
+let currentStep = 0;    // 0 = not started
+let currentMachine = 'client';
+let currentTab = 'screen';
+let currentLogSrc = 'sys';
+let quizAnswered = false;
+let termHistory = [];
+let termHistIdx = -1;
+
+// Machine status: 0=clean 1=suspicious 2=compromised
+let machStatus = { client: 0, web: 0, db: 0 };
+
+// ══════════════════════════════════════════════════════════════
+// SCENARIO DATA — 9 STEPS
+// ══════════════════════════════════════════════════════════════
+const STEPS = [
+{
+  id:1, phase:'INITIAL ACCESS', phaseColor:'#f85149',
+  title:'Phishing Email — Giả mạo UBND tỉnh',
+  machine:'client', time:'T+0:00',
+  machineChanges:{ client:1 },
+  red:{
+    title:'🔴 Attacker gửi spear-phishing',
+    content:'Kẻ tấn công soạn email giả mạo từ địa chỉ <b>ub-quangninh@ubnd-tinhquangninh.info</b> (domain giả, không phải quangninh.gov.vn chính thức). Email có tiêu đề khẩn cấp và file đính kèm <b>BaoCaoTaiChinh_Q1-2024.pdf.exe</b> — file .exe được ẩn phần mở rộng thành .pdf.',
+    technical:'Kỹ thuật: T1566.001 Spear-Phishing Attachment | File: double-extension .pdf.exe | SMTP spoofing domain'
+  },
+  blue:{
+    title:'🔵 SOC phát hiện email đáng ngờ',
+    content:'Email gateway log ghi nhận email từ domain mới đăng ký (1 ngày tuổi). SPF record FAIL. File đính kèm .exe bị ngụy trang. Cần kiểm tra ngay.',
+    iocs:['domain: ubnd-tinhquangninh.info','attachment: BaoCaoTaiChinh_Q1-2024.pdf.exe','sender IP: 45.134.212.77','SPF check: FAIL','DKIM: missing']
+  },
+  quiz:{
+    q:'Email đến từ "ub-quangninh@ubnd-tinhquangninh.info" đính kèm "BaoCaoTaiChinh_Q1-2024.pdf.exe". Dấu hiệu nào TỐ CÁO đây là phishing?',
+    opts:[
+      {t:'Email có nội dung chuyên nghiệp về tài chính, có thể là thật'},
+      {t:'Domain "ubnd-tinhquangninh.info" ≠ quangninh.gov.vn chính thức; file .exe ngụy trang thành .pdf',ok:true},
+      {t:'File PDF có thể an toàn nếu chỉ xem, không chạy'}
+    ],
+    note:'✅ Đúng! Hai dấu hiệu đỏ: (1) Domain giả không khớp tên miền chính phủ .gov.vn; (2) File .pdf.exe — Windows ẩn phần mở rộng cuối khiến trông như file PDF. Đây là kỹ thuật phổ biến nhất trong spear-phishing.',
+    badNote:'❌ Sai! File .pdf.exe là file thực thi (.exe) ngụy trang — khi mở sẽ chạy mã độc, không phải mở PDF. Domain chính phủ Việt Nam luôn kết thúc bằng .gov.vn.'
+  }
+},
+{
+  id:2, phase:'EXECUTION', phaseColor:'#f85149',
+  title:'Malware thực thi — RAT kết nối C2',
+  machine:'client', time:'T+0:08',
+  machineChanges:{ client:2 },
+  red:{
+    title:'🔴 RAT được triển khai',
+    content:'Nạn nhân mở file, một PDF giả mở ra để tạo cảm giác bình thường. Đồng thời malware drop file <b>%TEMP%\\svchost32.exe</b> và kết nối reverse shell về <b>45.134.212.77:4444</b>. Kẻ tấn công có toàn quyền điều khiển máy.',
+    technical:'Kỹ thuật: T1059.003 Windows Command Shell | T1571 Non-Standard Port | Beacon interval: 60s | C2: 45.134.212.77:4444'
+  },
+  blue:{
+    title:'🔵 EDR cảnh báo process bất thường',
+    content:'EDR ghi nhận: process lạ svchost32.exe (chú ý: svchost thật không có số "32") khởi tạo kết nối TCP đến IP nước ngoài qua port 4444. Đây là dấu hiệu C2 beacon.',
+    iocs:['process: svchost32.exe (PID 4821)','parent: explorer.exe → svchost32.exe','outbound TCP: 45.134.212.77:4444','hash (SHA256): a3f8c2...d91','event: network connection from %TEMP%']
+  },
+  quiz:{
+    q:'EDR báo process "svchost32.exe" (từ %TEMP%) đang kết nối TCP đến 45.134.212.77:4444. Phân tích cho thấy đây là:',
+    opts:[
+      {t:'Windows Update bình thường — svchost.exe hay kết nối internet'},
+      {t:'Malware C2 beacon — svchost thật không có "32", không nằm trong %TEMP%, không dùng port 4444',ok:true},
+      {t:'Có thể là phần mềm diệt virus đang cập nhật'}
+    ],
+    note:'✅ Đúng! Ba điểm phân biệt: (1) svchost.exe thật KHÔNG có hậu tố "32"; (2) File thật nằm trong C:\\Windows\\System32, không phải %TEMP%; (3) Port 4444 là port C2 phổ biến của framework Metasploit/Cobalt Strike.',
+    badNote:'❌ Sai! Windows Update dùng HTTPS (port 443), process nằm trong System32, tên chính xác là "svchost.exe". Ba điểm khác biệt này là IOC rõ ràng của RAT.'
+  }
+},
+{
+  id:3, phase:'PERSISTENCE', phaseColor:'#d29922',
+  title:'Persistence — Registry & Scheduled Task',
+  machine:'client', time:'T+0:12',
+  machineChanges:{ client:2 },
+  red:{
+    title:'🔴 Cài bẫy tồn tại sau reboot',
+    content:'Malware cài 2 cơ chế persistence: (1) Registry key <b>HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\WindowsDefend32</b>; (2) Scheduled Task <b>\\Microsoft\\Windows\\UpdateAssistant\\Assistant</b> chạy mỗi 5 phút. Nạn nhân restart máy cũng không thoát được.',
+    technical:'T1547.001 Registry Run Keys | T1053.005 Scheduled Task | Dual-persistence để đảm bảo survival'
+  },
+  blue:{
+    title:'🔵 Event Log ghi nhận thay đổi',
+    content:'Windows Event Log: EventID <b>4657</b> (Registry value set) và EventID <b>4698</b> (Scheduled task created). Cả hai do process svchost32.exe tạo ra — bất thường vì đây không phải tiến trình hệ thống.',
+    iocs:['EventID 4657: HKLM\\...\\Run\\WindowsDefend32','EventID 4698: Task \\UpdateAssistant\\Assistant','creator: svchost32.exe (PID 4821)','time: 10:12:33','action: task trigger every 5min']
+  },
+  quiz:{
+    q:'EventID 4698 ghi nhận Scheduled Task mới tạo bởi svchost32.exe với trigger "every 5 minutes". Mục đích kỹ thuật này là gì?',
+    opts:[
+      {t:'Windows tự cập nhật định kỳ — bình thường'},
+      {t:'Persistence — đảm bảo malware tự khởi động lại ngay cả khi bị kill hoặc máy reboot',ok:true},
+      {t:'Tối ưu hiệu suất hệ thống'}
+    ],
+    note:'✅ Đúng! Persistence là giai đoạn "cắm rễ" — kẻ tấn công đảm bảo không mất quyền kiểm soát dù nạn nhân tắt máy hay kill process. Hai cơ chế (registry + task) là redundancy, nếu một bị phát hiện còn cơ chế kia.',
+    badNote:'❌ Sai! Windows Update KHÔNG tạo scheduled task qua process %TEMP%\\svchost32.exe. EventID 4698 với creator là malware rõ ràng là persistence của kẻ tấn công.'
+  }
+},
+{
+  id:4, phase:'CREDENTIAL ACCESS', phaseColor:'#d29922',
+  title:'Credential Dumping — LSASS Memory',
+  machine:'client', time:'T+0:18',
+  machineChanges:{ client:2 },
+  red:{
+    title:'🔴 Dump mật khẩu từ bộ nhớ',
+    content:'Malware inject vào LSASS process để trích xuất credential từ bộ nhớ (kỹ thuật Mimikatz). Thu được: <b>nhanvien01 / P@ssw0rd2024!</b> và đặc biệt tài khoản domain admin <b>adminIT / Adm1n@Corp2024</b> đang cached.',
+    technical:'T1003.001 LSASS Memory | SeDebugPrivilege required | Credentials: NTLM hash + cleartext (WDigest enabled)'
+  },
+  blue:{
+    title:'🔵 Phát hiện LSASS access bất thường',
+    content:'EventID <b>4662</b>: object access với handle LSASS từ svchost32.exe. EventID <b>10</b> (Sysmon): Process Access — SourceImage: svchost32.exe → TargetImage: lsass.exe với quyền PROCESS_VM_READ.',
+    iocs:['EventID 4662: LSASS handle opened','Sysmon Event 10: lsass.exe accessed','GrantedAccess: 0x1010 (VM_READ)','source: svchost32.exe','alert: credential dumping attempt']
+  },
+  quiz:{
+    q:'Sysmon Event 10 ghi nhận svchost32.exe đọc bộ nhớ của lsass.exe với GrantedAccess 0x1010. Đây là kỹ thuật gì và mục đích là gì?',
+    opts:[
+      {t:'Kiểm tra trạng thái hệ thống — Windows thực hiện định kỳ'},
+      {t:'Credential dumping — đọc bộ nhớ LSASS để lấy username/password đang cached',ok:true},
+      {t:'Antivirus scan tiến trình hệ thống'}
+    ],
+    note:'✅ Đúng! LSASS (Local Security Authority Subsystem) lưu credential của các phiên đăng nhập. Đọc bộ nhớ LSASS là cách Mimikatz và các công cụ tương tự trích xuất mật khẩu cleartext hoặc NTLM hash. GrantedAccess 0x1010 = PROCESS_VM_READ + PROCESS_QUERY_INFO.',
+    badNote:'❌ Sai! Không tiến trình hệ thống nào cần đọc bộ nhớ LSASS theo cách này. EventID 4662 + Sysmon Event 10 targeting lsass.exe là IOC cực kỳ nhạy cảm, cần phản ứng ngay lập tức.'
+  }
+},
+{
+  id:5, phase:'DISCOVERY', phaseColor:'#bc8cff',
+  title:'Network Discovery — Quét mạng nội bộ',
+  machine:'client', time:'T+0:25',
+  machineChanges:{ client:2, web:1 },
+  red:{
+    title:'🔴 Vẽ bản đồ mạng nội bộ',
+    content:'Từ máy client đã chiếm, kẻ tấn công quét dải mạng <b>192.168.1.0/24</b> để tìm mục tiêu tiếp theo. Phát hiện: 192.168.1.10 (port 22, 80, 443 — webserver) và 192.168.1.20 (port 3306, 22 — database).',
+    technical:'T1046 Network Service Scanning | T1018 Remote System Discovery | Tool: built-in TCP connect scan | Rate: 500 ports/sec'
+  },
+  blue:{
+    title:'🔵 IDS phát hiện port scan',
+    content:'IDS/SIEM cảnh báo: 192.168.1.100 gửi TCP SYN đến 254 host trong 3 giây — là port scan signature. Đây là lateral movement preparation rõ ràng.',
+    iocs:['IDS Rule: SCAN TCP SYN flood','src: 192.168.1.100 → 192.168.1.0/24','duration: 3.2 seconds','ports probed: 22,80,443,3306,3389,8080','IDS alert severity: HIGH']
+  },
+  quiz:{
+    q:'IDS cảnh báo 192.168.1.100 gửi TCP SYN đến toàn bộ subnet /24 trong 3 giây. Máy .100 là client PC bình thường. Điều này cho thấy gì?',
+    opts:[
+      {t:'Máy tính bình thường đang resolve DNS cho nhiều host'},
+      {t:'Máy client đã bị compromised và đang thực hiện internal network scan để tìm mục tiêu tiếp theo',ok:true},
+      {t:'Windows Update đang kiểm tra kết nối mạng'}
+    ],
+    note:'✅ Đúng! Client PC thông thường KHÔNG bao giờ gửi TCP SYN đến toàn bộ subnet trong 3 giây. Đây là dấu hiệu điển hình của lateral movement preparation — kẻ tấn công đang dùng máy đã chiếm để tìm mục tiêu mới trong mạng nội bộ.',
+    badNote:'❌ Sai! DNS resolution không tạo ra TCP SYN flood đến nhiều IP. Windows Update chỉ kết nối đến Microsoft servers, không scan subnet nội bộ. Đây là network reconnaissance điển hình.'
+  }
+},
+{
+  id:6, phase:'LATERAL MOVEMENT', phaseColor:'#ffa657',
+  title:'Lateral Movement — SSH vào Web Server',
+  machine:'web', time:'T+0:38',
+  machineChanges:{ web:2 },
+  red:{
+    title:'🔴 Leo thang sang máy chủ web',
+    content:'Dùng credential đánh cắp được (<b>adminIT / Adm1n@Corp2024</b>), kẻ tấn công SSH từ 192.168.1.100 vào web server 192.168.1.10 thành công. Đây là tài khoản có sudo, mở ra toàn bộ hệ thống.',
+    technical:'T1021.004 SSH Lateral Movement | Source: 192.168.1.100 → Dest: 192.168.1.10:22 | Account: adminIT | Time: 10:38:12 (ngoài giờ làm việc)'
+  },
+  blue:{
+    title:'🔵 Auth log trên web server',
+    content:'/var/log/auth.log ghi nhận SSH login từ 192.168.1.100 vào lúc 10:38 — tài khoản adminIT. Bất thường: (1) giờ đăng nhập khác thường; (2) source IP là client PC, không phải máy admin; (3) không có MFA.',
+    iocs:['auth.log: Accepted password for adminIT from 192.168.1.100','port: 22 | proto: SSH2','time: 10:38:12 (off-hours)','previous login: 08:01 from 192.168.1.5 (admin PC)','alert: login from unusual source IP']
+  },
+  quiz:{
+    q:'auth.log của web server ghi: "Accepted password for adminIT from 192.168.1.100 port 22". 192.168.1.100 là client PC nhân viên, không phải máy IT. Đây là dấu hiệu gì?',
+    opts:[
+      {t:'IT admin đang làm việc từ xa từ máy nhân viên — bình thường'},
+      {t:'Lateral movement — credential bị đánh cắp và dùng để đăng nhập SSH từ máy đã compromised',ok:true},
+      {t:'Hệ thống backup tự động chạy từ client PC'}
+    ],
+    note:'✅ Đúng! Login SSH từ client PC thông thường (không phải máy admin) là dấu hiệu lateral movement rõ ràng. Kết hợp với giờ bất thường và không có MFA, đây là compromise qua stolen credentials.',
+    badNote:'❌ Sai! IT admin có máy riêng (.1.5) — không có lý do login từ client PC nhân viên. Mọi đăng nhập SSH với account cao quyền từ nguồn bất thường phải được coi là incident cho đến khi được xác minh.'
+  }
+},
+{
+  id:7, phase:'COLLECTION', phaseColor:'#ffa657',
+  title:'Webshell Upload — Backdoor bền vững',
+  machine:'web', time:'T+1:02',
+  machineChanges:{ web:2, db:1 },
+  red:{
+    title:'🔴 Cài webshell để giữ quyền',
+    content:'Qua SSH, kẻ tấn công upload file <b>/var/www/html/uploads/img_cache.php</b> — trông như file cache ảnh nhưng thực ra là webshell nhận lệnh qua HTTP parameter <code>?cmd=</code>. Kiểm tra: GET /uploads/img_cache.php?cmd=id trả về "www-data".',
+    technical:'T1505.003 Web Shell | T1027 Obfuscated Files | PHP webshell eval(base64_decode(...)) | Path: /uploads/ (publicly accessible)'
+  },
+  blue:{
+    title:'🔵 Apache log và file integrity',
+    content:'Apache access.log: POST /upload.php (200 OK) → 30s sau GET /uploads/img_cache.php?cmd=id (200 OK). File integrity check: img_cache.php KHÔNG có trong baseline. AIDE cảnh báo new file trong webroot.',
+    iocs:['apache: POST /upload.php 200 from 192.168.1.100','apache: GET /uploads/img_cache.php?cmd=id 200','AIDE alert: new file /var/www/html/uploads/img_cache.php','file size: 2.1KB | permissions: 644','content: base64-encoded eval() payload']
+  },
+  quiz:{
+    q:'Apache log: "GET /uploads/img_cache.php?cmd=id HTTP/1.1 200". File img_cache.php không có trong file integrity baseline. Đây là gì?',
+    opts:[
+      {t:'File cache của CMS — bình thường sau khi upload ảnh'},
+      {t:'Webshell — file PHP ngụy trang nhận lệnh qua HTTP parameter, cho phép thực thi lệnh hệ thống từ xa',ok:true},
+      {t:'Script kiểm tra trạng thái server tự động'}
+    ],
+    note:'✅ Đúng! Parameter "?cmd=id" là dấu hiệu webshell kinh điển — "id" là lệnh Linux trả về username hiện tại. File không có trong baseline + content có eval() = webshell backdoor. Xóa file, audit toàn bộ /uploads/ và kiểm tra code upload validation.',
+    badNote:'❌ Sai! CMS cache file không bao giờ nhận parameter ?cmd= để thực thi lệnh. "GET ?cmd=id" là test để xác nhận webshell hoạt động. Đây là Remote Code Execution backdoor.'
+  }
+},
+{
+  id:8, phase:'EXFILTRATION', phaseColor:'#58a6ff',
+  title:'Database Exfiltration — Đánh cắp dữ liệu',
+  machine:'db', time:'T+1:18',
+  machineChanges:{ db:2 },
+  red:{
+    title:'🔴 Truy cập và xuất toàn bộ CSDL',
+    content:'Từ webshell, kẻ tấn công kết nối MySQL nội bộ 192.168.1.20:3306, truy vấn bảng <b>citizens</b> và dump 150.000 bản ghi dữ liệu công dân (họ tên, CCCD, ngày sinh, địa chỉ, số điện thoại). File dump được gửi về C2 qua HTTP.',
+    technical:'T1005 Data from Local System | T1041 Exfiltration over C2 | mysqldump → /tmp/data.sql.gz (8.2MB) → curl upload to 45.134.212.77/c2'
+  },
+  blue:{
+    title:'🔵 Database audit log bất thường',
+    content:'MySQL general_log: SELECT * FROM citizens (150,247 rows) từ 192.168.1.10 lúc 01:18 — giờ thấp điểm bất thường. Network monitor: spike 8.2MB upload từ .10 ra internet. Đây là exfiltration.',
+    iocs:['mysql: SELECT * FROM citizens — 150247 rows affected','mysql: source: 192.168.1.10 | time: 01:18 AM','mysqldump: citizens_db dumped to /tmp/data.sql.gz','netflow: 192.168.1.10 → 45.134.212.77 8.2MB upload','alert: large data transfer to external IP']
+  },
+  quiz:{
+    q:'MySQL log: "SELECT * FROM citizens" trả về 150.247 rows lúc 1:18 AM từ 192.168.1.10. Network log: 8.2MB upload từ .10 đến 45.134.212.77. Điều này có nghĩa là gì?',
+    opts:[
+      {t:'Backup tự động chạy đêm — bình thường'},
+      {t:'Data exfiltration — toàn bộ CSDL công dân bị dump và gửi ra ngoài qua IP của kẻ tấn công',ok:true},
+      {t:'Developer đang test truy vấn database trong giờ thấp điểm'}
+    ],
+    note:'✅ Đúng! Kết hợp 3 yếu tố: (1) SELECT * toàn bộ bảng nhạy cảm; (2) Giờ bất thường 1:18 AM; (3) Upload 8.2MB đến IP bên ngoài (đã biết là C2). Backup hợp lệ không gửi đến external IP — phải đến storage nội bộ.',
+    badNote:'❌ Sai! Backup tự động ghi vào local storage/NAS, không upload đến external IP. Developer thật không truy cập database production lúc 1 giờ sáng để SELECT * toàn bộ dữ liệu công dân.'
+  }
+},
+{
+  id:9, phase:'IMPACT / COVER TRACKS', phaseColor:'#8b949e',
+  title:'Xóa dấu vết — Log Tampering',
+  machine:'web', time:'T+1:35',
+  machineChanges:{ web:2, db:2 },
+  red:{
+    title:'🔴 Xóa bằng chứng',
+    content:'Trước khi rút lui, kẻ tấn công: xóa Apache access.log, MySQL general_log, bash history trên cả 2 server. Xóa file webshell và dump tạm. Cố gắng để lại ít dấu vết nhất có thể.',
+    technical:'T1070.003 Clear Command History | T1070.002 Clear Linux Logs | T1485 Data Destruction | rm -rf /var/log/apache2/*.log | DELETE FROM mysql.general_log'
+  },
+  blue:{
+    title:'🔵 Phát hiện log integrity violation',
+    content:'SIEM cảnh báo: log gap — apache access.log bị truncate từ 245MB xuống 0 bytes lúc 01:35. MySQL general_log bị xóa. Tuy nhiên: (1) Kernel log (/var/log/kern.log) còn nguyên; (2) SIEM đã forward logs realtime nên bản ghi vẫn tồn tại.',
+    iocs:['SIEM alert: apache access.log size 245MB → 0 bytes','mysql.general_log: all records deleted','bash_history: cleared on web + db server','kern.log: intact (không bị xóa)','note: SIEM syslog forwarding captured all events']
+  },
+  quiz:{
+    q:'Kẻ tấn công xóa log để che giấu hành vi. Biện pháp phòng thủ nào đảm bảo log vẫn tồn tại cho điều tra dù file local bị xóa?',
+    opts:[
+      {t:'Đặt quyền read-only cho file log — kẻ tấn công có root không xóa được'},
+      {t:'Tập trung log về SIEM/Syslog server riêng biệt realtime — kẻ tấn công xóa local nhưng bản sao đã được forward',ok:true},
+      {t:'Mã hóa file log — không thể xóa khi không có key'}
+    ],
+    note:'✅ Đúng! Log forwarding realtime (SIEM/Syslog/ELK) là cơ chế bảo vệ log quan trọng nhất. Kẻ tấn công có root trên server có thể xóa mọi file local, nhưng bản sao đã được gửi đi không thể thu hồi. Đây là nguyên tắc "cannot delete what you do not control".',
+    badNote:'❌ Sai! Root user có thể override mọi quyền file và bypass encryption nếu đã có quyền OS. Biện pháp duy nhất hiệu quả là đưa log ra khỏi tầm kiểm soát của kẻ tấn công — log server riêng biệt hoặc SIEM cloud.'
+  }
+}
+];
+
+// ══════════════════════════════════════════════════════════════
+// TERMINAL COMMANDS — per machine, per step
+// ══════════════════════════════════════════════════════════════
+const TERM_DATA = {
+  client:{
+    help:{always:'Lệnh khả dụng: tasklist, netstat -an, ipconfig, dir, whoami, systeminfo, reg query HKLM\\...\\Run'},
+    ipconfig:{always:`Windows IP Configuration\n\nEthernet adapter LAN:\n   IPv4 Address. . . . : 192.168.1.100\n   Subnet Mask . . . . : 255.255.255.0\n   Default Gateway . . : 192.168.1.1\n   DNS Servers . . . . : 192.168.1.1`},
+    whoami:{always:'CORP\\nhanvien01'},
+    systeminfo:{always:`Host Name:          CLIENT-PC\nOS Name:            Microsoft Windows 10 Pro\nOS Version:         10.0.19045\nSystem Type:        x64-based PC\nTotal Physical Memory: 8,192 MB`},
+    dir:{
+      0:'Volume in drive C has no label.\n Directory of C:\\Users\\nhanvien01\\Downloads\n\n[empty]',
+      1:' Directory of C:\\Users\\nhanvien01\\Downloads\n\n10/04/2024  09:45    1,024  BaoCaoTaiChinh_Q1-2024.pdf.exe',
+      2:' Directory of C:\\Users\\nhanvien01\\Downloads\n\n10/04/2024  09:45    1,024  BaoCaoTaiChinh_Q1-2024.pdf.exe\n10/04/2024  09:46   87,552  svchost32.exe  [HIDDEN]'
+    },
+    tasklist:{
+      0:'Image Name          PID    CPU   Mem Usage\nsvchost.exe         892    0.0   18,432K\nexplorer.exe        2841   0.1   45,120K\nchrome.exe          3201   1.2   312,448K',
+      1:'Image Name          PID    CPU   Mem Usage\nsvchost.exe         892    0.0   18,432K\nexplorer.exe        2841   0.1   45,120K\n[MSEDGE] BaoCaoTaiChinh_Q1-2024.exe  4801  2.1  12,288K',
+      2:'Image Name          PID    CPU   Mem Usage\nsvchost.exe         892    0.0   18,432K\nexplorer.exe        2841   0.1   45,120K\n*** svchost32.exe   4821   3.4   24,576K  [SUSPICIOUS]\ncmd.exe             5012   0.0    4,096K'
+    },
+    'netstat -an':{
+      0:'Proto  Local Address        Foreign Address      State\nTCP    0.0.0.0:135          0.0.0.0:0            LISTENING\nTCP    0.0.0.0:445          0.0.0.0:0            LISTENING',
+      2:'Proto  Local Address        Foreign Address      State\nTCP    0.0.0.0:135          0.0.0.0:0            LISTENING\n*** TCP 192.168.1.100:49832  45.134.212.77:4444   ESTABLISHED [svchost32.exe]\nTCP    192.168.1.100:50001  192.168.1.10:22      TIME_WAIT'
+    },
+    'reg query hklm\\software\\microsoft\\windows\\currentversion\\run':{
+      0:'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\n    SecurityHealth    REG_SZ    %windir%\\system32\\SecurityHealthSystray.exe',
+      3:'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\n    SecurityHealth    REG_SZ    %windir%\\system32\\SecurityHealthSystray.exe\n*** WindowsDefend32 REG_SZ    C:\\Users\\NHVIEN~1\\AppData\\Local\\Temp\\svchost32.exe  [MALICIOUS]'
+    }
+  },
+  web:{
+    help:{always:'Lệnh: ps aux, netstat -an, ls -la /var/www/html/uploads/, cat /var/log/apache2/access.log, last, who, find /var/www -name "*.php" -newer /etc/passwd, cat /etc/passwd'},
+    'ps aux':{
+      0:'USER       PID %CPU %MEM    COMMAND\nroot         1  0.0  0.1    /sbin/init\nwww-data   812  0.3  1.2    apache2\nmysql      934  0.1  2.1    /usr/sbin/mysqld',
+      6:'USER       PID %CPU %MEM    COMMAND\nroot         1  0.0  0.1    /sbin/init\nwww-data   812  0.3  1.2    apache2\nmysql      934  0.1  2.1    /usr/sbin/mysqld\n*** adminIT 5523  0.8  1.5  -bash [LOGIN FROM 192.168.1.100 !!!]'
+    },
+    'netstat -an':{
+      0:'Proto Recv-Q Send-Q Local Address    Foreign Address  State\ntcp   0      0   0.0.0.0:22      0.0.0.0:*        LISTEN\ntcp   0      0   0.0.0.0:80      0.0.0.0:*        LISTEN\ntcp   0      0   0.0.0.0:443     0.0.0.0:*        LISTEN',
+      6:'Proto Recv-Q Send-Q Local Address       Foreign Address     State\ntcp   0      0   0.0.0.0:22         0.0.0.0:*           LISTEN\ntcp   0      0   0.0.0.0:80         0.0.0.0:*           LISTEN\n*** tcp 0    0   192.168.1.10:22    192.168.1.100:50041  ESTABLISHED'
+    },
+    last:{
+      0:'adminIT  pts/0  192.168.1.5   Mon Apr  8 08:01   still logged in\nadminIT  pts/0  192.168.1.5   Sun Apr  7 09:15 - 17:30',
+      6:'*** adminIT pts/1  192.168.1.100  Wed Apr 10 10:38   still logged in  [UNUSUAL SOURCE]\nadminIT  pts/0  192.168.1.5    Mon Apr  8 08:01 - 18:22\nreboot   system boot  Wed Apr 10 08:00'
+    },
+    who:{
+      6:'adminIT  pts/1  Apr 10 10:38 (192.168.1.100)  [!!! ALERT: unusual source IP]'
+    },
+    'ls -la /var/www/html/uploads/':{
+      0:'total 8\ndrwxr-xr-x 2 www-data www-data 4096 Apr  1 10:00 .\ndrwxr-xr-x 8 root     root     4096 Apr  1 09:00 ..',
+      7:'total 16\ndrwxr-xr-x 2 www-data www-data 4096 Apr 10 11:02 .\ndrwxr-xr-x 8 root     root     4096 Apr  1 09:00 ..\n-rw-r--r-- 1 www-data www-data 2148 Apr 10 11:02 img_cache.php  [!!! WEBSHELL]'
+    },
+    'find /var/www -name "*.php" -newer /etc/passwd':{
+      7:'/var/www/html/uploads/img_cache.php  [NEW - NOT IN BASELINE]'
+    },
+    'cat /var/log/apache2/access.log':{
+      0:'192.168.1.50 - - [10/Apr/2024:08:15:33] "GET /index.php HTTP/1.1" 200 4521\n192.168.1.50 - - [10/Apr/2024:09:01:11] "GET /about.php HTTP/1.1" 200 1234',
+      7:'192.168.1.100 - - [10/Apr/2024:11:01:44] "POST /upload.php HTTP/1.1" 200 312\n*** 192.168.1.100 - - [10/Apr/2024:11:02:18] "GET /uploads/img_cache.php?cmd=id HTTP/1.1" 200 8\n*** 192.168.1.100 - - [10/Apr/2024:11:02:31] "GET /uploads/img_cache.php?cmd=uname+-a HTTP/1.1" 200 89',
+      9:'[LOG FILE CLEARED - 0 bytes]\n# Log gap detected by SIEM: 245MB → 0 at 01:35:22'
+    }
+  },
+  db:{
+    help:{always:'Lệnh: show databases;  show tables;  select count(*) from citizens;  desc citizens;  show processlist;  show variables like "general_log%";'},
+    'show databases;':{
+      0:'+--------------------+\n| Database           |\n+--------------------+\n| information_schema |\n| citizens_db        |\n| mysql              |\n+--------------------+\n3 rows in set'
+    },
+    'show tables;':{
+      0:'+------------------------+\n| Tables_in_citizens_db  |\n+------------------------+\n| citizens               |\n| documents              |\n| user_accounts          |\n+------------------------+'
+    },
+    'select count(*) from citizens;':{
+      0:'+-----------+\n| count(*)  |\n+-----------+\n|    150247 |\n+-----------+'
+    },
+    'desc citizens;':{
+      0:'+------------+--------------+------+\n| Field      | Type         | Key  |\n+------------+--------------+------+\n| id         | int(11)      | PRI  |\n| ho_ten     | varchar(100) |      |\n| cccd       | varchar(12)  |      |\n| ngay_sinh  | date         |      |\n| dia_chi    | text         |      |\n| dien_thoai | varchar(15)  |      |\n+------------+--------------+------+'
+    },
+    'show processlist;':{
+      0:'Id  User     Host                 db           Command  Time  State\n1   system  localhost            NULL         Sleep    0\n2   root    localhost            mysql        Sleep    5',
+      8:'Id  User     Host                 db           Command  Time  State\n1   system  localhost            NULL         Sleep    0\n*** 45  www-data  192.168.1.10:33891  citizens_db  Query    2  "SELECT * FROM citizens"  [ALERT!]'
+    },
+    'show variables like "general_log%";':{
+      0:'+------------------+----------------------------+\n| Variable_name    | Value                      |\n+------------------+----------------------------+\n| general_log      | OFF                        |\n| general_log_file | /var/log/mysql/mysql.log   |\n+------------------+----------------------------+\n# TIP: Bật general_log để audit mọi query: SET GLOBAL general_log = ON;'
+    }
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// LOG DATA — per machine, per source, per step
+// ══════════════════════════════════════════════════════════════
+const LOG_DATA = {
+  client:{
+    sys:{
+      0:[
+        {t:'info', l:'[10/Apr/2024 08:00:01] System boot — Windows 10 Pro build 19045'},
+        {t:'info', l:'[10/Apr/2024 08:01:15] User nhanvien01 logged on (EventID 4624)'},
+        {t:'info', l:'[10/Apr/2024 09:00:00] Windows Defender: No threats found'},
+      ],
+      2:[
+        {t:'warn', l:'[10/Apr/2024 09:46:12] Process created: svchost32.exe from explorer.exe (EventID 4688)'},
+        {t:'danger',l:'[10/Apr/2024 09:46:13] *** ALERT: Outbound TCP to 45.134.212.77:4444 (non-standard port)'},
+        {t:'danger',l:'[10/Apr/2024 09:46:15] *** EDR: Suspicious executable in %TEMP% (EventID 4688)'},
+      ],
+      3:[
+        {t:'warn', l:'[10/Apr/2024 10:12:31] Registry modified: HKLM\\...\\Run\\WindowsDefend32 (EventID 4657)'},
+        {t:'danger',l:'[10/Apr/2024 10:12:33] *** Scheduled task created: \\UpdateAssistant\\Assistant (EventID 4698)'},
+        {t:'danger',l:'[10/Apr/2024 10:12:33] *** Creator: svchost32.exe (PID 4821) — ABNORMAL'}
+      ],
+      4:[
+        {t:'danger',l:'[10/Apr/2024 10:18:44] *** Sysmon Event 10: svchost32.exe accessed lsass.exe'},
+        {t:'danger',l:'[10/Apr/2024 10:18:44] *** GrantedAccess: 0x1010 (PROCESS_VM_READ) — Credential dump!'},
+        {t:'warn', l:'[10/Apr/2024 10:18:45] EventID 4662: Object Access — LSASS handle opened'}
+      ]
+    },
+    net:{
+      5:[
+        {t:'danger',l:'[10/Apr/2024 10:25:02] *** IDS ALERT: TCP SYN scan from 192.168.1.100 → /24'},
+        {t:'danger',l:'[10/Apr/2024 10:25:03] *** 254 hosts probed in 3.2 seconds (severity: HIGH)'},
+        {t:'warn', l:'[10/Apr/2024 10:25:05] Ports discovered: .10:22,80,443 | .20:22,3306'}
+      ]
+    }
+  },
+  web:{
+    sys:{
+      0:[
+        {t:'info',l:'[10/Apr/2024 08:00:10] Apache2 started (pid 812)'},
+        {t:'info',l:'[10/Apr/2024 08:01:00] MySQL healthy — 0 active connections'}
+      ],
+      6:[
+        {t:'danger',l:'[10/Apr/2024 10:38:12] *** SSH login: adminIT from 192.168.1.100 (UNUSUAL SOURCE)'},
+        {t:'warn', l:'[10/Apr/2024 10:38:12] Previous login for adminIT was from 192.168.1.5'},
+        {t:'warn', l:'[10/Apr/2024 10:38:12] Login time: outside business hours — ALERT'}
+      ],
+      7:[
+        {t:'danger',l:'[10/Apr/2024 11:01:44] Apache: POST /upload.php from 192.168.1.100 (200 OK)'},
+        {t:'danger',l:'[10/Apr/2024 11:02:18] *** Apache: GET /uploads/img_cache.php?cmd=id (200)'},
+        {t:'danger',l:'[10/Apr/2024 11:02:18] *** AIDE: New file in webroot — /uploads/img_cache.php NOT in baseline'}
+      ],
+      9:[
+        {t:'danger',l:'[10/Apr/2024 01:35:22] *** SIEM: apache access.log CLEARED (245MB → 0)'},
+        {t:'danger',l:'[10/Apr/2024 01:35:25] *** bash_history cleared for adminIT'},
+        {t:'info', l:'[10/Apr/2024 01:35:25] NOTE: SIEM syslog copy intact — all events preserved'}
+      ]
+    },
+    app:{
+      7:[
+        {t:'warn', l:'[10/Apr/2024 11:02:19] PHP: eval() called in /uploads/img_cache.php'},
+        {t:'danger',l:'[10/Apr/2024 11:02:19] *** RCE detected: system() call with user-supplied input'},
+        {t:'danger',l:'[10/Apr/2024 11:02:31] *** cmd=uname+-a → "Linux web-server 5.15.0-102-generic"'}
+      ]
+    }
+  },
+  db:{
+    sys:{
+      0:[
+        {t:'info',l:'[10/Apr/2024 08:00:05] MySQL 8.0.36 started'},
+        {t:'info',l:'[10/Apr/2024 08:00:05] general_log: OFF (consider enabling for audit)'}
+      ],
+      8:[
+        {t:'danger',l:'[10/Apr] 01:18:02 *** ALERT: SELECT * FROM citizens (150247 rows!) from 192.168.1.10'},
+        {t:'danger',l:'[10/Apr] 01:18:11 *** mysqldump citizens_db → /tmp/data.sql.gz (8.2MB)'},
+        {t:'danger',l:'[10/Apr] 01:19:04 *** netflow: 192.168.1.10 → 45.134.212.77 UPLOAD 8.2MB'}
+      ],
+      9:[
+        {t:'danger',l:'[10/Apr] 01:35:30 *** DELETE FROM mysql.general_log — all records erased'},
+        {t:'warn', l:'[10/Apr] 01:35:31 bash_history cleared for adminIT on db-server'},
+        {t:'info', l:'NOTE: SIEM copy preserved: 150247-row SELECT + dump evidence intact'}
+      ]
+    }
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// SCREEN RENDERS — HTML for each machine at each step
+// ══════════════════════════════════════════════════════════════
+function renderScreen(machine, step) {
+  if (machine==='client') return renderClientScreen(step);
+  if (machine==='web') return renderWebScreen(step);
+  if (machine==='db') return renderDBScreen(step);
+  return '<div style="padding:20px;color:var(--text2)">Chọn máy từ bên trái</div>';
+}
+
+function renderClientScreen(step) {
+  const s = step;
+  let emailAlert='', processAlert='', regAlert='';
+  if(s>=2) processAlert=`<div class="alert-box" style="margin-top:8px"><span>⚠</span><div><b>EDR ALERT:</b> Tiến trình đáng ngờ svchost32.exe (PID:4821) đang kết nối ra ngoài đến 45.134.212.77:4444</div></div>`;
+  if(s>=3) regAlert=`<div class="alert-box" style="margin-top:8px;border-color:rgba(210,153,34,.5);background:rgba(210,153,34,.1);color:#ffd60a"><span>⚠</span><div><b>Persistence:</b> Registry Run key mới: WindowsDefend32 → %TEMP%\\svchost32.exe</div></div>`;
+  if(s>=1) emailAlert=`<div class="email-item unread" style="background:rgba(248,81,73,.06);border-radius:4px;padding:7px 4px;margin-bottom:4px"><span style="color:var(--red);font-size:10px;font-weight:700;width:30px;flex-shrink:0">⚠ MỚI</span><div class="email-from" style="color:#ff8b8b">UBND Quảng Ninh</div><div class="email-subject" style="color:#fff">📎 Báo cáo TC Q1/2024 [KHẨN] — BaoCaoTaiChinh_Q1-2024.pdf.exe</div><div class="email-time">09:47</div></div>`;
+
+  return `<div class="win-desktop">
+    <div class="win-taskbar">
+      <div class="win-start">⊞ Start</div>
+      <div class="win-taskitem ${s>=1?'active-win':''}">📧 Outlook</div>
+      <div class="win-taskitem">📁 Explorer</div>
+      ${s>=2?'<div class="win-taskitem active-win" style="color:var(--red)">⚠ Task Manager</div>':''}
+      <div class="win-clock">10:38 — CLIENT-PC (192.168.1.100)</div>
+    </div>
+    <div class="win-body">
+      <div class="win-window">
+        <div class="win-window-title"><div class="dots"><span style="background:#ff5f56"></span><span style="background:#ffbd2e"></span><span style="background:#27c93f"></span></div>📧 Microsoft Outlook — nhanvien01@corp.local</div>
+        <div class="win-window-body">
+          ${s<1?'<div style="color:var(--text3);padding:8px 0">Không có email mới</div>':''}
+          ${emailAlert}
+          <div class="email-item"><span style="width:30px;flex-shrink:0"></span><div class="email-from">IT Support</div><div class="email-subject">Lịch bảo trì hệ thống tháng 4</div><div class="email-time">08:02</div></div>
+          <div class="email-item"><span style="width:30px;flex-shrink:0"></span><div class="email-from">HR Dept</div><div class="email-subject">Thông báo: đăng ký nghỉ phép</div><div class="email-time">07:30</div></div>
+        </div>
+      </div>
+      ${processAlert}${regAlert}
+      ${s>=4?`<div class="alert-box" style="margin-top:8px;border-color:rgba(188,140,255,.5);background:rgba(188,140,255,.1);color:var(--purple)"><span>⚠</span><div><b>CRITICAL:</b> svchost32.exe đọc bộ nhớ LSASS — Credential dumping! (EventID 4662)</div></div>`:''}
+    </div>
+  </div>`;
+}
+
+function renderWebScreen(step) {
+  const s = step;
+  return `<div class="win-desktop" style="background:#0f1923">
+    <div class="win-taskbar" style="background:#0a1520">
+      <span style="color:#58a6ff;font-size:12px;font-weight:700">🐧 WEB-SERVER</span>
+      <span style="color:#3fb950;font-size:11px;margin-left:8px">● Apache2 running</span>
+      <span style="color:#3fb950;font-size:11px;margin-left:8px">● SSH :22</span>
+      ${s>=6?'<span style="color:var(--red);font-size:11px;margin-left:8px;animation:blink 1s infinite">⚠ INTRUSION DETECTED</span>':''}
+      <div class="win-clock">192.168.1.10</div>
+    </div>
+    <div class="win-body">
+      <div class="win-window">
+        <div class="win-window-title" style="background:#0d1f2d">🌐 Apache2 Status — /var/www/html</div>
+        <div class="win-window-body" style="font-family:'JetBrains Mono',monospace;font-size:11px">
+          <div style="color:#3fb950">● apache2.service - active (running)</div>
+          <div style="color:#8b949e">  Loaded: /lib/systemd/system/apache2.service</div>
+          <div style="color:#8b949e">  DocumentRoot: /var/www/html</div>
+          ${s>=7?'<div style="color:var(--red);margin-top:4px">⚠ AIDE: NEW FILE DETECTED /uploads/img_cache.php</div>':''}
+          ${s>=9?'<div style="color:var(--red)">⚠ ALERT: access.log CLEARED (245MB → 0 bytes)</div>':''}
+        </div>
+      </div>
+      ${s>=6?`<div class="alert-box" style="margin-top:8px"><span>🚨</span><div><b>SSH INTRUSION:</b> adminIT logged in from 192.168.1.100 (unusual — normal source is 192.168.1.5) at 10:38 AM</div></div>`:''}
+      ${s>=7?`<div class="alert-box" style="margin-top:8px;border-color:rgba(188,140,255,.4);background:rgba(188,140,255,.08);color:var(--purple)"><span>🐚</span><div><b>WEBSHELL:</b> /uploads/img_cache.php — PHP eval() execution detected. cmd=id returned "www-data"</div></div>`:''}
+    </div>
+  </div>`;
+}
+
+function renderDBScreen(step) {
+  const s = step;
+  return `<div class="win-desktop" style="background:#0f1923">
+    <div class="win-taskbar" style="background:#0a1520">
+      <span style="color:#58a6ff;font-size:12px;font-weight:700">🗄️ DB-SERVER</span>
+      <span style="color:#3fb950;font-size:11px;margin-left:8px">● MySQL 8.0.36</span>
+      ${s>=8?'<span style="color:var(--red);font-size:11px;margin-left:8px">⚠ UNAUTHORIZED ACCESS</span>':''}
+      <div class="win-clock">192.168.1.20</div>
+    </div>
+    <div class="win-body">
+      <div class="win-window">
+        <div class="win-window-title" style="background:#0d1f2d">🗄️ MySQL Monitor — citizens_db</div>
+        <div class="win-window-body" style="font-family:'JetBrains Mono',monospace;font-size:11px">
+          <div style="color:#3fb950">mysql> STATUS</div>
+          <div style="color:#8b949e">Connection: localhost via TCP/IP</div>
+          <div style="color:#8b949e">DB: citizens_db | Tables: 3 | Total rows: 150,247</div>
+          ${s<8?'<div style="color:#3fb950;margin-top:4px">● No active queries</div>':''}
+          ${s>=8?`<div style="color:var(--red);margin-top:4px">⚠ ACTIVE: SELECT * FROM citizens (150247 rows)</div><div style="color:var(--red)">⚠ Source: 192.168.1.10 (via webshell) at 01:18 AM</div>`:''}
+          ${s>=9?`<div style="color:var(--red);margin-top:4px">⚠ CRITICAL: mysql.general_log DELETED</div>`:''}
+        </div>
+      </div>
+      ${s>=8?`<div class="alert-box" style="margin-top:8px"><span>💾</span><div><b>EXFILTRATION ALERT:</b> 150,247 records từ bảng citizens bị dump. File 8.2MB gửi đến 45.134.212.77</div></div>`:''}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// FINAL QUIZ DATA
+// ══════════════════════════════════════════════════════════════
+const FQ = [
+  {q:'Kỹ thuật MITRE ATT&CK nào mô tả việc giả mạo email với file đính kèm độc hại?',
+   opts:['T1190 Exploit Public-Facing Application','T1566.001 Spear-Phishing Attachment','T1078 Valid Accounts'],correct:1},
+  {q:'Tại sao file "BaoCaoTaiChinh_Q1-2024.pdf.exe" nguy hiểm dù người dùng nghĩ đó là PDF?',
+   opts:['File PDF không thể mã hóa','Windows mặc định ẩn phần mở rộng — .exe bị giấu, người dùng thấy .pdf','Tên file có ký tự đặc biệt nên bị block'],correct:1},
+  {q:'Tiến trình svchost32.exe trong %TEMP% kết nối port 4444. Kỹ thuật này được gọi là gì?',
+   opts:['Reverse Shell / C2 Beacon qua non-standard port','Windows Update bình thường','DNS tunneling'],correct:0},
+  {q:'EventID 4657 và 4698 cùng được tạo bởi malware. Mục đích là gì?',
+   opts:['Xóa log hệ thống','Thiết lập persistence — đảm bảo malware sống sót sau reboot','Leo thang đặc quyền'],correct:1},
+  {q:'Sysmon Event 10 ghi: SourceImage=svchost32.exe, TargetImage=lsass.exe, GrantedAccess=0x1010. Đây là:',
+   opts:['Windows Security scan định kỳ','Credential dumping từ LSASS memory (Mimikatz technique)','Antivirus quarantine process'],correct:1},
+  {q:'IDS phát hiện TCP SYN đến toàn bộ subnet /24 từ client PC trong 3 giây. Kỹ thuật MITRE nào?',
+   opts:['T1046 Network Service Scanning','T1110 Brute Force','T1071 Application Layer Protocol'],correct:0},
+  {q:'auth.log: "Accepted password for adminIT from 192.168.1.100". adminIT thường login từ 192.168.1.5. Đây là:',
+   opts:['IT admin làm việc di động — bình thường','Lateral Movement qua stolen credentials','Backup tự động'],correct:1},
+  {q:'File img_cache.php trong /uploads/ nhận parameter ?cmd= và thực thi lệnh. Đây là loại backdoor gì?',
+   opts:['File cache ảnh hợp lệ','Web Shell — Remote Code Execution qua HTTP','PHP configuration file'],correct:1},
+  {q:'MySQL log: SELECT * từ 150K rows lúc 1 AM, sau đó 8.2MB upload đến external IP. Giai đoạn Kill Chain này là gì?',
+   opts:['Discovery','Exfiltration — data bị đánh cắp và gửi ra ngoài','Impact'],correct:1},
+  {q:'Biện pháp phòng thủ nào QUAN TRỌNG NHẤT để giảm thiệt hại của toàn bộ chuỗi tấn công này?',
+   opts:['Chỉ cần antivirus tốt','Email filtering + EDR + SIEM log forwarding + Network segmentation + MFA kết hợp nhau',
+   'Chỉ cần firewall mạnh là đủ'],correct:1}
+];
+
+// ══════════════════════════════════════════════════════════════
+// UI FUNCTIONS
+// ══════════════════════════════════════════════════════════════
+function setMode(m){
+  drillMode=m;
+  ['red','blue','both'].forEach(x=>{
+    const btn=document.getElementById('mbtn-'+x);
+    btn.className='mode-btn';
+    if(x===m) btn.classList.add(m==='red'?'active-red':m==='blue'?'active-blue':'active-both');
+  });
+  if(currentStep>0) renderNarrative(STEPS[currentStep-1]);
+}
+
+function selectMachine(m){
+  currentMachine=m;
+  ['client','web','db'].forEach(x=>{
+    document.getElementById('mb-'+x).classList.toggle('active',x===m);
+  });
+  refreshMachineView();
+  refreshTermPrompt();
+}
+
+function switchTab(t){
+  currentTab=t;
+  ['screen','term','log'].forEach(x=>{
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+  document.getElementById('screen-view').style.display=t==='screen'?'flex':'none';
+  document.getElementById('term-view').style.display=t==='term'?'flex':'none';
+  document.getElementById('log-view').style.display=t==='log'?'flex':'none';
+  if(t==='term') document.getElementById('term-input').focus();
+}
+
+function setLogSrc(s){
+  currentLogSrc=s;
+  ['sys','net','app'].forEach(x=>{
+    document.getElementById('lbtn-'+x).classList.toggle('active',x===s);
+  });
+  renderLogs();
+}
+
+function refreshMachineView(){
+  document.getElementById('screen-view').innerHTML = renderScreen(currentMachine, currentStep);
+  refreshTermPrompt();
+  renderLogs();
+}
+
+function refreshTermPrompt(){
+  const prompts={
+    client:'C:\\Users\\nhanvien01> ',
+    web:'adminIT@web-server:~$ ',
+    db:'mysql [citizens_db]> '
+  };
+  document.getElementById('term-prompt-label').textContent = prompts[currentMachine]||'$ ';
+}
+
+function renderLogs(){
+  const out = document.getElementById('log-output');
+  const src = currentLogSrc;
+  const machLogs = LOG_DATA[currentMachine]||{};
+  const srcLogs = machLogs[src]||{};
+  // Collect all logs up to currentStep
+  let lines = [];
+  for(let i=0;i<=currentStep;i++){
+    const key = String(i);
+    if(srcLogs[key]) lines = lines.concat(srcLogs[key]);
+  }
+  if(!lines.length){
+    out.innerHTML='<div style="padding:14px;color:var(--text3);font-size:12px">[Không có log — chọn máy khác hoặc nguồn log khác]</div>';
+    return;
+  }
+  out.innerHTML = lines.map(l=>`<div class="log-line ${l.t==='danger'?'log-danger':l.t==='warn'?'log-warn':l.t==='info'?'log-info':''}">${l.l}</div>`).join('');
+  out.scrollTop = out.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════════════
+// STEP CONTROLLER
+// ══════════════════════════════════════════════════════════════
+function nextStep(){
+  if(currentStep >= STEPS.length){
+    document.getElementById('complete-overlay').classList.add('show');
+    document.getElementById('final-score').textContent = STEPS.length+'/'+STEPS.length;
+    return;
+  }
+  currentStep++;
+  const step = STEPS[currentStep-1];
+
+  // Update machine status
+  if(step.machineChanges){
+    Object.entries(step.machineChanges).forEach(([m,v])=>{
+      machStatus[m]=Math.max(machStatus[m],v);
+      updateMachineStatus(m);
+    });
+  }
+
+  // Focus correct machine
+  if(step.machine) selectMachine(step.machine);
+
+  // Update phase track
+  renderPhaseTrack();
+  document.getElementById('step-counter').textContent = `Bước ${currentStep}/9`;
+
+  // Render narrative
+  renderNarrative(step);
+
+  // Disable next button until quiz
+  document.getElementById('btn-next-step').disabled = true;
+  document.getElementById('step-instruction').textContent = 'Đọc kịch bản → Nhấn "Làm câu hỏi" để tiếp tục';
+
+  // Show quiz button in footer
+  const footer = document.getElementById('narr-footer');
+  let qbtn = document.getElementById('btn-show-quiz');
+  if(!qbtn){
+    qbtn = document.createElement('button');
+    qbtn.id='btn-show-quiz';
+    qbtn.style.cssText='background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.4);border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;width:100%';
+    footer.insertBefore(qbtn, document.getElementById('btn-next-step'));
+  }
+  qbtn.textContent = '❓ Làm câu hỏi bước '+currentStep;
+  qbtn.onclick = ()=>showQuiz(step);
+  qbtn.style.display='block';
+
+  document.getElementById('btn-next-step').textContent = currentStep>=STEPS.length ? '🏁 Hoàn thành — Xem kết quả' : `► Bước ${currentStep+1}: ${currentStep<STEPS.length?STEPS[currentStep].title.substring(0,30)+'..':'Kết thúc'}`;
+}
+
+function renderNarrative(step){
+  document.getElementById('narr-phase').textContent = step.phase;
+  document.getElementById('narr-phase').style.color = step.phaseColor;
+  document.getElementById('narr-title').textContent = step.title;
+  document.getElementById('narr-time').textContent = step.time;
+
+  const body = document.getElementById('narr-body');
+  let html = '';
+  if(drillMode==='red'||drillMode==='both'){
+    html+=`<div class="narr-block narr-red"><h4>🔴 Red Team — Góc nhìn tấn công</h4>${step.red.content}<div style="margin-top:8px;font-size:11px;color:rgba(248,81,73,.7);font-family:'JetBrains Mono',monospace">${step.red.technical}</div></div>`;
+  }
+  if(drillMode==='blue'||drillMode==='both'){
+    html+=`<div class="narr-block narr-blue"><h4>🔵 Blue Team — Góc nhìn phòng thủ</h4>${step.blue.content}</div>`;
+    if(step.blue.iocs&&step.blue.iocs.length){
+      html+=`<div class="narr-block narr-ioc"><h4>🔍 IOCs — Chỉ số tấn công</h4>${step.blue.iocs.map(i=>`<div class="ioc-item"><span>▸</span><span>${i}</span></div>`).join('')}</div>`;
+    }
+  }
+  html+=`<div class="hint-box">💡 <b>Khám phá:</b> Chuyển tab <b>Terminal</b> gõ lệnh hoặc tab <b>Logs</b> để xem nhật ký hệ thống tại bước này.</div>`;
+  body.innerHTML=html;
+}
+
+function updateMachineStatus(m){
+  const v = machStatus[m];
+  const dot = document.getElementById('ms-'+m);
+  const badge = document.getElementById('mb-'+m+'-badge');
+  if(v===0){dot.className='mach-status';badge.className='mach-badge safe';badge.textContent='OK';}
+  else if(v===1){dot.className='mach-status warn';badge.className='mach-badge warn';badge.textContent='⚠';}
+  else{dot.className='mach-status danger';badge.className='mach-badge pwned';badge.textContent='PWNED';}
+}
+
+function renderPhaseTrack(){
+  const phases=['INIT','EXEC','PERS','CRED','DISC','LAT1','COL','EXFIL','COVR'];
+  const container = document.getElementById('phase-track');
+  container.innerHTML='';
+  phases.forEach((p,i)=>{
+    const dot=document.createElement('div');
+    dot.className='phase-dot'+(i<currentStep?' done':i===currentStep-1?' active':'');
+    dot.textContent=i+1;
+    dot.title=STEPS[i]?STEPS[i].title:'';
+    container.appendChild(dot);
+    if(i<phases.length-1){
+      const line=document.createElement('div');
+      line.className='phase-line'+(i<currentStep-1?' done':'');
+      container.appendChild(line);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════════════════════
+function showQuiz(step){
+  quizAnswered=false;
+  const q=step.quiz;
+  document.getElementById('quiz-phase-badge').textContent=step.phase;
+  document.getElementById('quiz-phase-badge').style.cssText=`display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:${step.phaseColor}22;color:${step.phaseColor};border:1px solid ${step.phaseColor}55`;
+  document.getElementById('quiz-q').textContent=q.q;
+  const opts=document.getElementById('quiz-opts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const div=document.createElement('div');
+    div.className='q-opt';
+    div.id='qo-'+i;
+    div.innerHTML=`<span class="q-opt-letter">${String.fromCharCode(65+i)}</span><span>${o.t}</span>`;
+    div.onclick=()=>answerQuiz(i,q);
+    opts.appendChild(div);
+  });
+  document.getElementById('quiz-result').style.display='none';
+  document.getElementById('quiz-next').style.display='none';
+  document.getElementById('quiz-overlay').classList.add('show');
+}
+
+function answerQuiz(idx,q){
+  if(quizAnswered)return;
+  quizAnswered=true;
+  const correct=q.opts[idx].ok===true;
+  q.opts.forEach((o,i)=>{
+    const el=document.getElementById('qo-'+i);
+    if(!el)return;
+    el.style.cursor='default';
+    el.onclick=null;
+    if(o.ok)el.classList.add('correct');
+    else if(i===idx&&!correct)el.classList.add('wrong');
+  });
+  const res=document.getElementById('quiz-result');
+  res.style.display='block';
+  res.className='quiz-result '+(correct?'correct':'wrong');
+  res.textContent=correct?q.note:q.badNote;
+  document.getElementById('quiz-next').style.display='block';
+}
+
+function quizNext(){
+  document.getElementById('quiz-overlay').classList.remove('show');
+  document.getElementById('btn-next-step').disabled=false;
+  const qbtn=document.getElementById('btn-show-quiz');
+  if(qbtn)qbtn.style.display='none';
+  document.getElementById('step-instruction').textContent='Nhấn "Bước tiếp theo" để tiếp tục kịch bản';
+}
+
+// ══════════════════════════════════════════════════════════════
+// FINAL QUIZ
+// ══════════════════════════════════════════════════════════════
+let fqAnswers={};
+function renderFinalQuiz(){
+  fqAnswers={};
+  document.getElementById('fq-result-box').style.display='none';
+  document.getElementById('fq-submit').style.display='block';
+  const container=document.getElementById('fq-questions');
+  container.innerHTML='';
+  FQ.forEach((q,qi)=>{
+    const block=document.createElement('div');
+    block.className='fq-q-block';
+    block.innerHTML=`<div class="fq-q-text">${qi+1}. ${q.q}</div><div class="fq-opts">${q.opts.map((o,oi)=>`<div class="fq-opt" id="fqo-${qi}-${oi}" onclick="fqSelect(${qi},${oi})"><span style="width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${String.fromCharCode(65+oi)}</span><span>${o}</span></div>`).join('')}</div>`;
+    container.appendChild(block);
+  });
+}
+function fqSelect(qi,oi){
+  if(fqAnswers[qi]!==undefined)return;
+  fqAnswers[qi]=oi;
+  FQ[qi].opts.forEach((_,i)=>document.getElementById(`fqo-${qi}-${i}`)?.classList.remove('selected'));
+  document.getElementById(`fqo-${qi}-${oi}`)?.classList.add('selected');
+}
+function fqSubmit(){
+  if(Object.keys(fqAnswers).length<FQ.length){
+    alert('Vui lòng trả lời tất cả '+FQ.length+' câu hỏi trước khi nộp bài.');
+    return;
+  }
+  let score=0;
+  FQ.forEach((q,qi)=>{
+    const ans=fqAnswers[qi];
+    FQ[qi].opts.forEach((_,oi)=>{
+      const el=document.getElementById(`fqo-${qi}-${oi}`);
+      if(!el)return;
+      el.onclick=null;
+      if(oi===q.correct)el.classList.add('correct');
+      else if(oi===ans&&ans!==q.correct)el.classList.add('wrong');
+    });
+    if(ans===q.correct)score++;
+  });
+  document.getElementById('fq-submit').style.display='none';
+  const rb=document.getElementById('fq-result-box');
+  rb.style.display='block';
+  const pct=Math.round(score/FQ.length*100);
+  const grade=pct>=80?'Xuất sắc 🏆':pct>=60?'Khá 👍':'Cần ôn tập thêm 📚';
+  rb.innerHTML=`<div style="font-size:32px;font-weight:800;color:${pct>=80?'var(--green)':pct>=60?'var(--yellow)':'var(--red)'}">${score}/${FQ.length}</div><div style="font-size:14px;color:var(--text2);margin:8px 0">${grade} — ${pct}% câu đúng</div><button onclick="document.getElementById('fq-overlay').classList.remove('show');window.location.href='index.html'" style="margin-top:12px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer">← Quay về Menu chính</button>`;
+  rb.scrollIntoView({behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════════════════════════
+// TERMINAL EMULATOR
+// ══════════════════════════════════════════════════════════════
+function getTermOutput(machine, cmd){
+  const mData = TERM_DATA[machine]||{};
+  const cmdLower = cmd.trim().toLowerCase();
+  // Exact match first
+  let entry = mData[cmdLower];
+  if(!entry){
+    // Partial match
+    for(const key of Object.keys(mData)){
+      if(cmdLower.startsWith(key)||key.startsWith(cmdLower.split(' ')[0])){
+        if(key===cmdLower||(cmdLower.includes(key)&&key.length>3)){entry=mData[key];break;}
+      }
+    }
+  }
+  if(!entry) return null;
+  // Get step-specific output
+  let out = entry['always'];
+  for(let i=currentStep;i>=0;i--){
+    if(entry[String(i)]!==undefined){out=entry[String(i)];break;}
+  }
+  return out||null;
+}
+
+function termRun(cmd){
+  const out = document.getElementById('term-output');
+  const prompts={client:'C:\\Users\\nhanvien01> ',web:'adminIT@web-server:~$ ',db:'mysql [citizens_db]> '};
+  const prompt = prompts[currentMachine]||'$ ';
+
+  // Append command line
+  const cmdLine=document.createElement('div');
+  cmdLine.innerHTML=`<span class="t-prompt">${prompt}</span><span class="t-cmd">${cmd}</span>`;
+  out.appendChild(cmdLine);
+
+  if(!cmd.trim()){out.scrollTop=out.scrollHeight;return;}
+
+  if(cmd.trim().toLowerCase()==='clear'){out.innerHTML='';return;}
+  if(cmd.trim().toLowerCase()==='help'){
+    const helpData=getTermOutput(currentMachine,'help');
+    addTermLine(helpData||'Lệnh cơ bản: help, clear, whoami, ipconfig/ifconfig','t-out');
+    out.scrollTop=out.scrollHeight;return;
+  }
+
+  const result = getTermOutput(currentMachine, cmd.trim());
+  if(result!==null){
+    result.split('\n').forEach(line=>{
+      const cls = line.includes('[SUSPICIOUS]')||line.includes('[MALICIOUS]')||line.includes('***')||line.includes('[ALERT')? 't-hi' :
+                  line.includes('[HIDDEN]')? 't-warn' :
+                  line.includes('NOTE')||line.includes('TIP')? 't-good' : 't-out';
+      addTermLine(line, cls);
+    });
+  } else {
+    addTermLine(`'${cmd}': command not found. Gõ 'help' để xem lệnh khả dụng.`,'t-err');
+  }
+  out.scrollTop=out.scrollHeight;
+}
+
+function addTermLine(text, cls='t-out'){
+  const el=document.createElement('div');
+  el.className=cls;
+  el.textContent=text;
+  document.getElementById('term-output').appendChild(el);
+}
+
+// Init terminal welcome
+function initTerminal(){
+  const welcomes={
+    client:'Microsoft Windows [Version 10.0.19045.4170]\n(c) Microsoft Corporation. All rights reserved.\n\nGõ "help" để xem lệnh khả dụng.',
+    web:'Linux web-server 5.15.0-102-generic #112-Ubuntu\nWelcome to Ubuntu 22.04.4 LTS\n\nGõ "help" để xem lệnh khả dụng.',
+    db:'Welcome to the MySQL monitor. Commands end with ; or \\g\nServer version: 8.0.36 MySQL Community Server\n\nGõ "help" để xem lệnh khả dụng.'
+  };
+  document.getElementById('term-output').innerHTML='';
+  const msg=welcomes[currentMachine]||'Terminal ready.';
+  msg.split('\n').forEach(l=>addTermLine(l,'t-out'));
+}
+
+// Keyboard events
+document.getElementById('term-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){
+    const cmd=this.value;
+    this.value='';
+    termHistory.unshift(cmd);
+    termHistIdx=-1;
+    if(termHistory.length>50)termHistory.pop();
+    termRun(cmd);
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    termHistIdx=Math.min(termHistIdx+1,termHistory.length-1);
+    if(termHistIdx>=0)this.value=termHistory[termHistIdx];
+  } else if(e.key==='ArrowDown'){
+    e.preventDefault();
+    termHistIdx=Math.max(termHistIdx-1,-1);
+    this.value=termHistIdx>=0?termHistory[termHistIdx]:'';
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+(function init(){
+  renderPhaseTrack();
+  refreshMachineView();
+  initTerminal();
+  refreshTermPrompt();
+  // Initial screen
+  document.getElementById('screen-view').innerHTML=`
+    <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div style="background:var(--bg3);border-radius:10px;padding:20px;border:1px solid var(--border)">
+        <div style="font-size:18px;font-weight:800;margin-bottom:6px">🎯 Kịch bản A — APT Kill Chain</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7">Mô phỏng chuỗi tấn công thực tế: kẻ tấn công gửi email phishing giả UBND tỉnh → nạn nhân mở file độc hại → mã độc lây lan → leo thang tấn công sang máy chủ → đánh cắp dữ liệu 150.000 công dân.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div style="background:var(--red-dim);border:1px solid rgba(248,81,73,.3);border-radius:8px;padding:12px"><div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px">CLIENT-PC</div><div style="font-size:12px;color:var(--text2)">192.168.1.100<br>Windows 10 Pro<br>Điểm xâm nhập</div></div>
+        <div style="background:var(--blue-dim);border:1px solid rgba(88,166,255,.3);border-radius:8px;padding:12px"><div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:4px">WEB-SERVER</div><div style="font-size:12px;color:var(--text2)">192.168.1.10<br>Ubuntu 22.04<br>Apache2 + PHP</div></div>
+        <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.25);border-radius:8px;padding:12px"><div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px">DB-SERVER</div><div style="font-size:12px;color:var(--text2)">192.168.1.20<br>Ubuntu 22.04<br>MySQL 8.0</div></div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:14px;border:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px">📋 9 bước Kill Chain</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${STEPS.map((s,i)=>`<span style="background:${s.phaseColor}15;color:${s.phaseColor};border:1px solid ${s.phaseColor}33;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">${i+1}. ${s.phase}</span>`).join('')}</div>
+      </div>
+    </div>`;
+})();
+</script>
+</body>
+</html>
