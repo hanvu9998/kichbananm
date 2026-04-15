@@ -465,9 +465,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
                 </div>
               </div>
               <div style="font-size:11px;color:#777;line-height:1.6;margin-bottom:16px">Windows Defender đã chặn file này. Chạy có thể gây thiệt hại nghiêm trọng cho máy tính của bạn.</div>
-              <div style="display:flex;align-items:center;justify-content:space-between">
-                <button onclick="cltDlgRunAnyway()" style="background:transparent;color:#777;border:none;font-size:11px;cursor:pointer;text-decoration:underline">Thông tin thêm ▸ Chạy dù sao</button>
-                <button onclick="document.getElementById('clt-dlg-security').style.display='none'" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer">Đừng chạy ✓</button>
+              <button onclick="cltDlgRunAnyway()" style="width:100%;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px">Vẫn chạy</button>
+              <div style="text-align:center">
+                <span onclick="cltDlgDontRun()" style="font-size:11px;color:#6b7280;cursor:pointer;text-decoration:underline">Đừng chạy — Tôi hiểu rủi ro và chọn không chạy</span>
               </div>
             </div>
           </div>
@@ -1650,6 +1650,30 @@ function cltDlgRunAnyway(){
   const pdf = document.getElementById('clt-dlg-pdf');
   pdf.style.display = 'flex';
   setTimeout(()=>cltInfect(), 1500);
+}
+function cltDlgDontRun(){
+  // Show praise notification
+  cltAddNotif('✅','Nhận thức tốt!','Bạn đã chọn không chạy file lạ — đây là hành động đúng đắn trong thực tế.','info');
+  // Show drill notice overlay inside dialog before proceeding
+  const dlg = document.getElementById('clt-dlg-security');
+  const inner = dlg.querySelector('div');
+  inner.innerHTML += `<div id="clt-drill-notice" style="margin-top:14px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.4);border-radius:6px;padding:11px;font-size:11px;color:#fbbf24;line-height:1.7">
+    <b>⚠ Lưu ý diễn tập:</b> Rất tốt! Trong thực tế bạn đã bảo vệ máy tính thành công.<br>
+    Tuy nhiên đây là môi trường <b>diễn tập</b> — file sẽ tự động thực thi sau 3 giây để bạn quan sát toàn bộ chuỗi tấn công.
+    <div style="margin-top:8px;color:#9ca3af;font-size:10px" id="clt-drill-countdown">Thực thi sau: 3s</div>
+  </div>`;
+  let t = 3;
+  const timer = setInterval(()=>{
+    t--;
+    const el = document.getElementById('clt-drill-countdown');
+    if(el) el.textContent = t > 0 ? `Thực thi sau: ${t}s` : 'Đang thực thi...';
+    if(t <= 0){
+      clearInterval(timer);
+      dlg.style.display = 'none';
+      document.getElementById('clt-dlg-pdf').style.display = 'flex';
+      setTimeout(()=>cltInfect(), 1500);
+    }
+  }, 1000);
 }
 function cltInfect(){
   if(cltState.infected) return;
