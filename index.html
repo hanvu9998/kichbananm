@@ -1,540 +1,350 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>MÔI TRƯỜNG GIẢ LẬP AN NINH MẠNG | Phòng An ninh mạng &amp; PCTP sử dụng CNC, công an tỉnh Quảng Ninh</title>
-    <meta name="description" content="Môi trường giả lập an ninh mạng chính thức của Phòng An ninh mạng &amp; PCTP sử dụng CNC - Công an tỉnh Quảng Ninh."/>
-    <meta name="author" content="Phòng an ninh mạng"/>
-    <link rel="shortcut icon" href="/assets/images/logo.png"/>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-primary': '#004b8d',
-                        'brand-primary-hover': '#003366',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Môi trường giả lập An ninh mạng | Phòng An ninh mạng &amp; PCTP sử dụng CNC</title>
+<meta name="description" content="Môi trường giả lập an ninh mạng — Phòng An ninh mạng &amp; PCTP sử dụng CNC, Công an tỉnh Quảng Ninh">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090f;--bg2:#0d1117;--bg3:#161b22;
+  --border:#1e2d3d;--border2:#30363d;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;
+  --green:#00d084;--green-dim:rgba(0,208,132,.08);
+  --blue:#38bdf8;--blue-dim:rgba(56,189,248,.08);
+  --red:#f85149;--red-dim:rgba(248,81,73,.08);
+  --yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.08);
+  --purple:#a78bfa;--orange:#fb923c;
+  --cyan:#22d3ee;
+}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-        /* Animations */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.5; }
-        }
+/* ── SCAN LINE ANIMATION ── */
+@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(0,208,132,.2)}50%{box-shadow:0 0 22px rgba(0,208,132,.5)}}
+@keyframes matrixRain{0%{transform:translateY(-100%);opacity:0}10%{opacity:.6}90%{opacity:.4}100%{transform:translateY(100vh);opacity:0}}
+@keyframes typeIn{from{width:0}to{width:100%}}
+@keyframes borderFlow{0%{border-color:rgba(0,208,132,.2)}50%{border-color:rgba(0,208,132,.6)}100%{border-color:rgba(0,208,132,.2)}}
 
-        .animate-fade-in-down { animation: fadeInDown 0.6s ease forwards; }
-        .animate-fade-in-up   { animation: fadeInUp  0.5s ease forwards; }
-        .animate-fade-in      { animation: fadeIn    0.8s ease forwards; }
-        .animate-pulse-slow   { animation: pulse 2s infinite; }
+/* ── TOPBAR ── */
+#top-bar{
+  position:fixed;top:0;left:0;right:0;height:52px;z-index:100;
+  background:rgba(7,9,15,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
+}
+.top-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.top-logo-icon{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#00d084,#38bdf8);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.top-logo-text{font-weight:700;font-size:14px;color:#fff;white-space:nowrap}
+.top-logo-sub{font-size:10px;color:var(--text3);white-space:nowrap;font-family:'JetBrains Mono',monospace}
+.top-divider{width:1px;height:20px;background:var(--border2);flex-shrink:0}
+.top-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.top-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2.5s infinite}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.top-tag{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;border:1px solid rgba(0,208,132,.3);color:var(--green);background:var(--green-dim)}
 
-        .card-delay-1 { animation-delay: 0.1s; }
-        .card-delay-2 { animation-delay: 0.2s; }
-        .card-delay-3 { animation-delay: 0.3s; }
-        .card-delay-4 { animation-delay: 0.4s; }
-        .card-delay-5 { animation-delay: 0.5s; }
-        .card-delay-6 { animation-delay: 0.6s; }
+/* ── HERO ── */
+#hero{
+  padding:120px 24px 60px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+#hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 30%,rgba(0,208,132,.06) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(56,189,248,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+/* Grid pattern */
+#hero::after{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,208,132,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,208,132,.04) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;
+}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--green-dim);border:1px solid rgba(0,208,132,.25);border-radius:20px;padding:5px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:24px}
+.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+h1.hero-title{font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.15;margin-bottom:16px;color:#fff}
+h1.hero-title span{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:clamp(14px,2vw,17px);color:var(--text2);max-width:620px;margin:0 auto 40px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:60px}
+.hero-stat{text-align:center}
+.hero-stat-num{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--green)}
+.hero-stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
 
-        .card-initial { opacity: 0; }
+/* ── SECTION LABEL ── */
+.section-label{display:flex;align-items:center;gap:10px;max-width:1100px;margin:0 auto 20px;padding:0 24px}
+.section-label-line{flex:1;height:1px;background:var(--border)}
+.section-label-text{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
 
-        /* Footer brand colors */
-        .bg-brand-primary { background-color: #004b8d; }
-        .border-brand-primary { border-color: #004b8d; }
-        .border-brand-primary-hover { border-color: #003366; }
-        .text-brand-primary { color: #004b8d; }
-        .hover\:bg-gray-100:hover { background-color: #f3f4f6; }
-    </style>
+/* ── CARD GRID ── */
+#modules{padding:0 24px 80px;max-width:1100px;margin:0 auto}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+
+.mod-card{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:12px;
+  padding:24px;cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.mod-card:hover{transform:translateY(-3px);border-color:var(--card-color,var(--green));box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 20px rgba(0,208,132,.08)}
+.mod-card::before{content:'';position:absolute;inset:0;border-radius:12px;background:radial-gradient(circle at 70% 0%,var(--card-glow,rgba(0,208,132,.05)) 0%,transparent 60%);pointer-events:none}
+
+.mod-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.mod-card-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--card-icon-bg,rgba(0,208,132,.1));border:1px solid var(--card-border,rgba(0,208,132,.2))}
+.mod-card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mod-card-level{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace}
+.mod-card-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+
+.mod-card-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.3}
+.mod-card-desc{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+
+.mod-card-btn{
+  width:100%;padding:9px 16px;border-radius:8px;border:none;
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--card-btn-bg,rgba(0,208,132,.12));
+  color:var(--card-btn-color,var(--green));
+  border:1px solid var(--card-btn-border,rgba(0,208,132,.25));
+  transition:all .15s;
+}
+.mod-card-btn:hover{background:var(--card-btn-hover,rgba(0,208,132,.22));filter:brightness(1.1)}
+.mod-card-btn svg{flex-shrink:0}
+
+/* Difficulty colors */
+.lvl-basic{background:rgba(0,208,132,.12);color:var(--green)}
+.lvl-mid{background:rgba(251,191,36,.12);color:var(--yellow)}
+.lvl-adv{background:rgba(248,81,73,.12);color:var(--red)}
+.lvl-expert{background:rgba(167,139,250,.12);color:var(--purple)}
+
+/* ── FOOTER BAR ── */
+#foot-bar{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:20px 24px;text-align:center;
+}
+.foot-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.foot-safe{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;padding:5px 12px;border:1px solid var(--border);border-radius:20px}
+.foot-copy{font-size:11px;color:var(--text3)}
+
+/* ── FADE IN ── */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  #top-bar .top-logo-sub,.top-divider,.top-status{display:none}
+  .hero-stats{gap:20px}
+  .modules-grid{grid-template-columns:1fr}
+  .foot-inner{justify-content:center}
+}
+</style>
 </head>
-<body class="font-sans">
+<body>
 
-<!-- ===== WRAPPER ===== -->
-<div class="min-h-screen flex flex-col">
+<!-- TOPBAR -->
+<div id="top-bar">
+  <a class="top-logo" href="#">
+    <div class="top-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+    </div>
+    <div>
+      <div class="top-logo-text">Môi trường giả lập An ninh mạng</div>
+      <div class="top-logo-sub">Phòng An ninh mạng &amp; PCTP sử dụng CNC · CA tỉnh Quảng Ninh</div>
+    </div>
+  </a>
+  <div class="top-divider"></div>
+  <div class="top-status">
+    <div class="top-dot"></div>
+    SANDBOX ONLINE
+  </div>
+  <div class="top-right">
+    <div class="top-tag">v2.0 · 2026</div>
+  </div>
+</div>
 
-    <!-- ===== HEADER ===== -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-3">
-                    <div class="relative w-12 h-12 flex-shrink-0">
-                        <img alt="Logo Công an tỉnh Quảng Ninh" class="object-contain w-full h-full" src="/assets/images/logo.png"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-                        <!-- Fallback logo placeholder -->
-                        <div style="display:none" class="w-12 h-12 rounded-full bg-blue-800 items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-bold text-base text-gray-900 leading-tight">Môi trường giả lập an ninh mạng</span>
-                        <span class="text-[10px] text-gray-600 leading-tight max-w-[200px]">Phòng An ninh mạng &amp; PCTP sử dụng CNC, công an tỉnh Quảng Ninh</span>
-                    </div>
-                </div>
-                <!-- Desktop nav -->
-                <nav class="hidden md:flex items-center space-x-1">
-                    <a href="/" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Trang chủ</a>
-                    <a href="/news" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Tin tức</a>
-                    <a href="/report" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Báo cáo</a>
-                    <a href="/games" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Trò chơi</a>
-                    <a href="/tra-cuu" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Tra cứu</a>
-                    <a href="/statistics" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Thống kê</a>
-                    <a href="/feedback" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Góp ý</a>
-                    <a href="/about" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md transition-colors">Giới thiệu</a>
-                </nav>
-            </div>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div> MÔI TRƯỜNG MÔ PHỎNG AN TOÀN</div>
+  <h1 class="hero-title">Giả lập <span>Tấn công &amp; Phòng thủ</span><br>An ninh mạng</h1>
+  <p class="hero-desc">Trải nghiệm trực tiếp các tình huống tấn công mạng trong môi trường kiểm soát. Nhận biết mối đe dọa, luyện kỹ năng phòng thủ và nâng cao nhận thức an toàn thông tin.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-lbl">Kịch bản</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-lbl">Cấp độ</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">100%</div><div class="hero-stat-lbl">An toàn</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-lbl">Rủi ro thực</div></div>
+  </div>
+</section>
+
+<!-- MODULE GRID -->
+<section id="modules">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">// chọn kịch bản diễn tập</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="modules-grid">
+
+    <!-- 1: Ransomware -->
+    <div class="mod-card fade-up" style="--card-color:#f85149;--card-glow:rgba(248,81,73,.07);--card-icon-bg:rgba(248,81,73,.1);--card-border:rgba(248,81,73,.2);--card-btn-bg:rgba(248,81,73,.1);--card-btn-color:#f85149;--card-btn-border:rgba(248,81,73,.25);--card-btn-hover:rgba(248,81,73,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🔒</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-basic">Cơ bản</span>
+          <span class="mod-card-time">5–10 phút</span>
         </div>
-    </header>
+      </div>
+      <div class="mod-card-title">Mã Độc Tống Tiền</div>
+      <div class="mod-card-desc">Trải nghiệm bị tấn công bởi ransomware. Học cách nhận biết file độc hại và bảo vệ dữ liệu cá nhân trước khi quá muộn.</div>
+      <button class="mod-card-btn" onclick="startScenario('ransomware')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
 
-    <!-- ===== MAIN: SANDBOX OVERLAY ===== -->
-    <main class="flex-1">
-        <div id="sandbox-menu" class="fixed inset-0 w-full h-full overflow-auto bg-black z-50">
-            <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col items-center justify-center p-8 relative pb-24">
-
-                <!-- Title -->
-                <div class="text-center mb-12 animate-fade-in-down">
-                    <div class="flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400 mr-4">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-                        </svg>
-                        <h1 class="text-4xl font-bold text-white">Môi trường giả lập An ninh mạng</h1>
-                    </div>
-                    <p class="text-xl text-slate-300 max-w-3xl">Chọn một kịch bản để trải nghiệm các tình huống tấn công mạng một cách an toàn. Học hỏi và nâng cao kỹ năng bảo vệ thông tin cá nhân.</p>
-                </div>
-
-                <!-- Cards Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-
-                    <!-- Card 1: Mã Độc Tống Tiền -->
-                    <div class="group card-initial animate-fade-in-up card-delay-1">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-red-500 to-red-600 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Cơ bản</span>
-                                        <span class="text-xs text-slate-400 mt-1">5-10 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">Mã Độc Tống Tiền</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Trải nghiệm bị tấn công bởi ransomware. Học cách nhận biết file độc hại và bảo vệ dữ liệu.</p>
-                                <button onclick="startScenario('ransomware')" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu trải nghiệm
-                                </button>
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <path d="M12 16v-4"></path>
-                                        <path d="M12 8h.01"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 2: Email Lừa Đảo -->
-                    <div class="group card-initial animate-fade-in-up card-delay-2">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Cơ bản</span>
-                                        <span class="text-xs text-slate-400 mt-1">8-12 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">Email Lừa Đảo</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Mô phỏng nhận email lừa đảo. Học cách phân tích và nhận biết email giả mạo.</p>
-                                <button onclick="startScenario('phishing')" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu trải nghiệm
-                                </button>
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <path d="M12 16v-4"></path>
-                                        <path d="M12 8h.01"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 3: Mạng Wi-Fi Công Cộng -->
-                    <div class="group card-initial animate-fade-in-up card-delay-3">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M5 13a10 10 0 0 1 14 0"></path>
-                                            <path d="M8.5 16.5a5 5 0 0 1 7 0"></path>
-                                            <path d="M2 8.82a15 15 0 0 1 20 0"></path>
-                                            <line x1="12" x2="12.01" y1="20" y2="20"></line>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Trung cấp</span>
-                                        <span class="text-xs text-slate-400 mt-1">10-15 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">Mạng Wi-Fi Công Cộng</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Trải nghiệm nguy hiểm khi dùng Wi-Fi công cộng. Hiểu về man-in-the-middle attacks.</p>
-                                <button onclick="startScenario('wifi')" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu trải nghiệm
-                                </button>
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <path d="M12 16v-4"></path>
-                                        <path d="M12 8h.01"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 4: Kỹ Thuật Xã Hội -->
-                    <div class="group card-initial animate-fade-in-up card-delay-4">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="9" cy="7" r="4"></circle>
-                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Trung cấp</span>
-                                        <span class="text-xs text-slate-400 mt-1">12-18 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">Kỹ Thuật Xã Hội</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Mô phỏng các cuộc gọi lừa đảo. Học cách nhận biết và đối phó với social engineering.</p>
-                                <button onclick="startScenario('social')" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu trải nghiệm
-                                </button>
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <path d="M12 16v-4"></path>
-                                        <path d="M12 8h.01"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 5: Phân Tích Mã Độc -->
-                    <div class="group card-initial animate-fade-in-up card-delay-5">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-600 to-gray-700 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v3"></path>
-                                            <polyline points="14 2 14 8 20 8"></polyline>
-                                            <path d="M5 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
-                                            <path d="m9 18-1.5-1.5"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Nâng cao</span>
-                                        <span class="text-xs text-slate-400 mt-1">15-20 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">Phân Tích Mã Độc</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Khám phá cách malware hoạt động. Học kỹ năng phân tích và ngăn chặn mã độc.</p>
-                                <button onclick="startScenario('malware')" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-gray-600 to-gray-700 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-white/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu trải nghiệm
-                                </button>
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <path d="M12 16v-4"></path>
-                                        <path d="M12 8h.01"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 6: Advanced Sandbox -->
-                    <div class="group card-initial animate-fade-in-up card-delay-6">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-purple-700 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-purple-600 to-purple-700 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Nâng cao</span>
-                                        <span class="text-xs text-slate-400 mt-1">20-30 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">Desktop Sandbox</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Môi trường desktop thực sự với hệ thống file, browser, terminal và network simulation.</p>
-                                <button onclick="startScenario('advanced')" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu trải nghiệm
-                                </button>
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-60">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <path d="M12 16v-4"></path>
-                                        <path d="M12 8h.01"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 7: Mobile Sandbox -->
-                    <div class="group card-initial animate-fade-in-up card-delay-6" style="animation-delay:0.7s">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-500 to-teal-600 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-green-500 to-teal-600 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
-                                            <path d="M12 18h.01"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Nâng cao</span>
-                                        <span class="text-xs text-slate-400 mt-1">15-25 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">Mobile Sandbox</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Giả lập điện thoại iPhone thực sự. Trải nghiệm các kịch bản lừa đảo qua SMS, cuộc gọi giả mạo, app giả và QR code độc hại.</p>
-                                <button onclick="startScenario('mobile')" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-green-500/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu trải nghiệm
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 8: APT Drill -->
-                    <div class="group card-initial animate-fade-in-up card-delay-6" style="animation-delay:0.8s">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-600 to-orange-600 p-1 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                            <div class="bg-slate-900 rounded-xl p-6 h-full">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="p-3 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 text-white group-hover:scale-110 transition-transform duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M12 8v4l3 3"/>
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-red-900 text-red-300">Chuyên sâu</span>
-                                        <span class="text-xs text-slate-400 mt-1">30-45 phút</span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-3">⚔️ Diễn Tập An Ninh Mạng — APT Kill Chain</h3>
-                                <p class="text-slate-300 text-sm mb-6 leading-relaxed">Mô phỏng chuỗi tấn công APT đầy đủ trên 3 máy (Client, Web Server, DB). Red Team + Blue Team + Terminal tương tác.</p>
-                                <button onclick="window.location.href='drill.html'" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25 group-hover:brightness-110">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                    </svg>
-                                    Bắt đầu diễn tập
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div><!-- /grid -->
-
-                <!-- Safety badge -->
-                <div class="mt-12 text-center card-initial animate-fade-in" style="animation-delay:0.7s">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/50 rounded-full text-slate-400 text-sm backdrop-blur-sm border border-slate-700/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-                        </svg>
-                        Môi trường mô phỏng an toàn - Không gây hại thực tế
-                    </div>
-                </div>
-
-                <!-- Bottom bar -->
-                <div class="fixed bottom-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-t border-slate-700 shadow-lg">
-                    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-                        <div class="flex items-center gap-2"></div>
-                        <div class="flex-1 text-center hidden md:block">
-                            <div class="text-slate-400 text-sm">Môi trường giả lập an ninh mạng - Học Tập &amp; Thực Hành An Toàn</div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button id="exitBtn" onclick="exitSandbox()" class="group flex items-center gap-2 px-4 py-2 bg-red-600/90 hover:bg-red-600 text-white rounded-lg border border-red-500/50 hover:border-red-400 transition-all duration-200 shadow-md hover:shadow-lg">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-200">
-                                    <path d="M18 6 6 18"></path>
-                                    <path d="m6 6 12 12"></path>
-                                </svg>
-                                <span class="text-sm font-medium hidden sm:inline">Thoát Sandbox</span>
-                                <span class="text-sm font-medium sm:hidden">Thoát</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+    <!-- 2: Phishing -->
+    <div class="mod-card fade-up" style="--card-color:#38bdf8;--card-glow:rgba(56,189,248,.07);--card-icon-bg:rgba(56,189,248,.1);--card-border:rgba(56,189,248,.2);--card-btn-bg:rgba(56,189,248,.1);--card-btn-color:#38bdf8;--card-btn-border:rgba(56,189,248,.25);--card-btn-hover:rgba(56,189,248,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">📧</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-basic">Cơ bản</span>
+          <span class="mod-card-time">8–12 phút</span>
         </div>
-    </main>
+      </div>
+      <div class="mod-card-title">Email Lừa Đảo</div>
+      <div class="mod-card-desc">Mô phỏng nhận email phishing giả mạo cơ quan. Học cách phân tích header, kiểm tra domain và nhận biết dấu hiệu giả mạo.</div>
+      <button class="mod-card-btn" onclick="startScenario('phishing')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="relative bg-brand-primary text-white overflow-hidden border-t-4" style="background-color:#004b8d; border-color:#003366;">
-        <!-- Background pattern -->
-        <div class="absolute inset-0 z-0 opacity-10 pointer-events-none overflow-hidden">
-            <img alt="Trong Dong Pattern" class="object-cover object-center w-full h-full" src="/assets/images/trongdong.jpg"/>
+    <!-- 3: WiFi -->
+    <div class="mod-card fade-up" style="--card-color:#fb923c;--card-glow:rgba(251,146,60,.07);--card-icon-bg:rgba(251,146,60,.1);--card-border:rgba(251,146,60,.2);--card-btn-bg:rgba(251,146,60,.1);--card-btn-color:#fb923c;--card-btn-border:rgba(251,146,60,.25);--card-btn-hover:rgba(251,146,60,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">📶</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-mid">Trung cấp</span>
+          <span class="mod-card-time">10–15 phút</span>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+      </div>
+      <div class="mod-card-title">Mạng Wi-Fi Công Cộng</div>
+      <div class="mod-card-desc">Mô phỏng tấn công Man-in-the-Middle trên Wi-Fi công cộng. Hiểu vì sao không nên dùng Wi-Fi miễn phí cho giao dịch nhạy cảm.</div>
+      <button class="mod-card-btn" onclick="startScenario('wifi')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
 
-                <!-- Col 1: Brand -->
-                <div class="lg:col-span-1">
-                    <div class="flex flex-col items-start">
-                        <div class="w-20 h-20 relative mb-4">
-                            <img alt="Logo" class="object-contain w-full h-full" src="/assets/images/logo.png"
-                                 onerror="this.style.background='rgba(255,255,255,0.1)';this.style.borderRadius='50%'"/>
-                        </div>
-                        <h3 class="text-lg font-extrabold uppercase leading-tight text-white mb-2">Môi trường giả lập phòng chống lừa đảo – Công an tỉnh Quảng Ninh</h3>
-                        <p class="text-xs text-white/80 font-medium tracking-wide mb-4 leading-relaxed">Trang bị kiến thức, kỹ năng nhận diện và phòng tránh các hình thức lừa đảo trực tuyến. Cập nhật cảnh báo mới nhất từ cơ quan chức năng.</p>
-                        <div class="flex gap-3">
-                            <a href="https://www.facebook.com/profile.php?id=100072392139440" target="_blank" rel="noopener noreferrer"
-                               class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white text-white hover:text-blue-700 transition-all duration-300 shadow-sm border border-white/20 hover:border-transparent"
-                               title="Facebook">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Col 2: Thông tin liên hệ -->
-                <div class="lg:col-span-1">
-                    <h4 class="text-sm font-bold uppercase tracking-wider text-white border-b-2 border-white/30 pb-2 mb-6 inline-block">Thông tin liên hệ</h4>
-                    <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 mt-0.5 mr-3 flex-shrink-0">
-                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            <span class="text-sm text-gray-100">Số 45 đường Hải Thượng Lãn Ông, phường Phố Hiến, tỉnh Quảng Ninh</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 mr-3 flex-shrink-0">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                            </svg>
-                            <a href="tel:02213xxxxxx" class="text-sm text-gray-100 hover:text-white transition-colors">0221.3.xxx.xxx</a>
-                        </li>
-                        <li class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 mr-3 flex-shrink-0">
-                                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                            </svg>
-                            <a href="mailto:doianninhmanghy@gmail.com" class="text-sm text-gray-100 hover:text-white transition-colors">doianninhmanghy@gmail.com</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Col 3: Liên kết -->
-                <div class="lg:col-span-1">
-                    <h4 class="text-sm font-bold uppercase tracking-wider text-white border-b-2 border-white/30 pb-2 mb-6 inline-block">Liên kết</h4>
-                    <ul class="space-y-3">
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Trang chủ</span></a></li>
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/news"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Tin tức &amp; Cảnh báo</span></a></li>
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/report"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Báo cáo lừa đảo</span></a></li>
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/games"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Trò chơi trắc nghiệm</span></a></li>
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/tra-cuu"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Tra cứu</span></a></li>
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/statistics"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Thống kê</span></a></li>
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/feedback"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Góp ý</span></a></li>
-                        <li><a class="group flex items-center text-sm text-gray-100 hover:text-white transition-colors" href="/about"><span class="mr-2 text-white/80">—</span><span class="group-hover:translate-x-1 transition-transform inline-block">Giới thiệu</span></a></li>
-                    </ul>
-                </div>
-
-                <!-- Col 4: Khẩn cấp -->
-                <div class="lg:col-span-1">
-                    <h4 class="text-sm font-bold uppercase tracking-wider text-white border-b-2 border-white/30 pb-2 mb-6 inline-block">Khẩn cấp</h4>
-                    <div class="bg-white/10 border border-white/30 p-5 rounded-lg">
-                        <div class="flex items-center mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white mr-3 animate-pulse-slow">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-                            </svg>
-                            <span class="text-sm font-bold text-white uppercase">Đội phản ứng nhanh</span>
-                        </div>
-                        <p class="text-xs text-gray-200 mb-3">Hỗ trợ khẩn cấp 24/7 trong các trường hợp nghi ngờ lừa đảo trực tuyến.</p>
-                        <a href="tel:113" class="block text-center bg-white hover:bg-gray-100 font-bold py-2 rounded transition-colors" style="color:#004b8d;">GỌI NGAY: 113, 114</a>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Bottom copyright -->
-            <div class="border-t border-white/20 pt-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
-                    <div class="text-center md:text-left text-gray-200/90">
-                        <p class="font-medium">© 2026 Phòng An ninh mạng &amp; PCTP sử dụng CNC, Công an tỉnh Quảng Ninh</p>
-                        <p class="text-gray-200/70 mt-1">Khi sử dụng lại, đề nghị ghi rõ nguồn: "Môi trường giả lập an ninh mạng - Công an tỉnh Quảng Ninh"</p>
-                    </div>
-                    <div class="flex flex-wrap items-center justify-center md:justify-end gap-2 md:gap-4 text-gray-200/80">
-                        <a class="hover:text-white transition-colors whitespace-nowrap" href="/privacy">Chính sách bảo mật</a>
-                        <span class="text-white/30 hidden md:inline">|</span>
-                        <a class="hover:text-white transition-colors whitespace-nowrap" href="/cookies">Chính sách cookie</a>
-                        <span class="text-white/30 hidden md:inline">|</span>
-                        <a class="hover:text-white transition-colors whitespace-nowrap" href="/terms">Điều khoản sử dụng</a>
-                    </div>
-                </div>
-            </div>
+    <!-- 4: Social Engineering -->
+    <div class="mod-card fade-up" style="--card-color:#a78bfa;--card-glow:rgba(167,139,250,.07);--card-icon-bg:rgba(167,139,250,.1);--card-border:rgba(167,139,250,.2);--card-btn-bg:rgba(167,139,250,.1);--card-btn-color:#a78bfa;--card-btn-border:rgba(167,139,250,.25);--card-btn-hover:rgba(167,139,250,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🎭</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-mid">Trung cấp</span>
+          <span class="mod-card-time">12–18 phút</span>
         </div>
-    </footer>
+      </div>
+      <div class="mod-card-title">Kỹ Thuật Xã Hội</div>
+      <div class="mod-card-desc">Mô phỏng cuộc gọi lừa đảo giả danh công an, ngân hàng. Luyện cách nhận biết và đối phó với Social Engineering.</div>
+      <button class="mod-card-btn" onclick="startScenario('social')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 5: Malware Analysis -->
+    <div class="mod-card fade-up" style="--card-color:#94a3b8;--card-glow:rgba(148,163,184,.05);--card-icon-bg:rgba(148,163,184,.08);--card-border:rgba(148,163,184,.15);--card-btn-bg:rgba(148,163,184,.08);--card-btn-color:#94a3b8;--card-btn-border:rgba(148,163,184,.2);--card-btn-hover:rgba(148,163,184,.15)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🔍</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-adv">Nâng cao</span>
+          <span class="mod-card-time">15–20 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Phân Tích Mã Độc</div>
+      <div class="mod-card-desc">Khám phá cách malware hoạt động trong hệ thống. Học kỹ năng phân tích hành vi và ngăn chặn mã độc hiệu quả.</div>
+      <button class="mod-card-btn" onclick="startScenario('malware')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 6: Desktop Sandbox -->
+    <div class="mod-card fade-up" style="--card-color:#a78bfa;--card-glow:rgba(167,139,250,.07);--card-icon-bg:rgba(167,139,250,.1);--card-border:rgba(167,139,250,.2);--card-btn-bg:rgba(167,139,250,.1);--card-btn-color:#a78bfa;--card-btn-border:rgba(167,139,250,.25);--card-btn-hover:rgba(167,139,250,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🖥️</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-adv">Nâng cao</span>
+          <span class="mod-card-time">20–30 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Desktop Sandbox</div>
+      <div class="mod-card-desc">Môi trường desktop mô phỏng với hệ thống file, trình duyệt, terminal và network simulation đầy đủ.</div>
+      <button class="mod-card-btn" onclick="startScenario('advanced')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 7: Mobile Sandbox -->
+    <div class="mod-card fade-up" style="--card-color:#00d084;--card-glow:rgba(0,208,132,.07);--card-icon-bg:rgba(0,208,132,.1);--card-border:rgba(0,208,132,.2);--card-btn-bg:rgba(0,208,132,.1);--card-btn-color:#00d084;--card-btn-border:rgba(0,208,132,.25);--card-btn-hover:rgba(0,208,132,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">📱</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-adv">Nâng cao</span>
+          <span class="mod-card-time">15–25 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Mobile Sandbox</div>
+      <div class="mod-card-desc">Giả lập điện thoại thông minh. Trải nghiệm lừa đảo qua SMS, cuộc gọi giả mạo, ứng dụng giả và mã QR độc hại.</div>
+      <button class="mod-card-btn" onclick="startScenario('mobile')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 8: APT Drill -->
+    <div class="mod-card fade-up" style="--card-color:#f85149;--card-glow:rgba(248,81,73,.07);--card-icon-bg:rgba(248,81,73,.1);--card-border:rgba(248,81,73,.2);--card-btn-bg:rgba(248,81,73,.1);--card-btn-color:#f85149;--card-btn-border:rgba(248,81,73,.25);--card-btn-hover:rgba(248,81,73,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">⚔️</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-expert">Chuyên sâu</span>
+          <span class="mod-card-time">30–45 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Diễn Tập An Ninh Mạng — APT Kill Chain</div>
+      <div class="mod-card-desc">Mô phỏng toàn bộ chuỗi tấn công APT trên 3 máy chủ. Chế độ Red Team + Blue Team, terminal tương tác và quiz kiến thức.</div>
+      <button class="mod-card-btn" onclick="window.location.href='drill.html'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu diễn tập
+      </button>
+    </div>
+
+  </div><!-- /modules-grid -->
+</section>
+
+<!-- FOOTER -->
+<footer id="foot-bar">
+  <div class="foot-inner">
+    <div class="foot-safe">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+      Môi trường mô phỏng an toàn — không gây hại thực tế
+    </div>
+    <div class="foot-copy">© 2026 Phòng An ninh mạng &amp; PCTP sử dụng CNC · Công an tỉnh Quảng Ninh</div>
+  </div>
+</footer>
+
+<script>
+// Fade-up on scroll
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+},{threshold:.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
 
 <!-- ═══════════════════════════════════════════════════════
      DESKTOP SANDBOX — Desktop giả lập
@@ -854,7 +664,7 @@
                 <div style="padding:18px;max-width:720px;margin:0 auto">
                     <h2 style="color:#333;margin-bottom:14px;font-size:16px">Tin tức nổi bật</h2>
                     <div style="border-bottom:1px solid #eee;padding-bottom:14px;margin-bottom:14px"><div style="font-size:14px;color:#222;font-weight:600;margin-bottom:4px">Hàng nghìn người mất tiền vì lừa đảo trực tuyến qua mạng xã hội</div><div style="font-size:11px;color:#999">2 giờ trước • Công nghệ</div></div>
-                    <div style="border-bottom:1px solid #eee;padding-bottom:14px;margin-bottom:14px"><div style="font-size:14px;color:#222;font-weight:600;margin-bottom:4px">Không nhấp vào link lạ trong email — Cục An toàn thông tin cảnh báo</div><div style="font-size:11px;color:#999">4 giờ trước • An ninh</div></div>
+                    <div style="border-bottom:1px solid #eee;padding-bottom:14px;margin-bottom:14px"><div style="font-size:14px;color:#222;font-weight:600;margin-bottom:4px">Không nhấp vào link lạ trong email</div><div style="font-size:11px;color:#999">4 giờ trước • An ninh</div></div>
                     <div><div style="font-size:14px;color:#222;font-weight:600;margin-bottom:4px">5 dấu hiệu nhận biết website giả mạo ngân hàng</div><div style="font-size:11px;color:#999">6 giờ trước • Kinh tế</div></div>
                 </div>
             </div>
@@ -2232,7 +2042,7 @@ function advRwLearn() {
     });
     advLrnShow('🛡️','Phòng chống Ransomware',
         'Ransomware mã hóa toàn bộ dữ liệu và đòi tiền chuộc. Lây lan qua file đính kèm email, phần mềm crack và link độc hại.',
-        ['KHÔNG mở file .exe từ nguồn không rõ','File PDF/Word thật KHÔNG BAO GIỜ là .exe','Backup theo quy tắc 3-2-1 (3 bản, 2 phương tiện, 1 offline)','Nếu bị nhiễm: ngắt mạng NGAY, KHÔNG trả tiền','Đường dây: Cục An toàn thông tin 1800 1533 (miễn phí)']);
+        ['KHÔNG mở file .exe từ nguồn không rõ','File PDF/Word thật KHÔNG BAO GIỜ là .exe','Backup theo quy tắc 3-2-1 (3 bản, 2 phương tiện, 1 offline)','Nếu bị nhiễm: ngắt mạng NGAY, KHÔNG trả tiền','Đường dây: Phòng An ninh mạng và PCTP sử dụng CNC - Công an tỉnh Quảng Ninh - 069.247.247']);
 }
 function advP(n){return String(n).padStart(2,'0');}
 
