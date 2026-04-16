@@ -15,8 +15,7 @@
   --green-dim:rgba(0,255,136,.07);--red-dim:rgba(255,59,59,.07);
   --cyan:#22d3ee;--purple:#a78bfa;
 }
-html{scroll-behavior:auto}
-html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;font-size:15px}
+html,body{height:100%;font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;font-size:15px}
 .mono{font-family:'Share Tech Mono',monospace}
 
 /* ── HEADER ── */
@@ -28,11 +27,11 @@ html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);c
 #btn-back:hover{border-color:var(--green);color:var(--green)}
 
 /* ── SCREENS ── */
-.screen{display:none}
+.screen{display:none;position:fixed;top:52px;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden}
 .screen.active{display:block}
 
 /* ══ INTRO ══ */
-#scr-intro{min-height:calc(100vh - 52px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
+#scr-intro{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
 #scr-intro.active{display:flex}
 .intro-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.25);border-radius:20px;padding:5px 16px;font-size:11px;font-family:'Share Tech Mono',monospace;color:var(--red);margin-bottom:20px;animation:pulse-red 2s infinite}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 0 rgba(255,59,59,0)}50%{box-shadow:0 0 16px rgba(255,59,59,.25)}}
@@ -900,12 +899,13 @@ html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);c
 //  SCREEN MANAGEMENT
 // ═══════════════════════════════════════
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');});
-  document.getElementById(id).classList.add('active');
-  requestAnimationFrame(()=>{
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active');
+    s.scrollTop = 0;
   });
+  const next = document.getElementById(id);
+  next.scrollTop = 0;
+  next.classList.add('active');
 }
 
 // ═══════════════════════════════════════
