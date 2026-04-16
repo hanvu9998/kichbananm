@@ -15,6 +15,7 @@
   --green-dim:rgba(0,255,136,.07);--red-dim:rgba(255,59,59,.07);
   --cyan:#22d3ee;--purple:#a78bfa;
 }
+html{scroll-behavior:auto}
 html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;font-size:15px}
 .mono{font-family:'Share Tech Mono',monospace}
 
@@ -901,7 +902,10 @@ html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);c
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
+  requestAnimationFrame(()=>{
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  });
 }
 
 // ═══════════════════════════════════════
