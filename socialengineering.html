@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kỹ Thuật Xã Hội — Mô phỏng lừa đảo | ANM&PCTP Quảng Ninh</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0d14;--bg2:#0f1420;--bg3:#151c2e;--bg4:#1a2235;
+  --border:#1e2d4a;--border2:#243352;
+  --text:#c8d8f0;--text2:#7a93b8;--text3:#3d5070;
+  --green:#00ff88;--green-dim:rgba(0,255,136,.08);--green-glow:rgba(0,255,136,.3);
+  --red:#ff3b3b;--red-dim:rgba(255,59,59,.08);
+  --amber:#ffaa00;--amber-dim:rgba(255,170,0,.08);
+  --blue:#4af;--cyan:#22d3ee;--purple:#a78bfa;
+}
+html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+.mono{font-family:'Share Tech Mono',monospace}
+
+/* ── HEADER ── */
+#hdr{position:sticky;top:0;z-index:200;background:rgba(10,13,20,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;height:52px;gap:12px}
+.hdr-logo{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--green),#22d3ee);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-title{font-weight:700;font-size:13px;color:#fff;line-height:1.2}
+.hdr-sub{font-size:10px;color:var(--text3);font-family:'Share Tech Mono',monospace}
+#btn-back{margin-left:auto;display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:.15s}
+#btn-back:hover{border-color:var(--green);color:var(--green)}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:calc(100vh - 52px)}
+.screen.active{display:block}
+
+/* ══ LANDING ══ */
+#scr-landing{padding:40px 20px 60px;max-width:860px;margin:0 auto}
+.landing-hero{text-align:center;margin-bottom:40px}
+.landing-badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-dim);border:1px solid rgba(0,255,136,.2);border-radius:20px;padding:5px 16px;font-size:11px;font-family:'Share Tech Mono',monospace;color:var(--green);margin-bottom:20px}
+.landing-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+.landing-h1{font-size:clamp(22px,4vw,36px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:12px}
+.landing-h1 span{color:var(--green)}
+.landing-desc{font-size:14px;color:var(--text2);line-height:1.7;max-width:600px;margin:0 auto}
+.scenarios-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:40px}
+.sc-card{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:22px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.sc-card:hover{transform:translateY(-3px);border-color:var(--card-color,var(--green));box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.sc-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 0%,var(--card-glow,rgba(0,255,136,.04)),transparent 60%);pointer-events:none}
+.sc-card-icon{font-size:32px;margin-bottom:14px}
+.sc-card-tag{font-size:10px;font-family:'Share Tech Mono',monospace;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:10px}
+.sc-card h3{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.3}
+.sc-card p{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:16px}
+.sc-card-btn{width:100%;padding:8px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s}
+.warning-box{background:rgba(255,170,0,.06);border:1px solid rgba(255,170,0,.25);border-radius:10px;padding:16px 20px;display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+.warning-box-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.warning-box-text{font-size:12.5px;color:var(--text2);line-height:1.6}
+.warning-box-text strong{color:var(--amber)}
+
+/* ══ INTRO ══ */
+#scr-intro{padding:30px 20px;max-width:700px;margin:0 auto}
+.intro-back{display:inline-flex;align-items:center;gap:6px;color:var(--text3);font-size:12px;cursor:pointer;margin-bottom:24px;transition:.15s}
+.intro-back:hover{color:var(--green)}
+.intro-card{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:28px;margin-bottom:20px}
+.intro-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;border:2px solid var(--border2)}
+.intro-name{text-align:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:4px}
+.intro-role{text-align:center;font-size:12px;color:var(--text2);margin-bottom:20px;font-family:'Share Tech Mono',monospace}
+.intro-section{margin-bottom:14px}
+.intro-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-family:'Share Tech Mono',monospace}
+.intro-value{font-size:13px;color:var(--text2);line-height:1.6}
+.intro-techniques{display:flex;flex-wrap:wrap;gap:6px}
+.tech-chip{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;font-family:'Share Tech Mono',monospace}
+.objectives{list-style:none}
+.objectives li{font-size:13px;color:var(--text2);padding:4px 0 4px 20px;position:relative;line-height:1.5}
+.objectives li::before{content:'▸';position:absolute;left:0;color:var(--green)}
+#btn-start-scenario{width:100%;padding:14px;border-radius:10px;background:var(--green);color:#000;border:none;font-size:15px;font-weight:800;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s}
+#btn-start-scenario:hover{background:#00e07a;box-shadow:0 0 20px var(--green-glow)}
+
+/* ══ PHONE CALL ══ */
+#scr-call{display:none;align-items:center;justify-content:center;min-height:calc(100vh - 52px);padding:20px}
+#scr-call.active{display:flex}
+.phone-frame{width:320px;max-width:100%;background:#0d0d0d;border-radius:40px;overflow:hidden;border:2px solid #222;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.phone-notch{height:28px;background:#0d0d0d;display:flex;align-items:center;justify-content:center}
+.phone-notch-bar{width:100px;height:5px;background:#222;border-radius:3px}
+.phone-screen{background:linear-gradient(160deg,#0d1b2a,#1a0a2e);padding:30px 24px 24px;text-align:center;min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
+.call-header-lbl{font-size:11px;color:#aaa;font-family:'Share Tech Mono',monospace;margin-bottom:8px}
+.call-number{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;font-family:'Share Tech Mono',monospace;letter-spacing:2px}
+.call-name{font-size:13px;color:#888;margin-bottom:30px}
+.call-avatar-wrap{position:relative;margin-bottom:24px}
+.call-avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#2d1b4e);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto;border:3px solid rgba(255,255,255,.1)}
+.call-ring{position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(255,255,255,.15);animation:ring-pulse 1.5s ease-out infinite}
+.call-ring2{position:absolute;inset:-18px;border-radius:50%;border:1px solid rgba(255,255,255,.07);animation:ring-pulse 1.5s ease-out .5s infinite}
+@keyframes ring-pulse{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.1);opacity:0}}
+.call-status{font-size:13px;color:#aaa;margin-bottom:10px}
+.call-ringing-txt{font-size:11px;color:rgba(255,255,255,.4);font-family:'Share Tech Mono',monospace;animation:blink 1s infinite}
+.call-btns{display:flex;justify-content:space-around;width:100%;padding:0 20px;margin-top:10px}
+.call-btn{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;transition:.15s}
+.call-btn-label{font-size:10px;color:rgba(255,255,255,.5);margin-top:6px;font-family:'Share Tech Mono',monospace}
+.call-decline{background:rgba(255,59,59,.2);color:var(--red)}
+.call-decline:hover{background:rgba(255,59,59,.35)}
+.call-answer{background:rgba(0,220,100,.2);color:#00dc64}
+.call-answer:hover{background:rgba(0,220,100,.35)}
+.phone-home{height:32px;background:#0d0d0d;display:flex;align-items:center;justify-content:center}
+.phone-home-bar{width:60px;height:4px;background:#333;border-radius:2px}
+@keyframes phone-shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-3deg)}40%{transform:rotate(3deg)}60%{transform:rotate(-2deg)}80%{transform:rotate(2deg)}}
+.phone-ringing{animation:phone-shake .4s ease-in-out infinite}
+.call-missed{font-size:11px;color:var(--red);font-family:'Share Tech Mono',monospace;margin-top:8px;opacity:0;transition:.3s}
+.call-missed.show{opacity:1}
+
+/* ══ CONVERSATION ══ */
+#scr-conv{padding:0;display:flex;flex-direction:column;min-height:calc(100vh - 52px)}
+.conv-topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:52px;z-index:100}
+.conv-caller-avatar{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.conv-caller-name{font-size:13px;font-weight:700;color:#fff}
+.conv-caller-sub{font-size:10px;color:var(--text3);font-family:'Share Tech Mono',monospace}
+.conv-score-wrap{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.score-label{font-size:9px;color:var(--text3);font-family:'Share Tech Mono',monospace}
+.score-bar-outer{width:80px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.score-bar-inner{height:100%;border-radius:3px;transition:width .5s,background .5s}
+.score-val{font-size:10px;font-family:'Share Tech Mono',monospace;font-weight:700}
+
+.conv-body{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:12px;max-width:700px;margin:0 auto;width:100%}
+.bubble-row{display:flex;gap:10px;align-items:flex-end}
+.bubble-row.user{flex-direction:row-reverse}
+.bubble-avatar{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.bubble{max-width:75%;padding:11px 14px;border-radius:14px;font-size:13.5px;line-height:1.6;position:relative}
+.bubble.scammer{background:var(--bg3);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text)}
+.bubble.system{background:rgba(255,170,0,.07);border:1px solid rgba(255,170,0,.2);border-radius:10px;max-width:90%;color:var(--amber);font-size:12px;font-style:italic;align-self:center}
+.bubble.user-choice{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.2);border-bottom-right-radius:4px;color:#e8ffe8}
+.bubble-time{font-size:9px;color:var(--text3);margin-top:4px;font-family:'Share Tech Mono',monospace}
+.emotion-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:'Share Tech Mono',monospace;padding:2px 7px;border-radius:8px;margin-bottom:6px;font-weight:700}
+.se-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.se-tag{font-size:9px;font-family:'Share Tech Mono',monospace;padding:2px 6px;border-radius:4px;cursor:pointer;border:1px solid;transition:.15s}
+.se-tag:hover{filter:brightness(1.3)}
+
+.choices-area{padding:14px 16px;background:var(--bg2);border-top:1px solid var(--border);max-width:700px;margin:0 auto;width:100%}
+.choices-label{font-size:10px;color:var(--text3);font-family:'Share Tech Mono',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px}
+.choice-btn{width:100%;text-align:left;padding:11px 14px;border-radius:8px;border:1px solid;margin-bottom:8px;cursor:pointer;font-size:13px;font-family:'Exo 2',sans-serif;font-weight:500;transition:.15s;line-height:1.5;display:flex;align-items:flex-start;gap:10px}
+.choice-btn:last-child{margin-bottom:0}
+.choice-btn:hover{filter:brightness(1.15);transform:translateX(2px)}
+.choice-btn .choice-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.choice-btn.comply{background:rgba(255,59,59,.08);border-color:rgba(255,59,59,.3);color:#ffb3b3}
+.choice-btn.question{background:rgba(255,170,0,.08);border-color:rgba(255,170,0,.3);color:#ffe0a0}
+.choice-btn.resist{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.3);color:#b0ffdb}
+.choice-btn.correct{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.3);color:#b0ffdb}
+
+/* ══ SE ANALYSIS POPUP ══ */
+#se-popup{position:fixed;inset:0;z-index:500;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+#se-popup.show{display:flex}
+.se-popup-panel{background:var(--bg2);border:1px solid var(--border2);border-radius:18px 18px 0 0;padding:24px 20px 32px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.se-popup-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
+.se-popup-title{font-size:12px;color:var(--text3);font-family:'Share Tech Mono',monospace;margin-bottom:14px;text-transform:uppercase;letter-spacing:.8px}
+.se-tech-card{background:var(--bg3);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid var(--tech-color,var(--amber))}
+.se-tech-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px}
+.se-tech-desc{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.se-tech-section{margin-bottom:10px}
+.se-tech-section-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;font-family:'Share Tech Mono',monospace}
+.se-tech-list{list-style:none}
+.se-tech-list li{font-size:12px;color:var(--text2);padding:2px 0 2px 14px;position:relative;line-height:1.5}
+.se-tech-list li::before{content:'•';position:absolute;left:0;color:var(--tech-color,var(--amber))}
+.consequence-box{background:rgba(255,59,59,.07);border:1px solid rgba(255,59,59,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#ffb3b3;margin-bottom:14px}
+.consequence-box.good{background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.2);color:#b0ffdb}
+#se-popup-close{width:100%;padding:12px;border-radius:8px;background:var(--green);color:#000;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;margin-top:4px}
+
+/* ══ RESULTS ══ */
+#scr-result{padding:30px 20px 60px;max-width:700px;margin:0 auto}
+.result-hero{text-align:center;margin-bottom:30px}
+.result-icon-wrap{width:90px;height:90px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:40px;border:3px solid}
+.result-title{font-size:26px;font-weight:800;margin-bottom:8px}
+.result-subtitle{font-size:14px;color:var(--text2);line-height:1.6;max-width:500px;margin:0 auto 20px}
+.score-display{display:inline-flex;flex-direction:column;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:16px 30px;margin-bottom:30px}
+.score-num{font-size:42px;font-weight:800;font-family:'Share Tech Mono',monospace}
+.score-lbl{font-size:11px;color:var(--text3);font-family:'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.8px}
+.lesson-box{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:16px}
+.lesson-box h3{font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.lesson-box p, .lesson-box li{font-size:13px;color:var(--text2);line-height:1.7}
+.lesson-box ul{list-style:none;padding:0}
+.lesson-box li{padding:4px 0 4px 18px;position:relative}
+.lesson-box li::before{content:'▸';position:absolute;left:0;color:var(--green)}
+.red-flags{background:rgba(255,59,59,.06);border:1px solid rgba(255,59,59,.2);border-radius:12px;padding:20px;margin-bottom:16px}
+.red-flags h3{font-size:13px;font-weight:700;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.red-flag-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,59,59,.1)}
+.red-flag-item:last-child{border-bottom:none}
+.red-flag-num{width:20px;height:20px;border-radius:50%;background:rgba(255,59,59,.15);border:1px solid rgba(255,59,59,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--red);flex-shrink:0;margin-top:1px;font-family:'Share Tech Mono',monospace}
+.red-flag-text{font-size:12.5px;color:var(--text2);line-height:1.5}
+.golden-rule{background:rgba(0,255,136,.05);border:2px solid rgba(0,255,136,.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:20px}
+.golden-rule p{font-size:15px;font-weight:700;color:var(--green);line-height:1.7}
+.hotline-box{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:16px 20px;margin-bottom:20px}
+.hotline-box h3{font-size:12px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.6px}
+.hotline-item{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.hotline-item:last-child{border-bottom:none}
+.hotline-name{font-size:12.5px;color:var(--text2)}
+.hotline-num{font-size:14px;font-weight:700;color:var(--green);font-family:'Share Tech Mono',monospace}
+.result-btns{display:flex;gap:12px;flex-wrap:wrap}
+.result-btns button{flex:1;min-width:140px;padding:12px;border-radius:8px;border:1px solid;font-size:13px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s}
+.btn-retry{background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.3);color:var(--green)}
+.btn-retry:hover{background:rgba(0,255,136,.2)}
+.btn-home{background:var(--bg3);border-color:var(--border2);color:var(--text2)}
+.btn-home:hover{border-color:var(--green);color:var(--green)}
+.btn-next{background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.3);color:var(--blue)}
+.btn-next:hover{background:rgba(56,189,248,.2)}
+
+/* ── UTILS ── */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .35s ease forwards}
+.typing-dots::after{content:'...';animation:blink 1.2s infinite}
+
+@media(max-width:500px){
+  .choice-btn{font-size:12px;padding:10px 12px}
+  .bubble{max-width:88%}
+  .conv-score-wrap{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hdr">
+  <div class="hdr-logo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+  </div>
+  <div>
+    <div class="hdr-title">Kỹ Thuật Xã Hội — Social Engineering</div>
+    <div class="hdr-sub mono">ANM&amp;PCTP · CA tỉnh Quảng Ninh</div>
+  </div>
+  <a id="btn-back" href="index.html">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Trang chủ
+  </a>
+</div>
+
+<!-- SCREEN: LANDING -->
+<div id="scr-landing" class="screen active">
+  <div class="landing-hero">
+    <div class="landing-badge"><div class="landing-badge-dot"></div> MÔ PHỎNG TƯƠNG TÁC</div>
+    <h1 class="landing-h1">Nhận diện &amp; Đối phó<br><span>Lừa đảo Xã hội</span></h1>
+    <p class="landing-desc">Bạn sẽ đóng vai nạn nhân và trải qua hội thoại có thật với kẻ lừa đảo. Mỗi quyết định dẫn đến hậu quả khác nhau. Luyện phản xạ an toàn trước khi gặp tình huống thực tế.</p>
+  </div>
+  <div class="warning-box">
+    <div class="warning-box-icon">⚠️</div>
+    <div class="warning-box-text"><strong>Mục đích giáo dục:</strong> Các kịch bản dưới đây tái hiện thủ đoạn lừa đảo thực tế nhằm giúp bạn nhận diện và phòng chống. Mọi tên người, số điện thoại, tên tổ chức trong kịch bản đều là hư cấu phục vụ diễn tập.</div>
+  </div>
+  <div class="scenarios-grid" id="scenario-cards"></div>
+  <div class="warning-box" style="border-color:rgba(0,255,136,.25);background:rgba(0,255,136,.04)">
+    <div class="warning-box-icon">📞</div>
+    <div class="warning-box-text" style="color:var(--text2)"><strong style="color:var(--green)">Nhớ:</strong> Cơ quan Công an, Viện Kiểm sát, Tòa án, Ngân hàng <strong style="color:var(--green)">KHÔNG BAO GIỜ</strong> yêu cầu chuyển tiền, cung cấp OTP hay mật khẩu qua điện thoại.</div>
+  </div>
+</div>
+
+<!-- SCREEN: INTRO -->
+<div id="scr-intro" class="screen">
+  <div class="intro-back" onclick="showScreen('scr-landing')">← Chọn kịch bản khác</div>
+  <div class="intro-card" id="intro-content"></div>
+  <button id="btn-start-scenario" onclick="startScenario()">▶ Bắt đầu kịch bản</button>
+</div>
+
+<!-- SCREEN: CALL -->
+<div id="scr-call" class="screen">
+  <div class="phone-frame phone-ringing" id="phone-frame">
+    <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+    <div class="phone-screen">
+      <div>
+        <div class="call-header-lbl mono">CUỘC GỌI ĐẾN</div>
+        <div class="call-number mono" id="call-number">0243.xxx.xxxx</div>
+        <div class="call-name" id="call-name">Số lạ</div>
+      </div>
+      <div class="call-avatar-wrap">
+        <div class="call-ring"></div>
+        <div class="call-ring2"></div>
+        <div class="call-avatar" id="call-avatar">📞</div>
+      </div>
+      <div>
+        <div class="call-status" id="call-status">Đang đổ chuông...</div>
+        <div class="call-ringing-txt mono">● ● ●</div>
+        <div class="call-missed mono" id="call-missed"></div>
+      </div>
+      <div class="call-btns">
+        <div style="text-align:center">
+          <button class="call-btn call-decline" onclick="callDecline()" id="btn-decline">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M23.15 6.47l-2.6-2.6a2 2 0 00-2.82 0l-2.58 2.6c-.38.39-.38 1.02 0 1.41l1.85 1.85-4.14 4.14-1.85-1.85a1 1 0 00-1.41 0L7 14.6a2 2 0 000 2.83l2.6 2.58a3.5 3.5 0 004.9 0l9.6-9.6a3.5 3.5 0 00-.95-3.94z"/></svg>
+          </button>
+          <div class="call-btn-label mono">Từ chối</div>
+        </div>
+        <div style="text-align:center">
+          <button class="call-btn call-answer" onclick="callAnswer()" id="btn-answer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02L6.6 10.8z"/></svg>
+          </button>
+          <div class="call-btn-label mono">Bắt máy</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-home"><div class="phone-home-bar"></div></div>
+  </div>
+</div>
+
+<!-- SCREEN: CONVERSATION -->
+<div id="scr-conv" class="screen">
+  <div class="conv-topbar">
+    <div class="conv-caller-avatar" id="conv-avatar">👤</div>
+    <div>
+      <div class="conv-caller-name" id="conv-name">—</div>
+      <div class="conv-caller-sub mono" id="conv-sub">—</div>
+    </div>
+    <div class="conv-score-wrap">
+      <div class="score-label mono">CHỈ SỐ AN TOÀN</div>
+      <div class="score-bar-outer"><div class="score-bar-inner" id="score-bar" style="width:60%;background:var(--amber)"></div></div>
+      <div class="score-val" id="score-val" style="color:var(--amber)">60</div>
+    </div>
+  </div>
+  <div class="conv-body" id="conv-body"></div>
+  <div class="choices-area">
+    <div class="choices-label mono">— Bạn phản ứng thế nào? —</div>
+    <div id="choices-list"></div>
+  </div>
+</div>
+
+<!-- SCREEN: RESULT -->
+<div id="scr-result" class="screen">
+  <div class="result-hero">
+    <div class="result-icon-wrap" id="result-icon-wrap"></div>
+    <div class="result-title" id="result-title"></div>
+    <div class="result-subtitle" id="result-subtitle"></div>
+  </div>
+  <div class="score-display">
+    <div class="score-num" id="result-score-num">—</div>
+    <div class="score-lbl mono">ĐIỂM AN TOÀN CUỐI</div>
+  </div>
+  <div id="result-body"></div>
+  <div class="golden-rule">
+    <p>🛡️ Cơ quan Công an, Viện Kiểm sát, Tòa án, Ngân hàng<br><strong>KHÔNG BAO GIỜ</strong> yêu cầu chuyển tiền,<br>cung cấp OTP hay mật khẩu qua điện thoại.</p>
+  </div>
+  <div class="hotline-box">
+    <h3>📞 BÁO CÁO LỪA ĐẢO</h3>
+    <div class="hotline-item"><span class="hotline-name">Đường dây nóng Công an</span><span class="hotline-num">113</span></div>
+    <div class="hotline-item"><span class="hotline-name">Tổng đài Bộ Công an</span><span class="hotline-num">069.219.4053</span></div>
+    <div class="hotline-item"><span class="hotline-name">Cổng phản ánh tội phạm CNC</span><span class="hotline-num">dichvucong.bocongan.gov.vn</span></div>
+    <div class="hotline-item"><span class="hotline-name">CA tỉnh Quảng Ninh</span><span class="hotline-num">0203.3838.113</span></div>
+  </div>
+  <div class="result-btns" id="result-btns"></div>
+</div>
+
+<!-- SE ANALYSIS POPUP -->
+<div id="se-popup" onclick="closeSEPopup(event)">
+  <div class="se-popup-panel" id="se-popup-panel">
+    <div class="se-popup-handle"></div>
+    <div class="se-popup-title mono">⚡ PHÂN TÍCH KỸ THUẬT TẤN CÔNG TÂM LÝ</div>
+    <div id="se-popup-content"></div>
+    <button id="se-popup-close" onclick="closeSEPopup()">Đã hiểu — Tiếp tục</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  SE TECHNIQUES DICTIONARY
+// ═══════════════════════════════════════════
+const SE_TECHNIQUES = {
+  AUTHORITY:{
+    color:'#4af',
+    title:'AUTHORITY — Lợi dụng quyền lực',
+    desc:'Kẻ lừa đảo giả vờ là người có thẩm quyền (công an, ngân hàng, cơ quan nhà nước) để bạn tuân theo mà không đặt câu hỏi.',
+    signs:['Tự xưng cấp bậc cao, số hiệu cụ thể','Đề cập tên đơn vị uy tín, có thật','Giọng điệu ra lệnh, không giải thích'],
+    counter:['Yêu cầu gặp trực tiếp tại trụ sở','Gọi lại số điện thoại chính thức tra trên website nhà nước','Không tin vào danh tính qua điện thoại'],
+    example:'"Tôi là Thượng tá X, Cục C02 Bộ Công an. Anh có nghĩa vụ hợp tác ngay."'
+  },
+  URGENCY:{
+    color:'#ffaa00',
+    title:'URGENCY — Tạo áp lực thời gian',
+    desc:'Kẻ lừa đảo đặt ra thời hạn giả tạo để bạn hành động ngay, không kịp suy nghĩ hay xác minh.',
+    signs:['Yêu cầu "ngay bây giờ", "trong vòng 2 tiếng"','Đe dọa hậu quả nghiêm trọng nếu chậm trễ','Không cho thời gian hỏi ý kiến người khác'],
+    counter:['Bình tĩnh — không có tình huống hợp pháp nào cần bạn hành động trong vài phút','Nói: "Tôi cần thời gian xác minh"','Tắt máy, gọi lại số chính thức'],
+    example:'"Nếu anh không xử lý trong 2 tiếng, tài khoản sẽ bị phong tỏa vĩnh viễn."'
+  },
+  FEAR:{
+    color:'#ff3b3b',
+    title:'FEAR — Khai thác nỗi sợ',
+    desc:'Tạo ra mối đe dọa nghiêm trọng (bắt giam, phong tỏa tài sản, liên quan tội phạm) khiến bạn hoảng loạn và mất khả năng phán xét.',
+    signs:['Cáo buộc bạn liên quan tội phạm nghiêm trọng','Đe dọa bắt giữ, phong tỏa tài sản','Mô tả hậu quả cực kỳ nặng nề'],
+    counter:['Nhận ra: sự sợ hãi làm mờ lý trí — đó là mục tiêu của chúng','Hít thở, không hành động khi đang hoảng loạn','Gọi ngay cho người thân để xác nhận'],
+    example:'"Anh đang bị điều tra về tội rửa tiền xuyên quốc gia. Chúng tôi có đủ bằng chứng."'
+  },
+  ISOLATION:{
+    color:'#a78bfa',
+    title:'ISOLATION — Cô lập nạn nhân',
+    desc:'Dấu hiệu nguy hiểm nhất. Kẻ lừa đảo cấm bạn nói chuyện với gia đình, bạn bè để không ai giúp bạn nhận ra trò lừa đảo.',
+    signs:['Yêu cầu "không nói với ai" về vụ việc','Coi việc hỏi ý kiến người khác là "can thiệp điều tra"','Giữ bạn trong cuộc gọi liên tục'],
+    counter:['Cơ quan công quyền hợp pháp KHÔNG BAO GIỜ yêu cầu bí mật','Ngay lập tức hỏi ý kiến người thân','Kết thúc cuộc gọi và liên hệ trực tiếp cơ quan'],
+    example:'"Anh KHÔNG được nói với bất kỳ ai — kể cả vợ/chồng — cho đến khi vụ việc được giải quyết."'
+  },
+  PRETEXTING:{
+    color:'#22d3ee',
+    title:'PRETEXTING — Dựng kịch bản giả',
+    desc:'Xây dựng câu chuyện hư cấu có vẻ hợp lý để biện hộ cho yêu cầu thông tin hoặc hành động của chúng.',
+    signs:['Kịch bản phức tạp, chi tiết nhưng không thể kiểm chứng ngay','Lý do "đặc biệt" giải thích tại sao cần OTP/mật khẩu','Thông tin về bạn được thu thập trước để tạo độ tin cậy'],
+    counter:['Không một lý do nào hợp lệ để cung cấp OTP cho người khác','Kiểm tra thông tin qua kênh độc lập','Hỏi: "Tại sao kênh chính thức không xử lý được?"'],
+    example:'"Để xác minh anh là chủ tài khoản, tôi cần anh đọc mã OTP vừa gửi."'
+  },
+  SPOOFING:{
+    color:'#00ff88',
+    title:'SPOOFING — Giả mạo danh tính',
+    desc:'Làm giả số điện thoại, email, website để trông giống nguồn đáng tin cậy. Số hiển thị trên điện thoại có thể bị làm giả.',
+    signs:['Số điện thoại trông giống đầu số chính thức nhưng lạ','Website giống hệt ngân hàng nhưng tên miền khác','Email từ domain gần giống (vietcom-bank.vn thay vì vietcombank.vn)'],
+    counter:['Không tin vào số hiện trên màn hình — có thể bị giả mạo','Tra cứu số điện thoại chính thức từ thẻ ngân hàng hoặc website','Kiểm tra URL cẩn thận trước khi đăng nhập'],
+    example:'Màn hình hiện "VCB 1800xxxx" nhưng thực ra là số giả mạo.'
+  },
+  BAITING:{
+    color:'#fb923c',
+    title:'BAITING — Mồi nhử',
+    desc:'Dùng phần thưởng, cơ hội hấp dẫn hoặc nỗi tò mò để dụ bạn thực hiện hành động nguy hiểm.',
+    signs:['Thông báo trúng thưởng bất ngờ','File đính kèm hấp dẫn (hóa đơn, thông báo lương)','Pop-up "Máy tính của bạn bị nhiễm virus"'],
+    counter:['Không tồn tại phần thưởng nào miễn phí hoàn toàn','Không mở file lạ từ email không rõ nguồn gốc','Pop-up cảnh báo virus là giả — đóng tab, không gọi số trong đó'],
+    example:'"Bạn là người thứ 1.000.000, bấm vào đây nhận thưởng 10 triệu đồng!"'
+  },
+  QUID_PRO_QUO:{
+    color:'#f0abfc',
+    title:'QUID PRO QUO — Đổi chác lợi ích',
+    desc:'Đề nghị giúp đỡ hoặc dịch vụ đổi lấy thông tin. Thường giả danh hỗ trợ kỹ thuật để lấy quyền truy cập.',
+    signs:['Tự nguyện gọi đến "hỗ trợ" không ai yêu cầu','Đề nghị vá lỗi, cập nhật, kiểm tra bảo mật miễn phí','Yêu cầu cài phần mềm để "giúp" bạn'],
+    counter:['Không cho phép ai truy cập từ xa vào máy tính không mời','Tự gọi hỗ trợ qua kênh chính thức khi cần','Phần mềm điều khiển từ xa (AnyDesk, TeamViewer) cần cực kỳ thận trọng'],
+    example:'"Tôi phát hiện máy tính của anh bị hack. Cài AnyDesk để tôi giúp sửa miễn phí."'
+  }
+};
+
+// ═══════════════════════════════════════════
+//  SCENARIO DATA
+// ═══════════════════════════════════════════
+const SCENARIOS = [
+{
+  id:'s1',
+  title:'Điều tra viên Bộ Công an',
+  subtitle:'Giả mạo cơ quan điều tra',
+  icon:'🚔',
+  difficulty:'Khó',
+  diffColor:'#ff3b3b',
+  time:'8–12 phút',
+  cardColor:'#ff3b3b',
+  cardGlow:'rgba(255,59,59,.06)',
+  caller:{name:'Thượng tá Trần Minh Khoa', role:'Cục C02 — Bộ Công an (giả mạo)', number:'0243.852.xxxx', avatar:'👮'},
+  techniques:['AUTHORITY','FEAR','URGENCY','ISOLATION','PRETEXTING'],
+  context:'Bạn đang làm việc tại nhà thì điện thoại đổ chuông từ số lạ có đầu số Hà Nội. Kịch bản này mô phỏng thủ đoạn lừa đảo phổ biến nhất tại Việt Nam hiện nay — giả mạo điều tra viên Bộ Công an.',
+  objectives:['Nhận biết kỹ thuật AUTHORITY trong lời nói đầu tiên','Phát hiện dấu hiệu ISOLATION — đây là dấu đỏ quan trọng nhất','Không cung cấp thông tin cá nhân hay OTP','Biết cách kết thúc cuộc gọi đúng cách'],
+  startNode:'s1_call',
+  nodes:{
+    s1_call:{
+      id:'s1_call', speaker:'system',
+      text:'📱 Điện thoại đổ chuông. Số lạ: 0243.852.xxxx — đầu số Hà Nội. Đây là lần gọi đầu tiên từ số này.',
+      emotion:'neutral', se_technique:[],
+      choices:[
+        {label:'Bắt máy', tone:'comply', icon:'📞', next:'s1_intro', consequence:'Bạn nhấc máy. Cuộc gọi bắt đầu.', score_delta:0},
+        {label:'Không bắt — để máy', tone:'resist', icon:'🔕', next:'s1_redial', consequence:'Bạn bỏ qua cuộc gọi đầu tiên.', score_delta:0}
+      ]
+    },
+    s1_redial:{
+      id:'s1_redial', speaker:'system',
+      text:'📵 Bạn không bắt máy. Sau 30 giây, số đó gọi lại... Lần 2. Lần 3. Bạn thấy lo lắng — biết đâu có việc khẩn cấp với gia đình?',
+      emotion:'neutral', se_technique:['URGENCY'],
+      choices:[
+        {label:'Bắt máy lần này', tone:'comply', icon:'📞', next:'s1_intro', consequence:'Sự kiên trì gọi lại nhiều lần cũng là kỹ thuật tạo áp lực.', score_delta:-5},
+        {label:'Vẫn không bắt — chặn số luôn', tone:'resist', icon:'🚫', next:'s1_end_safe_block', consequence:'Quyết định đúng — số lạ gọi nhiều lần là dấu hiệu đáng ngờ.', score_delta:+15}
+      ]
+    },
+    s1_intro:{
+      id:'s1_intro', speaker:'scammer',
+      text:'Tôi là Thượng tá Trần Minh Khoa, Cục C02 — Bộ Công an. Đây có phải số điện thoại của anh/chị [tên bạn] không?',
+      emotion:'calm', se_technique:['AUTHORITY','PRETEXTING'],
+      choices:[
+        {label:'"Vâng đúng rồi ạ"', tone:'comply', icon:'😰', next:'s1_fear', consequence:'Bạn xác nhận danh tính — kẻ lừa đảo đã có thông tin quan trọng đầu tiên.', score_delta:-10},
+        {label:'"Ai vậy? Anh gọi có việc gì?"', tone:'question', icon:'🤔', next:'s1_adjust', consequence:'Bạn chưa xác nhận danh tính, yêu cầu thêm thông tin. Tốt.', score_delta:+5},
+        {label:'"Tôi không nghe số lạ" — cúp máy', tone:'resist', icon:'📵', next:'s1_end_safe_1', consequence:'Hành động đúng đắn: không cung cấp thông tin cho số lạ.', score_delta:+15}
+      ]
+    },
+    s1_adjust:{
+      id:'s1_adjust', speaker:'scammer',
+      text:'Tôi hiểu anh/chị thận trọng. Nhưng đây là việc hệ trọng liên quan đến tài khoản ngân hàng mang tên anh/chị. Nếu không phối hợp ngay, chúng tôi sẽ phải ra lệnh phong tỏa tài khoản trong vòng 2 tiếng.',
+      emotion:'urgent', se_technique:['URGENCY','FEAR'],
+      choices:[
+        {label:'"Thôi được, tôi nghe"', tone:'comply', icon:'😰', next:'s1_fear', consequence:'Áp lực phong tỏa tài khoản đã khiến bạn tuân theo.', score_delta:-10},
+        {label:'"Cho tôi mã số cán bộ và số tổng đài đơn vị"', tone:'question', icon:'🧐', next:'s1_verify_demand', consequence:'Tuyệt vời — yêu cầu xác minh thông tin là phản ứng hoàn toàn đúng.', score_delta:+10},
+        {label:'"Tôi sẽ đến trực tiếp trụ sở Bộ Công an làm việc"', tone:'resist', icon:'🏛️', next:'s1_end_safe_office', consequence:'Đây là đề nghị hợp lý nhất — cơ quan thật sẽ đồng ý, kẻ lừa đảo sẽ từ chối.', score_delta:+15}
+      ]
+    },
+    s1_verify_demand:{
+      id:'s1_verify_demand', speaker:'scammer',
+      text:'Mã số cán bộ của tôi là C02-2847. Số điện thoại đơn vị thì anh/chị không được phép gọi trực tiếp vì đây là cuộc điều tra bí mật. Nếu anh/chị gọi ra ngoài có thể làm lộ vụ án và anh/chị sẽ phải chịu trách nhiệm!',
+      emotion:'urgent', se_technique:['AUTHORITY','ISOLATION','FEAR'],
+      choices:[
+        {label:'"Tôi sẽ tự tra số Bộ Công an và gọi lại xác minh"', tone:'resist', icon:'🔍', next:'s1_end_safe_verify', consequence:'Hoàn hảo! Không thể xác minh qua kênh độc lập = dấu hiệu lừa đảo rõ ràng.', score_delta:+20},
+        {label:'"Thôi được, tôi tin anh, tiếp tục đi"', tone:'comply', icon:'😟', next:'s1_fear', consequence:'Bạn bỏ qua cơ hội xác minh — kẻ lừa đảo tiếp tục kịch bản.', score_delta:-10}
+      ]
+    },
+    s1_fear:{
+      id:'s1_fear', speaker:'scammer',
+      text:'Tốt. Anh/chị hiện đang liên quan đến đường dây rửa tiền xuyên quốc gia vừa bị triệt phá tại TP.HCM. Chúng tôi có đủ bằng chứng giao dịch từ tài khoản của anh/chị. Anh/chị có biết điều này không?',
+      emotion:'urgent', se_technique:['FEAR','PRETEXTING'],
+      choices:[
+        {label:'"Trời ơi không ạ, tôi không biết gì hết!"', tone:'comply', icon:'😱', next:'s1_isolation', consequence:'Sự hoảng loạn là điều kẻ lừa đảo muốn — nó làm bạn dễ bị dẫn dắt hơn.', score_delta:-15},
+        {label:'"Tôi muốn biết cụ thể bằng chứng gì? Tôi sẽ liên hệ luật sư"', tone:'question', icon:'⚖️', next:'s1_otp_trap', consequence:'Tốt — yêu cầu bằng chứng và nhắc đến luật sư làm kẻ lừa đảo chuyển chiến thuật.', score_delta:+10},
+        {label:'"Đây là lừa đảo — tôi cúp máy và báo công an"', tone:'resist', icon:'🚨', next:'s1_end_safe_2', consequence:'Chính xác! Nhận ra mô thức lừa đảo ngay từ bước này.', score_delta:+20}
+      ]
+    },
+    s1_otp_trap:{
+      id:'s1_otp_trap', speaker:'scammer',
+      text:'Bằng chứng sẽ được trình bày tại cơ quan. Nhưng trước tiên để xác minh anh/chị là chủ tài khoản hợp pháp và không phải đồng phạm, tôi cần anh/chị đọc 6 số OTP vừa được ngân hàng gửi đến điện thoại.',
+      emotion:'calm', se_technique:['PRETEXTING','AUTHORITY'],
+      choices:[
+        {label:'Đọc mã OTP cho họ', tone:'comply', icon:'🔑', next:'s1_end_caught_otp', consequence:'Nguy hiểm! OTP là chìa khóa tài khoản — không ai được quyền yêu cầu bạn đọc OTP.', score_delta:-50},
+        {label:'"OTP là bí mật cá nhân, ngân hàng dặn không đọc cho ai"', tone:'resist', icon:'🛡️', next:'s1_end_safe_3', consequence:'Hoàn toàn đúng! Không có lý do hợp pháp nào để đọc OTP cho người khác.', score_delta:+20},
+        {label:'"Ngân hàng nào? Tôi sẽ tự gọi hotline kiểm tra"', tone:'question', icon:'🏦', next:'s1_end_safe_3', consequence:'Xuất sắc! Xác minh qua kênh độc lập là cách chắc chắn nhất.', score_delta:+20}
+      ]
+    },
+    s1_isolation:{
+      id:'s1_isolation', speaker:'scammer',
+      text:'Bình tĩnh. Để bảo vệ anh/chị, chúng tôi cần anh/chị KHÔNG nói với ai — kể cả người thân — cho đến khi vụ việc được xử lý. Đây là yêu cầu bắt buộc của quy trình điều tra. Anh/chị hiểu không?',
+      emotion:'calm', se_technique:['ISOLATION'],
+      choices:[
+        {label:'"Vâng, tôi sẽ không nói với ai"', tone:'comply', icon:'🤫', next:'s1_transfer', consequence:'RẤT NGUY HIỂM. ISOLATION thành công — bạn đã mất lớp bảo vệ cuối cùng.', score_delta:-20},
+        {label:'"Tại sao lại không được nói với gia đình?"', tone:'question', icon:'🤨', next:'s1_isolation_explain', consequence:'Tốt — đây là câu hỏi quan trọng. Cơ quan hợp pháp không bao giờ yêu cầu điều này.', score_delta:+10},
+        {label:'"Điều này rất bất thường. Tôi cúp máy ngay"', tone:'resist', icon:'📵', next:'s1_end_safe_2', consequence:'Chính xác! Yêu cầu cô lập là dấu đỏ số 1 của lừa đảo.', score_delta:+20}
+      ]
+    },
+    s1_isolation_explain:{
+      id:'s1_isolation_explain', speaker:'scammer',
+      text:'Vì nếu lộ thông tin điều tra, các đồng phạm có thể tẩu tán tài sản và anh/chị sẽ bị liên đới. Đây là quy trình bảo mật tối mật của Bộ Công an. Tôi đang bảo vệ anh/chị đấy!',
+      emotion:'friendly', se_technique:['ISOLATION','AUTHORITY','FEAR'],
+      choices:[
+        {label:'"Tôi vẫn cần hỏi vợ/chồng tôi trước"', tone:'resist', icon:'👨‍👩‍👧', next:'s1_end_safe_2', consequence:'Đúng rồi! Hỏi ý kiến người thân là quyền cơ bản của bạn.', score_delta:+15},
+        {label:'"Thôi được, tôi tin. Tiếp theo là gì?"', tone:'comply', icon:'😟', next:'s1_transfer', consequence:'Kẻ lừa đảo đã thuyết phục bạn bằng lý do nghe có vẻ hợp lý.', score_delta:-15}
+      ]
+    },
+    s1_transfer:{
+      id:'s1_transfer', speaker:'scammer',
+      text:'Rất tốt. Bây giờ để bảo toàn tài sản của anh/chị trong thời gian điều tra, cần chuyển toàn bộ tiền vào "tài khoản phong tỏa tạm thời" do Bộ Công an quản lý. Sau khi điều tra xong sẽ trả lại đầy đủ. Số tài khoản: 1903-6xxx-xxxx tại Techcombank.',
+      emotion:'calm', se_technique:['AUTHORITY','PRETEXTING','URGENCY'],
+      choices:[
+        {label:'Đồng ý chuyển tiền theo yêu cầu', tone:'comply', icon:'💸', next:'s1_end_caught_final', consequence:'MẤT TIỀN. Đây là mục tiêu thật của cuộc gọi này.', score_delta:-50},
+        {label:'"Công an KHÔNG BAO GIỜ yêu cầu chuyển tiền qua điện thoại!"', tone:'resist', icon:'🛡️', next:'s1_end_safe_final', consequence:'Hoàn toàn đúng! Đây là kiến thức bảo vệ bạn quan trọng nhất.', score_delta:+30},
+        {label:'"Tôi sẽ đến trực tiếp nộp tiền tại cơ quan"', tone:'question', icon:'🏛️', next:'s1_end_safe_final', consequence:'Cũng đúng! Cơ quan thật sẽ đồng ý; kẻ lừa đảo sẽ cúp máy.', score_delta:+25}
+      ]
+    },
+    // ENDINGS
+    s1_end_safe_block:{
+      id:'s1_end_safe_block', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã chặn số lạ gọi nhiều lần liên tiếp. Đây là quyết định đúng đắn.', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Số lạ gọi nhiều lần liên tiếp là dấu hiệu đáng ngờ. Bạn không có nghĩa vụ bắt máy số lạ. Nếu cần thiết, cơ quan hợp pháp sẽ liên hệ qua kênh chính thức hoặc gửi giấy tờ trực tiếp.'
+    },
+    s1_end_safe_1:{
+      id:'s1_end_safe_1', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã từ chối tiếp tục cuộc gọi từ số lạ. Hành động đúng đắn.', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Không có nghĩa vụ phải nói chuyện với số lạ tự xưng là cơ quan nhà nước. Nếu thật sự cần làm việc, cơ quan sẽ gửi giấy triệu tập qua đường chính thức.'
+    },
+    s1_end_safe_2:{
+      id:'s1_end_safe_2', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã nhận ra mô thức lừa đảo và kết thúc cuộc gọi. Xuất sắc!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Bạn đã nhận ra các kỹ thuật tâm lý đang được dùng và có hành động quyết đoán đúng lúc. Đây là mức độ nhận thức an ninh mạng tốt.'
+    },
+    s1_end_safe_3:{
+      id:'s1_end_safe_3', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã bảo vệ OTP/tài khoản thành công!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'OTP là mã bí mật cá nhân. Không có lý do hợp pháp nào để đọc OTP cho người khác — kể cả ngân hàng, công an hay bất kỳ ai. Ngân hàng cũng không bao giờ hỏi OTP qua điện thoại.'
+    },
+    s1_end_safe_office:{
+      id:'s1_end_safe_office', speaker:'system', ending:'safe',
+      text:'✅ Đề nghị làm việc trực tiếp — cơ quan thật sẽ đồng ý, kẻ lừa đảo sẽ cúp máy!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Kẻ lừa đảo không thể đối mặt trực tiếp. Yêu cầu gặp trực tiếp tại trụ sở sẽ làm họ từ bỏ ngay lập tức.'
+    },
+    s1_end_safe_verify:{
+      id:'s1_end_safe_verify', speaker:'system', ending:'safe',
+      text:'✅ Xác minh độc lập — kỹ năng bảo vệ quan trọng nhất!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Luôn xác minh thông qua kênh độc lập bạn tự tìm kiếm — không dùng số điện thoại do đối phương cung cấp. Tra cứu số chính thức trên website nhà nước hoặc thẻ ngân hàng của bạn.'
+    },
+    s1_end_safe_final:{
+      id:'s1_end_safe_final', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã bảo vệ tài sản thành công!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Cơ quan công an, viện kiểm sát, tòa án và ngân hàng KHÔNG BAO GIỜ yêu cầu chuyển tiền qua điện thoại. Đây là nguyên tắc bất di bất dịch.'
+    },
+    s1_end_caught_otp:{
+      id:'s1_end_caught_otp', speaker:'system', ending:'caught',
+      text:'❌ Bạn đã đọc OTP. Tài khoản ngân hàng của bạn bị truy cập trái phép ngay lập tức.', emotion:'danger', se_technique:[],choices:[],
+      lesson:'OTP (One-Time Password) là lớp bảo mật cuối cùng bảo vệ tài khoản. Khi bạn đọc OTP cho người khác, bạn trao chìa khóa vào tay kẻ lừa đảo. Không có lý do hợp lý nào để làm điều này.'
+    },
+    s1_end_caught_final:{
+      id:'s1_end_caught_final', speaker:'system', ending:'caught',
+      text:'❌ Bạn đã chuyển tiền theo yêu cầu. Toàn bộ số tiền đã mất vĩnh viễn.', emotion:'danger', se_technique:[],choices:[],
+      lesson:'Kẻ lừa đảo đã thực hiện thành công kịch bản: AUTHORITY → FEAR → ISOLATION → thu tiền. Tiền chuyển đi không thể lấy lại. Nhớ: Cơ quan nhà nước KHÔNG BAO GIỜ yêu cầu chuyển tiền qua điện thoại.'
+    }
+  },
+  redFlags:[
+    'Số lạ tự xưng là điều tra viên Bộ Công an — cơ quan hợp pháp sẽ gửi giấy triệu tập',
+    'Yêu cầu "không nói với ai" — dấu đỏ số 1, không có quy trình pháp lý nào như vậy',
+    'Tạo áp lực thời gian "2 tiếng" — nhằm ngăn bạn suy nghĩ và xác minh',
+    'Yêu cầu cung cấp OTP — ngân hàng và công an không bao giờ hỏi OTP',
+    'Yêu cầu chuyển tiền vào "tài khoản phong tỏa" — không tồn tại trong thực tế'
+  ]
+},
+{
+  id:'s2',
+  title:'Nhân viên ngân hàng giả mạo',
+  subtitle:'Giả mạo VCB qua SMS + điện thoại',
+  icon:'🏦',
+  difficulty:'Trung bình',
+  diffColor:'#ffaa00',
+  time:'6–10 phút',
+  cardColor:'#ffaa00',
+  cardGlow:'rgba(255,170,0,.06)',
+  caller:{name:'Nguyễn Thu Hương — VCB Support', role:'"Nhân viên" Vietcombank (giả mạo)', number:'1800.xxxx (giả)', avatar:'👩‍💼'},
+  techniques:['SPOOFING','URGENCY','PRETEXTING','FEAR'],
+  context:'Bạn vừa nhận được SMS cảnh báo: "VCB: Tai khoan cua ban co giao dich bat thuong. Lien he ngay 1800.xxxx de xu ly". Kịch bản này tái hiện thủ đoạn giả mạo ngân hàng kết hợp SMS + điện thoại.',
+  objectives:['Nhận biết SMS ngân hàng giả mạo qua dấu hiệu ngôn ngữ','Không gọi số điện thoại trong SMS lạ','Không cung cấp số thẻ, CVV, OTP cho bất kỳ ai','Biết số hotline thật của ngân hàng từ thẻ ATM'],
+  startNode:'s2_sms',
+  nodes:{
+    s2_sms:{
+      id:'s2_sms', speaker:'system',
+      text:'📱 Bạn nhận SMS: "VCB: Tai khoan cua ban co giao dich bat thuong 15,000,000 VND. Neu khong phai ban, lien he ngay 1800.8868 de khoa the." — Số gửi: VCB-ALERT (có vẻ chính thức)',
+      emotion:'neutral', se_technique:['SPOOFING','URGENCY'],
+      choices:[
+        {label:'Gọi ngay số 1800.8868 trong SMS', tone:'comply', icon:'📞', next:'s2_call_answer', consequence:'Nguy hiểm — bạn đang gọi đến số của kẻ lừa đảo, không phải VCB thật.', score_delta:-10},
+        {label:'Lấy thẻ ATM ra và gọi số hotline in trên thẻ', tone:'resist', icon:'💳', next:'s2_end_safe_1', consequence:'Xuất sắc! Số hotline trên thẻ ATM là số chính thức duy nhất đáng tin.', score_delta:+25},
+        {label:'Kiểm tra kỹ SMS — nhận ra dấu hiệu lạ', tone:'question', icon:'🔍', next:'s2_sms_check', consequence:'Tốt — phân tích trước khi hành động.', score_delta:+10}
+      ]
+    },
+    s2_sms_check:{
+      id:'s2_sms_check', speaker:'system',
+      text:'🔍 Bạn xem lại SMS: Không có dấu tiếng Việt (viết tắt), số tiền lẻ kỳ lạ, số hotline khác với hotline chính thức VCB trên thẻ. Đây là dấu hiệu SMS giả mạo điển hình.',
+      emotion:'neutral', se_technique:[],
+      choices:[
+        {label:'Xóa SMS — không làm gì thêm', tone:'resist', icon:'🗑️', next:'s2_end_safe_1', consequence:'Đúng! SMS giả mạo không cần phản hồi. Gọi hotline thật nếu lo lắng.', score_delta:+20},
+        {label:'Vẫn gọi số trong SMS để kiểm tra cho chắc', tone:'comply', icon:'📞', next:'s2_call_answer', consequence:'Dù đã nghi ngờ, bạn vẫn gọi — kẻ lừa đảo đã chuẩn bị cho tình huống này.', score_delta:-5}
+      ]
+    },
+    s2_call_answer:{
+      id:'s2_call_answer', speaker:'scammer',
+      text:'Vietcombank xin chào, tôi là Nguyễn Thu Hương, nhân viên bộ phận bảo mật. Tôi thấy anh/chị có cuộc gọi về giao dịch bất thường phải không? Để giúp anh/chị, tôi cần xác minh danh tính. Anh/chị vui lòng cung cấp 16 số thẻ và ngày hết hạn.',
+      emotion:'friendly', se_technique:['SPOOFING','PRETEXTING'],
+      choices:[
+        {label:'Đọc số thẻ và ngày hết hạn', tone:'comply', icon:'💳', next:'s2_cvv', consequence:'Thông tin thẻ đã bị lộ — kẻ lừa đảo có thể dùng để giao dịch online.', score_delta:-25},
+        {label:'"Tôi không cung cấp số thẻ qua điện thoại"', tone:'resist', icon:'🛡️', next:'s2_end_safe_2', consequence:'Hoàn toàn đúng! Nhân viên ngân hàng thật không bao giờ hỏi số thẻ đầy đủ.', score_delta:+20},
+        {label:'"Tôi gọi vào số này — sao anh/chị biết tôi gọi về giao dịch?"', tone:'question', icon:'🤔', next:'s2_bluff', consequence:'Câu hỏi sắc bén! Kẻ lừa đảo không có thông tin này — họ sẽ bịa đặt.', score_delta:+15}
+      ]
+    },
+    s2_bluff:{
+      id:'s2_bluff', speaker:'scammer',
+      text:'À... hệ thống của chúng tôi tự động kết nối với số điện thoại đăng ký trong tài khoản. Nên khi anh/chị gọi vào đường dây này là hệ thống đã biết. Thôi mình tiếp tục xác minh nhé — số thẻ của anh/chị?',
+      emotion:'calm', se_technique:['PRETEXTING'],
+      choices:[
+        {label:'Chấp nhận giải thích và cung cấp số thẻ', tone:'comply', icon:'😕', next:'s2_cvv', consequence:'Giải thích này không có cơ sở kỹ thuật — bạn đã bị thuyết phục bởi lý do giả tạo.', score_delta:-20},
+        {label:'"Giải thích đó không hợp lý. Tôi sẽ gọi lại số chính thức"', tone:'resist', icon:'🚫', next:'s2_end_safe_2', consequence:'Chính xác! Nhận ra mâu thuẫn trong lời giải thích là kỹ năng quan trọng.', score_delta:+20}
+      ]
+    },
+    s2_cvv:{
+      id:'s2_cvv', speaker:'scammer',
+      text:'Cảm ơn anh/chị. Tiếp theo để hoàn tất xác minh, cho tôi 3 số CVV ở mặt sau thẻ và mã OTP vừa được gửi đến điện thoại.',
+      emotion:'calm', se_technique:['PRETEXTING'],
+      choices:[
+        {label:'Cung cấp CVV và OTP', tone:'comply', icon:'💀', next:'s2_end_caught', consequence:'Tài khoản bị chiếm hoàn toàn. CVV + OTP là đủ để thực hiện mọi giao dịch.', score_delta:-50},
+        {label:'"Không — OTP và CVV là bí mật tuyệt đối"', tone:'resist', icon:'🛡️', next:'s2_end_safe_2', consequence:'Kịp dừng lại! Dù đã cung cấp số thẻ, bạn vẫn bảo vệ được OTP và CVV.', score_delta:+15}
+      ]
+    },
+    s2_end_safe_1:{
+      id:'s2_end_safe_1', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã không bị dẫn dụ bởi SMS giả mạo!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Luôn lưu số hotline ngân hàng từ thẻ ATM hoặc website chính thức. Không bao giờ gọi số điện thoại xuất hiện trong SMS lạ. SMS brandname (VCB-ALERT) cũng có thể bị giả mạo.'
+    },
+    s2_end_safe_2:{
+      id:'s2_end_safe_2', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã từ chối cung cấp thông tin nhạy cảm!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Nhân viên ngân hàng thật KHÔNG BAO GIỜ hỏi: số thẻ đầy đủ, CVV, mã OTP qua điện thoại. Nếu bị yêu cầu, đó chắc chắn là lừa đảo.'
+    },
+    s2_end_caught:{
+      id:'s2_end_caught', speaker:'system', ending:'caught',
+      text:'❌ Thông tin thẻ và OTP bị lộ — tài khoản bị rút tiền trong vài phút.', emotion:'danger', se_technique:[],choices:[],
+      lesson:'Kẻ lừa đảo đã có đủ thông tin để thực hiện giao dịch: số thẻ + ngày hết hạn + CVV + OTP. Tiền có thể bị rút sạch trong vài phút. Hành động ngay: gọi hotline ngân hàng để khóa thẻ, báo công an 113.'
+    }
+  },
+  redFlags:[
+    'SMS không có dấu tiếng Việt, ngữ pháp lạ — đây là dấu hiệu giả mạo điển hình',
+    'Số hotline trong SMS khác với số in trên thẻ ATM hoặc website chính thức',
+    'Nhân viên hỏi 16 số thẻ đầy đủ — ngân hàng thật không bao giờ làm vậy',
+    'Yêu cầu CVV (3 số mặt sau thẻ) qua điện thoại — tuyệt đối không cung cấp',
+    'Yêu cầu OTP — không có lý do hợp lệ nào để đọc OTP cho người khác'
+  ]
+},
+{
+  id:'s3',
+  title:'Hỗ trợ kỹ thuật Microsoft giả',
+  subtitle:'Tech Support Scam qua pop-up & điện thoại',
+  icon:'💻',
+  difficulty:'Cơ bản',
+  diffColor:'#00ff88',
+  time:'5–8 phút',
+  cardColor:'#4af',
+  cardGlow:'rgba(68,170,255,.06)',
+  caller:{name:'"Chuyên viên" David Nguyen', role:'Microsoft Support (giả mạo)', number:'1800-MICROSOFT (giả)', avatar:'👨‍💻'},
+  techniques:['BAITING','FEAR','QUID_PRO_QUO','AUTHORITY'],
+  context:'Đang lướt web, màn hình xuất hiện pop-up lớn: "CẢNH BÁO! Máy tính của bạn bị nhiễm virus nghiêm trọng! Gọi ngay 1800-xxxx để được hỗ trợ miễn phí!" và phát ra âm thanh cảnh báo liên tục.',
+  objectives:['Nhận ra pop-up virus giả mạo (Scareware)','Không gọi số điện thoại trong pop-up','Không cài phần mềm điều khiển từ xa theo yêu cầu lạ','Biết cách đóng tab/trình duyệt bị pop-up chiếm'],
+  startNode:'s3_popup',
+  nodes:{
+    s3_popup:{
+      id:'s3_popup', speaker:'system',
+      text:'🖥️ Pop-up xuất hiện toàn màn hình với tiếng còi cảnh báo: "⚠ MICROSOFT SECURITY ALERT — Máy tính bị nhiễm Trojan:Win32/Zpevdo.B. ĐỪNG TẮT MÁY. Gọi ngay bộ phận hỗ trợ: 1800-xxxx (miễn phí 24/7)"',
+      emotion:'neutral', se_technique:['BAITING','FEAR'],
+      choices:[
+        {label:'Gọi số điện thoại trong pop-up', tone:'comply', icon:'📞', next:'s3_call', consequence:'Bạn đang gọi cho kẻ lừa đảo, không phải Microsoft.', score_delta:-15},
+        {label:'Nhấn Alt+F4 / tắt tab trình duyệt', tone:'resist', icon:'❌', next:'s3_end_safe_1', consequence:'Đúng! Pop-up virus giả chỉ là trang web — đóng tab là xong.', score_delta:+20},
+        {label:'Kiểm tra Task Manager xem máy có thật sự bị nhiễm không', tone:'question', icon:'🔍', next:'s3_check', consequence:'Tốt — kiểm tra thực tế thay vì tin vào pop-up.', score_delta:+15}
+      ]
+    },
+    s3_check:{
+      id:'s3_check', speaker:'system',
+      text:'🔍 Bạn mở Task Manager: CPU và RAM bình thường. Không có tiến trình lạ. Phần mềm diệt virus Windows Defender không thấy gì bất thường. Pop-up đó là giả hoàn toàn.',
+      emotion:'neutral', se_technique:[],
+      choices:[
+        {label:'Đóng trình duyệt và tiếp tục làm việc', tone:'resist', icon:'✅', next:'s3_end_safe_1', consequence:'Hoàn hảo! Bạn đã xác minh bằng thực tế thay vì tin vào pop-up.', score_delta:+20},
+        {label:'Vẫn gọi cho "Microsoft" để hỏi cho chắc', tone:'comply', icon:'📞', next:'s3_call', consequence:'Kể cả khi biết pop-up giả, bạn vẫn gọi — kẻ lừa đảo sẽ có cơ hội tiếp theo.', score_delta:-5}
+      ]
+    },
+    s3_call:{
+      id:'s3_call', speaker:'scammer',
+      text:'Microsoft Support, xin chào! Chúng tôi đã nhận được cảnh báo từ máy tính của bạn. Tên tôi là David Nguyen. Máy bạn đang bị tấn công từ xa rất nghiêm trọng. Để sửa ngay, tôi cần bạn cài AnyDesk để tôi kết nối và vá lỗi — hoàn toàn miễn phí!',
+      emotion:'friendly', se_technique:['AUTHORITY','QUID_PRO_QUO','PRETEXTING'],
+      choices:[
+        {label:'Cài AnyDesk theo hướng dẫn', tone:'comply', icon:'💾', next:'s3_remote_access', consequence:'RẤT NGUY HIỂM — cài xong họ có toàn quyền kiểm soát máy tính của bạn.', score_delta:-30},
+        {label:'"Microsoft không bao giờ gọi chủ động — đây là lừa đảo"', tone:'resist', icon:'🚫', next:'s3_end_safe_2', consequence:'Chính xác! Microsoft không chủ động gọi điện cho người dùng về virus.', score_delta:+25},
+        {label:'"Tôi tải AnyDesk từ đâu vậy?"', tone:'question', icon:'🤔', next:'s3_anydesk_link', consequence:'Bạn chưa từ chối thẳng thừng — kẻ lừa đảo sẽ tiếp tục.', score_delta:-5}
+      ]
+    },
+    s3_anydesk_link:{
+      id:'s3_anydesk_link', speaker:'scammer',
+      text:'Dễ thôi, tôi gửi link tải trực tiếp cho bạn: anydesk-support-vn.com/download — Sau khi cài xong cho tôi mã 9 chữ số hiện trên màn hình là xong!',
+      emotion:'friendly', se_technique:['BAITING','PRETEXTING'],
+      choices:[
+        {label:'Tải và cài từ link đó', tone:'comply', icon:'💀', next:'s3_remote_access', consequence:'Link giả mạo — bạn có thể tải malware hoặc trao toàn quyền máy tính.', score_delta:-30},
+        {label:'"Link đó không phải anydesk.com chính thức — tôi không tải"', tone:'resist', icon:'🛡️', next:'s3_end_safe_2', consequence:'Mắt sắc! Nhận ra tên miền giả mạo là kỹ năng quan trọng.', score_delta:+25}
+      ]
+    },
+    s3_remote_access:{
+      id:'s3_remote_access', speaker:'scammer',
+      text:'Tốt lắm! Tôi đang kết nối vào máy tính của bạn. [Bạn thấy con chuột tự di chuyển]. Ồ, máy bạn bị nhiễm rất nặng — có 47 virus. Để diệt hết cần mua gói bảo mật 1 năm, chỉ 1.500.000 VND thôi, rẻ lắm!',
+      emotion:'calm', se_technique:['BAITING','QUID_PRO_QUO','PRETEXTING'],
+      choices:[
+        {label:'Đồng ý mua và thanh toán bằng thẻ', tone:'comply', icon:'💳', next:'s3_end_caught', consequence:'Mất tiền VÀ thông tin thẻ. Máy tính vẫn trong tầm kiểm soát của họ.', score_delta:-50},
+        {label:'Rút cáp mạng/tắt wifi ngay lập tức', tone:'resist', icon:'🔌', next:'s3_end_partial', consequence:'Bước đầu đúng — cắt kết nối ngay để họ mất quyền truy cập.', score_delta:+15}
+      ]
+    },
+    // ENDINGS
+    s3_end_safe_1:{
+      id:'s3_end_safe_1', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã nhận ra Scareware và xử lý đúng cách!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Pop-up cảnh báo virus xuất hiện khi duyệt web là "Scareware" — phần mềm hù dọa giả. Microsoft, Windows Defender không bao giờ hiện thông báo yêu cầu gọi điện thoại. Chỉ cần đóng tab/trình duyệt là xử lý xong.'
+    },
+    s3_end_safe_2:{
+      id:'s3_end_safe_2', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã nhận ra Tech Support Scam!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Microsoft, Google, Apple không bao giờ chủ động gọi điện cho bạn về virus hay lỗi hệ thống. Nếu ai tự xưng là hỗ trợ kỹ thuật và yêu cầu cài AnyDesk/TeamViewer — đó là lừa đảo 100%.'
+    },
+    s3_end_partial:{
+      id:'s3_end_partial', speaker:'system', ending:'partial',
+      text:'⚠️ Bạn đã cắt kết nối — nhưng kẻ lừa đảo đã có quyền truy cập máy tính trong vài phút.', emotion:'warning', se_technique:[],choices:[],
+      lesson:'Cần kiểm tra ngay: (1) Đổi tất cả mật khẩu từ thiết bị khác, (2) Quét virus bằng Windows Defender, (3) Kiểm tra các tài khoản ngân hàng. Lần sau: không bao giờ cài phần mềm điều khiển từ xa theo yêu cầu người lạ.'
+    },
+    s3_end_caught:{
+      id:'s3_end_caught', speaker:'system', ending:'caught',
+      text:'❌ Mất tiền và thông tin thẻ. Máy tính vẫn bị kiểm soát từ xa.', emotion:'danger', se_technique:[],choices:[],
+      lesson:'Thiệt hại kép: mất phí "dịch vụ" + thông tin thẻ bị lưu lại. Hành động ngay: (1) Rút cáp mạng, (2) Gọi ngân hàng khóa thẻ, (3) Báo công an 113, (4) Nhờ kỹ thuật viên kiểm tra máy.'
+    }
+  },
+  redFlags:[
+    'Pop-up virus có số điện thoại để gọi — Windows/Microsoft không bao giờ làm vậy',
+    'Công ty phần mềm lớn không bao giờ chủ động gọi điện về virus trên máy bạn',
+    'Yêu cầu cài AnyDesk/TeamViewer để "sửa miễn phí" — đây là kỹ thuật chiếm máy tính',
+    'Link tải phần mềm không phải tên miền chính thức (anydesk.com, teamviewer.com)',
+    'Sau khi "kiểm tra" tự nhiên phát hiện nhiều virus và yêu cầu mua dịch vụ tốn tiền'
+  ]
+}
+];
+
+// ═══════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════
+let state = {
+  scenarioIdx: 0,
+  currentNode: null,
+  score: 60,
+  history: [],   // [{nodeId, choice}]
+  activeScenario: null
+};
+
+// ═══════════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ═══════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='';});
+  const el = document.getElementById(id);
+  if(id==='scr-call'){el.style.display='flex';el.classList.add('active');}
+  else {el.style.display=''; el.classList.add('active');}
+}
+
+// ═══════════════════════════════════════════
+//  LANDING — render scenario cards
+// ═══════════════════════════════════════════
+function renderLanding(){
+  const grid = document.getElementById('scenario-cards');
+  grid.innerHTML = SCENARIOS.map((sc,i)=>`
+    <div class="sc-card" onclick="openIntro(${i})"
+      style="--card-color:${sc.cardColor};--card-glow:${sc.cardGlow}">
+      <div class="sc-card-icon">${sc.icon}</div>
+      <span class="sc-card-tag" style="background:${sc.cardColor}22;color:${sc.cardColor};border:1px solid ${sc.cardColor}44">
+        ${sc.difficulty} · ${sc.time}
+      </span>
+      <h3>${sc.title}</h3>
+      <p>${sc.subtitle}<br><small style="color:var(--text3)">${sc.techniques.join(' · ')}</small></p>
+      <button class="sc-card-btn" style="background:${sc.cardColor}18;color:${sc.cardColor};border:1px solid ${sc.cardColor}44">
+        ▶ Bắt đầu kịch bản
+      </button>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+//  INTRO SCREEN
+// ═══════════════════════════════════════════
+function openIntro(idx){
+  state.scenarioIdx = idx;
+  const sc = SCENARIOS[idx];
+  const techHTML = sc.techniques.map(t=>{
+    const info = SE_TECHNIQUES[t]; if(!info) return '';
+    return `<span class="tech-chip" style="background:${info.color}18;color:${info.color};border:1px solid ${info.color}33">${t}</span>`;
+  }).join('');
+  document.getElementById('intro-content').innerHTML = `
+    <div class="intro-avatar" style="background:${sc.cardColor}18;border-color:${sc.cardColor}44">${sc.caller.avatar}</div>
+    <div class="intro-name">${sc.caller.name}</div>
+    <div class="intro-role mono">${sc.caller.role}</div>
+    <div style="height:1px;background:var(--border);margin:16px 0"></div>
+    <div class="intro-section">
+      <div class="intro-label">Bối cảnh</div>
+      <div class="intro-value">${sc.context}</div>
+    </div>
+    <div class="intro-section">
+      <div class="intro-label">Kỹ thuật SE được dùng</div>
+      <div class="intro-techniques">${techHTML}</div>
+    </div>
+    <div class="intro-section">
+      <div class="intro-label">Mục tiêu học tập</div>
+      <ul class="objectives">${sc.objectives.map(o=>`<li>${o}</li>`).join('')}</ul>
+    </div>
+  `;
+  showScreen('scr-intro');
+}
+
+// ═══════════════════════════════════════════
+//  START — phone call or direct
+// ═══════════════════════════════════════════
+function startScenario(){
+  const sc = SCENARIOS[state.scenarioIdx];
+  state.activeScenario = sc;
+  state.score = 60;
+  state.history = [];
+  state.currentNode = sc.startNode;
+  const firstNode = sc.nodes[sc.startNode];
+  // Show phone call screen only if first node involves a call
+  if(firstNode.speaker==='system' && (sc.nodes[sc.startNode].text.includes('đổ chuông') || sc.nodes[sc.startNode].text.includes('Cuộc gọi') || sc.id==='s1' || sc.id==='s2')){
+    setupPhoneCall(sc);
+  } else {
+    startConversation();
+  }
+}
+
+// ═══════════════════════════════════════════
+//  PHONE CALL UI
+// ═══════════════════════════════════════════
+let ringTimer = null, ringAudio = null;
+
+function setupPhoneCall(sc){
+  document.getElementById('call-number').textContent = sc.caller.number;
+  document.getElementById('call-name').textContent = sc.caller.name;
+  document.getElementById('call-avatar').textContent = sc.caller.avatar;
+  document.getElementById('call-status').textContent = 'Đang đổ chuông...';
+  document.getElementById('call-missed').classList.remove('show');
+  document.getElementById('btn-decline').style.display='';
+  document.getElementById('btn-answer').style.display='';
+  document.getElementById('phone-frame').classList.add('phone-ringing');
+  showScreen('scr-call');
+  startRingTone();
+}
+function startRingTone(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    let count = 0;
+    function ring(){
+      if(count>6) return;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.setValueAtTime(880,ctx.currentTime);
+      o.frequency.setValueAtTime(1100,ctx.currentTime+0.15);
+      g.gain.setValueAtTime(0.15,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime+0.6);
+      count++; ringTimer = setTimeout(ring,900);
+    }
+    ring();
+    ringAudio = ctx;
+  }catch(e){}
+}
+function stopRingTone(){
+  if(ringTimer){clearTimeout(ringTimer);ringTimer=null;}
+  try{if(ringAudio)ringAudio.close();}catch(e){}
+  document.getElementById('phone-frame').classList.remove('phone-ringing');
+}
+function callAnswer(){
+  stopRingTone();
+  document.getElementById('call-status').textContent = 'Đang kết nối...';
+  document.getElementById('btn-decline').style.display='none';
+  document.getElementById('btn-answer').style.display='none';
+  setTimeout(()=>startConversation(), 800);
+}
+function callDecline(){
+  stopRingTone();
+  // For s1 — show missed call then re-ring
+  const sc = SCENARIOS[state.scenarioIdx];
+  if(sc.id==='s1'){
+    document.getElementById('call-missed').textContent = '📵 Cuộc gọi nhỡ';
+    document.getElementById('call-missed').classList.add('show');
+    document.getElementById('call-status').textContent = 'Gọi nhỡ';
+    // Change to redial node
+    state.currentNode = 's1_redial';
+    setTimeout(()=>startConversation(), 1000);
+  } else {
+    // For s2 — if decline, go to safe end (checked SMS)
+    state.currentNode = 's2_sms';
+    startConversation();
+  }
+}
+
+// ═══════════════════════════════════════════
+//  CONVERSATION ENGINE
+// ═══════════════════════════════════════════
+function startConversation(){
+  const sc = state.activeScenario;
+  // set topbar
+  document.getElementById('conv-avatar').textContent = sc.caller.avatar;
+  document.getElementById('conv-name').textContent = sc.caller.name;
+  document.getElementById('conv-sub').textContent = sc.caller.role;
+  document.getElementById('conv-body').innerHTML='';
+  updateScoreBar();
+  showScreen('scr-conv');
+  // If we have a specific node from callDecline
+  const node = sc.nodes[state.currentNode];
+  renderNode(node);
+}
+
+function renderNode(node){
+  if(!node) return;
+  state.currentNode = node.id;
+  const body = document.getElementById('conv-body');
+  // If ending node
+  if(node.ending){
+    setTimeout(()=>showResult(node), 600);
+    return;
+  }
+  // Build bubble
+  const bub = document.createElement('div');
+  bub.className = 'bubble-row fade-in';
+  if(node.speaker==='system'){
+    bub.innerHTML=`<div class="bubble system">${node.text}</div>`;
+  } else {
+    const emotionMap = {calm:'😐',urgent:'😤',angry:'😠',friendly:'😊',threatening:'😡'};
+    const seTagsHTML = node.se_technique.map(t=>{
+      const info = SE_TECHNIQUES[t]; if(!info) return '';
+      return `<span class="se-tag" style="color:${info.color};border-color:${info.color}44;background:${info.color}0d" onclick="showSETechPopup(['${t}'],null)">${t}</span>`;
+    }).join('');
+    bub.innerHTML=`
+      <div class="bubble-avatar">${emotionMap[node.emotion]||'💬'}</div>
+      <div>
+        ${node.se_technique.length?`<div class="se-tags" style="margin-bottom:6px">${seTagsHTML}</div>`:''}
+        <div class="bubble scammer">${node.text}</div>
+        <div class="bubble-time mono">${new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>`;
+  }
+  body.appendChild(bub);
+  bub.scrollIntoView({behavior:'smooth',block:'end'});
+  // Render choices
+  setTimeout(()=>renderChoices(node.choices), node.speaker==='scammer'?400:100);
+}
+
+function renderChoices(choices){
+  const list = document.getElementById('choices-list');
+  list.innerHTML='';
+  if(!choices||choices.length===0) return;
+  choices.forEach((c,i)=>{
+    const btn = document.createElement('button');
+    btn.className=`choice-btn ${c.tone} fade-in`;
+    btn.style.animationDelay=`${i*80}ms`;
+    const icons={comply:'😰',question:'🤔',resist:'🛡️',correct:'✅'};
+    btn.innerHTML=`<span class="choice-icon">${c.icon||icons[c.tone]||'💬'}</span><span>${c.label}</span>`;
+    btn.onclick=()=>selectChoice(c);
+    list.appendChild(btn);
+  });
+}
+
+function selectChoice(choice){
+  // Clear choices
+  document.getElementById('choices-list').innerHTML='';
+  // Add user bubble
+  const body = document.getElementById('conv-body');
+  const ubub = document.createElement('div');
+  ubub.className='bubble-row user fade-in';
+  ubub.innerHTML=`
+    <div>
+      <div class="bubble user-choice">${choice.label}</div>
+      <div class="bubble-time mono" style="text-align:right">${new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</div>
+    </div>
+    <div class="bubble-avatar">🧑</div>`;
+  body.appendChild(ubub);
+  ubub.scrollIntoView({behavior:'smooth',block:'end'});
+  // Update score
+  state.score = Math.max(0, Math.min(100, state.score + choice.score_delta));
+  state.history.push({nodeId:state.currentNode, choice});
+  updateScoreBar();
+  // Show SE popup if this choice has consequences or current node has techniques
+  const curNode = state.activeScenario.nodes[state.currentNode];
+  if(curNode && curNode.se_technique && curNode.se_technique.length>0){
+    setTimeout(()=>{
+      showSETechPopup(curNode.se_technique, choice, ()=>{
+        proceedToNext(choice.next);
+      });
+    }, 400);
+  } else {
+    setTimeout(()=>proceedToNext(choice.next), 500);
+  }
+}
+
+function proceedToNext(nextId){
+  const sc = state.activeScenario;
+  const next = sc.nodes[nextId];
+  if(!next){ showResult({ending:'safe',lesson:'Kịch bản kết thúc.'}); return; }
+  if(next.speaker==='scammer'){
+    // typing indicator
+    const body = document.getElementById('conv-body');
+    const typing = document.createElement('div');
+    typing.className='bubble-row fade-in';
+    typing.id='typing-indicator';
+    typing.innerHTML=`<div class="bubble-avatar">💬</div><div class="bubble scammer"><span class="typing-dots">Đang nhập</span></div>`;
+    body.appendChild(typing);
+    typing.scrollIntoView({behavior:'smooth',block:'end'});
+    setTimeout(()=>{
+      const t = document.getElementById('typing-indicator');
+      if(t) t.remove();
+      renderNode(next);
+    }, 1200);
+  } else {
+    renderNode(next);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  SCORE BAR
+// ═══════════════════════════════════════════
+function updateScoreBar(){
+  const bar = document.getElementById('score-bar');
+  const val = document.getElementById('score-val');
+  const s = state.score;
+  const color = s>=70?'var(--green)':s>=40?'var(--amber)':'var(--red)';
+  bar.style.width = s+'%';
+  bar.style.background = color;
+  val.textContent = s;
+  val.style.color = color;
+}
+
+// ═══════════════════════════════════════════
+//  SE TECHNIQUE POPUP
+// ═══════════════════════════════════════════
+let sePopupCallback = null;
+function showSETechPopup(techKeys, choice, callback){
+  sePopupCallback = callback||null;
+  const content = document.getElementById('se-popup-content');
+  let html = '';
+  if(choice){
+    const isGood = choice.tone==='resist'||choice.tone==='correct';
+    html += `<div class="consequence-box ${isGood?'good':''}" style="margin-bottom:14px">
+      <strong>${isGood?'✅ Lựa chọn đúng':'⚠ Hậu quả lựa chọn này:'}</strong><br>${choice.consequence}
+    </div>`;
+  }
+  techKeys.forEach(k=>{
+    const t = SE_TECHNIQUES[k]; if(!t) return;
+    html += `<div class="se-tech-card" style="--tech-color:${t.color}">
+      <div class="se-tech-name" style="color:${t.color}">${t.title}</div>
+      <div class="se-tech-desc">${t.desc}</div>
+      <div class="se-tech-section">
+        <div class="se-tech-section-lbl">Dấu hiệu nhận biết</div>
+        <ul class="se-tech-list">${t.signs.map(s=>`<li>${s}</li>`).join('')}</ul>
+      </div>
+      <div class="se-tech-section">
+        <div class="se-tech-section-lbl">Cách đối phó</div>
+        <ul class="se-tech-list">${t.counter.map(c=>`<li>${c}</li>`).join('')}</ul>
+      </div>
+      <div class="se-tech-section" style="margin-bottom:0">
+        <div class="se-tech-section-lbl">Câu thoại thường gặp</div>
+        <div class="se-tech-list" style="font-size:12px;color:var(--amber);font-style:italic;padding:6px 10px;background:rgba(255,170,0,.05);border-radius:6px;margin-top:4px">${t.example}</div>
+      </div>
+    </div>`;
+  });
+  content.innerHTML = html;
+  const popup = document.getElementById('se-popup');
+  popup.classList.add('show');
+  document.getElementById('se-popup-panel').scrollTop = 0;
+}
+function closeSEPopup(e){
+  if(e && e.target !== document.getElementById('se-popup') && e.target !== document.getElementById('se-popup-close')) return;
+  document.getElementById('se-popup').classList.remove('show');
+  if(sePopupCallback){ const cb=sePopupCallback; sePopupCallback=null; setTimeout(cb,200); }
+}
+
+// ═══════════════════════════════════════════
+//  RESULT SCREEN
+// ═══════════════════════════════════════════
+function showResult(endNode){
+  const sc = state.activeScenario;
+  const ending = endNode.ending || 'safe';
+  const score = state.score;
+  // Icon + title
+  const configs = {
+    safe:{icon:'🛡️',color:'var(--green)',title:'An toàn!',subtitle:'Bạn đã nhận diện và đối phó thành công với kẻ lừa đảo.'},
+    caught:{icon:'⚠️',color:'var(--red)',title:'Bị lừa đảo',subtitle:'Kẻ lừa đảo đã thực hiện thành công kịch bản tấn công tâm lý. Hãy học từ trải nghiệm này.'},
+    partial:{icon:'⚡',color:'var(--amber)',title:'Thoát được — nhưng có rủi ro',subtitle:'Bạn đã phát hiện ra lừa đảo, nhưng có một số điểm cần rút kinh nghiệm.'}
+  };
+  const cfg = configs[ending]||configs.safe;
+  // Render
+  document.getElementById('result-icon-wrap').innerHTML = cfg.icon;
+  document.getElementById('result-icon-wrap').style.cssText = `width:90px;height:90px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:40px;border:3px solid ${cfg.color};background:${cfg.color}15`;
+  document.getElementById('result-title').textContent = cfg.title;
+  document.getElementById('result-title').style.color = cfg.color;
+  document.getElementById('result-subtitle').textContent = cfg.subtitle;
+  document.getElementById('result-score-num').textContent = score;
+  document.getElementById('result-score-num').style.color = score>=70?'var(--green)':score>=40?'var(--amber)':'var(--red)';
+  // Body
+  let bodyHTML = '';
+  if(endNode.lesson){
+    bodyHTML += `<div class="lesson-box">
+      <h3>💡 Bài học từ kịch bản này</h3>
+      <p>${endNode.lesson}</p>
+    </div>`;
+  }
+  // Red flags
+  bodyHTML += `<div class="red-flags">
+    <h3>🚩 5 Dấu hiệu nhận biết — ${sc.title}</h3>
+    ${sc.redFlags.map((f,i)=>`<div class="red-flag-item">
+      <div class="red-flag-num">${i+1}</div>
+      <div class="red-flag-text">${f}</div>
+    </div>`).join('')}
+  </div>`;
+  // Techniques used summary
+  const techHTML = sc.techniques.map(k=>{
+    const t=SE_TECHNIQUES[k]; if(!t) return '';
+    return `<span class="tech-chip" style="background:${t.color}15;color:${t.color};border:1px solid ${t.color}33;padding:4px 10px;border-radius:8px;font-size:11px;display:inline-block;margin:3px">${t.title}</span>`;
+  }).join('');
+  bodyHTML += `<div class="lesson-box"><h3>⚡ Kỹ thuật tấn công tâm lý đã dùng</h3><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${techHTML}</div></div>`;
+  document.getElementById('result-body').innerHTML = bodyHTML;
+  // Buttons
+  const hasNext = state.scenarioIdx < SCENARIOS.length-1;
+  document.getElementById('result-btns').innerHTML = `
+    <button class="btn-retry" onclick="retryScenario()">↩ Thử lại kịch bản này</button>
+    ${hasNext?`<button class="btn-next" onclick="openIntro(${state.scenarioIdx+1})">Kịch bản tiếp →</button>`:''}
+    <button class="btn-home" onclick="showScreen('scr-landing')">⌂ Chọn lại</button>
+  `;
+  showScreen('scr-result');
+}
+
+function retryScenario(){
+  const idx = state.scenarioIdx;
+  state.score = 60;
+  state.history = [];
+  openIntro(idx);
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+renderLanding();
+</script>
+</body>
+</html>
