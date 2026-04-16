@@ -329,10 +329,9 @@ html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);c
   </div>
   <div class="hotline-box">
     <h3>📞 BÁO CÁO LỪA ĐẢO</h3>
-    <div class="hotline-item"><span class="hotline-name">Đường dây nóng Công an</span><span class="hotline-num">113</span></div>
-    <div class="hotline-item"><span class="hotline-name">Tổng đài Bộ Công an</span><span class="hotline-num">069.219.4053</span></div>
-    <div class="hotline-item"><span class="hotline-name">Cổng phản ánh tội phạm CNC</span><span class="hotline-num">dichvucong.bocongan.gov.vn</span></div>
-    <div class="hotline-item"><span class="hotline-name">CA tỉnh Quảng Ninh</span><span class="hotline-num">0203.3838.113</span></div>
+    <div class="hotline-item"><span class="hotline-name">Tổng đài</span><span class="hotline-num">113</span></div>
+    <div class="hotline-item"><span class="hotline-name">Công an tỉnh Quảng Ninh</span><span class="hotline-num">069.2808.100</span></div>
+    <div class="hotline-item"><span class="hotline-name">Phòng An ninh mạng và PCTP sử dụng CNC - CA tỉnh Quảng Ninh</span><span class="hotline-num">069.2808.247</span></div>
   </div>
   <div class="result-btns" id="result-btns"></div>
 </div>
@@ -415,6 +414,22 @@ const SE_TECHNIQUES = {
     signs:['Tự nguyện gọi đến "hỗ trợ" không ai yêu cầu','Đề nghị vá lỗi, cập nhật, kiểm tra bảo mật miễn phí','Yêu cầu cài phần mềm để "giúp" bạn'],
     counter:['Không cho phép ai truy cập từ xa vào máy tính không mời','Tự gọi hỗ trợ qua kênh chính thức khi cần','Phần mềm điều khiển từ xa (AnyDesk, TeamViewer) cần cực kỳ thận trọng'],
     example:'"Tôi phát hiện máy tính của anh bị hack. Cài AnyDesk để tôi giúp sửa miễn phí."'
+  },
+  OSINT:{
+    color:'#34d399',
+    title:'OSINT — Khai thác thông tin mạng xã hội',
+    desc:'Kẻ lừa đảo thu thập thông tin cá nhân từ Facebook, Zalo, TikTok công khai để tạo cảm giác "chúng biết hết về mình" — từ đó tăng độ tin cậy giả tạo.',
+    signs:['Biết chính xác tên trường, năm học, tên bố/mẹ, quê quán','Nhắc đến sự kiện gần đây bạn đăng lên mạng','Tạo cảm giác "chúng đã theo dõi bạn từ lâu"'],
+    counter:['Kiểm tra và khóa thông tin cá nhân trên mạng xã hội (Facebook riêng tư, Zalo giới hạn bạn bè)','Nhớ: biết thông tin cá nhân KHÔNG đồng nghĩa với hợp pháp — đây là thông tin công khai','Không để lộ số điện thoại, tên trường, ảnh gia đình công khai trên mạng'],
+    example:'"Chúng tôi biết anh đang học tại ĐHCN Quảng Ninh, bố tên Nguyễn Văn A, mẹ tên Trần Thị B. Anh không thể chối."'
+  },
+  FABRICATED_EVIDENCE:{
+    color:'#fb7185',
+    title:'FABRICATED EVIDENCE — Bằng chứng giả mạo',
+    desc:'Sử dụng video, ghi âm giọng nói AI (voice cloning), ảnh ghép hoặc tin nhắn giả để tạo ra "bằng chứng" người thân đang gặp nguy hiểm.',
+    signs:['Video người thân trông không tự nhiên, ánh sáng bất thường, nền khách sạn','Giọng nói nghe quen nhưng thiếu cảm xúc, đọc theo kịch bản','Không thể trả lời câu hỏi cụ thể do bạn đặt ra ngay lúc đó','Ghi âm ngắn, không liên kết với thực tế hiện tại'],
+    counter:['Yêu cầu người thân nói một câu CỤ THỂ do bạn nghĩ ra ngay lúc đó — AI không thể tạo video thời gian thực','Gọi số điện thoại thật của người thân từ máy khác','Nhờ người quen đến địa điểm xác minh trực tiếp','Gọi trường học, cơ quan, bạn bè của người thân để xác nhận'],
+    example:'Nhận được video 10 giây giọng giống con: "Bố/mẹ ơi, con đang bị giữ, cần tiền gấp..."'
   }
 };
 
@@ -768,6 +783,239 @@ const SCENARIOS = [
     'Link tải phần mềm không phải tên miền chính thức (anydesk.com, teamviewer.com)',
     'Sau khi "kiểm tra" tự nhiên phát hiện nhiều virus và yêu cầu mua dịch vụ tốn tiền'
   ]
+},
+{
+  id:'s4',
+  title:'Bắt cóc trực tuyến (Virtual Kidnapping)',
+  subtitle:'Hai góc nhìn: Nạn nhân & Phụ huynh',
+  icon:'📵',
+  difficulty:'Khó',
+  diffColor:'#ff3b3b',
+  time:'10–15 phút',
+  cardColor:'#f472b6',
+  cardGlow:'rgba(244,114,182,.06)',
+  dualTrack: true,
+  trackALabel: 'Tuyến A — Góc nhìn Nạn nhân (Khoa)',
+  trackBLabel: 'Tuyến B — Góc nhìn Phụ huynh',
+  caller:{name:'Nhiều nhân vật', role:'Kịch bản Virtual Kidnapping', number:'Số lạ', avatar:'📵'},
+  callerA:{name:'Thượng tá Trần Văn Đức (giả)', role:'Cục CSHS — Bộ Công an (giả mạo)', number:'0243.xxx.xxxx', avatar:'👮'},
+  callerB:{name:'Kẻ lừa đảo ẩn danh', role:'Giả mạo giữ con làm con tin', number:'Số ẩn danh', avatar:'🎭'},
+  techniques:['AUTHORITY','ISOLATION','FEAR','URGENCY','OSINT','FABRICATED_EVIDENCE'],
+  context:'Kịch bản tái hiện thủ đoạn "Bắt cóc trực tuyến" — kẻ lừa đảo thao túng tâm lý nạn nhân để tự quay video giả bị giam giữ, sau đó dùng video đó đòi tiền chuộc từ gia đình. KHÔNG có bắt cóc thật. Trải nghiệm từ hai phía để hiểu toàn bộ kịch bản.',
+  objectives:[
+    'Nhận ra kỹ thuật ISOLATION — "không được báo gia đình" là dấu đỏ số 1',
+    'Hiểu cách kẻ lừa đảo dùng thông tin OSINT từ mạng xã hội để tạo áp lực',
+    'Học cách xác minh video/ghi âm giả (Tuyến B)',
+    'Biết quy trình đúng: cúp máy — gọi 113 — báo gia đình ngay'
+  ],
+  startNode:'s4a_call',
+  startNodeB:'s4b_start',
+  nodes:{
+    // ════ TUYẾN A — GÓC NHÌN NẠN NHÂN (KHOA) ════
+    s4a_call:{
+      id:'s4a_call', speaker:'system',
+      text:'📱 9:15 sáng thứ Tư. Khoa vừa tan buổi học đầu tiên, ngồi trong căng-tin trường. Điện thoại đổ chuông — số lạ 0243.xxx.xxxx, đầu số Hà Nội. Khoa chưa biết đây là bước đầu tiên của một kịch bản lừa đảo tinh vi.',
+      emotion:'neutral', se_technique:[],
+      choices:[
+        {label:'Bắt máy', tone:'comply', icon:'📞', next:'s4a_intro', consequence:'Khoa nhấc máy. Cuộc gọi bắt đầu.', score_delta:0},
+        {label:'Không bắt — chặn số lạ', tone:'resist', icon:'🔕', next:'s4a_end_safe_1', consequence:'Quyết định an toàn — số lạ đầu số Hà Nội gọi cho sinh viên Quảng Ninh vào buổi sáng là dấu hiệu đáng ngờ.', score_delta:+15}
+      ]
+    },
+    s4a_intro:{
+      id:'s4a_intro', speaker:'scammer',
+      text:'Đây là Thượng tá Trần Văn Đức, Cục Cảnh sát Hình sự, Bộ Công an. Tôi đang liên hệ với em Nguyễn Minh Khoa, sinh năm 2005, hiện đang học tại trường Đại học tại Hạ Long — Quảng Ninh đúng không? Tài khoản ngân hàng mang tên em vừa bị phát hiện liên quan đến đường dây rửa tiền xuyên quốc gia. Em cần phối hợp ngay để làm rõ.',
+      emotion:'calm', se_technique:['AUTHORITY','PRETEXTING'],
+      choices:[
+        {label:'"Vâng đúng ạ, nhưng tôi không biết gì về chuyện đó"', tone:'comply', icon:'😰', next:'s4a_isolate', consequence:'Khoa đã xác nhận danh tính và tỏ ra hoảng loạn — kẻ lừa đảo tiếp tục leo thang.', score_delta:-10},
+        {label:'"Cho tôi mã số cán bộ và số điện thoại chính thức của Cục để tôi xác minh"', tone:'question', icon:'🔍', next:'s4a_deflect', consequence:'Phản ứng đúng — yêu cầu xác minh thông qua kênh độc lập.', score_delta:+10},
+        {label:'Nhắn tin thầm cho bố/mẹ ngay khi đang nghe máy', tone:'resist', icon:'💬', next:'s4a_end_safe_2', consequence:'Xuất sắc! Liên hệ gia đình ngay là hành động đúng đắn nhất.', score_delta:+20},
+        {label:'Cúp máy và gọi 113 ngay', tone:'resist', icon:'🚨', next:'s4a_end_safe_1', consequence:'Hoàn hảo! Số lạ tự xưng cơ quan điều tra → cúp máy → gọi 113 là quy trình chuẩn.', score_delta:+25}
+      ]
+    },
+    s4a_deflect:{
+      id:'s4a_deflect', speaker:'scammer',
+      text:'Mã số cán bộ của tôi là CSHS-2024-0847. Còn số điện thoại chính thức thì hiện tại đây là đường dây điều tra mật — em không được phép gọi ra ngoài vì sẽ làm lộ vụ án và em sẽ bị coi là đồng phạm, chịu trách nhiệm hình sự. Hiện tôi đang bảo vệ em đấy.',
+      emotion:'calm', se_technique:['AUTHORITY','ISOLATION','FEAR'],
+      choices:[
+        {label:'"Nếu không thể xác minh qua kênh chính thức, tôi sẽ cúp máy và tự đến đồn Công an"', tone:'resist', icon:'🏛️', next:'s4a_end_safe_3', consequence:'Xuất sắc! Cơ quan thật sẽ đồng ý; kẻ lừa đảo sẽ không để bạn làm vậy.', score_delta:+20},
+        {label:'"Thôi được, tôi tin anh, tiếp tục đi"', tone:'comply', icon:'😟', next:'s4a_isolate', consequence:'Bạn đã bỏ lỡ cơ hội thoát ra — kẻ lừa đảo chuyển sang giai đoạn tiếp theo.', score_delta:-15}
+      ]
+    },
+    s4a_isolate:{
+      id:'s4a_isolate', speaker:'scammer',
+      text:'Bây giờ em nghe tôi. Đây là cuộc điều tra bí mật cấp quốc gia. Em TUYỆT ĐỐI không được báo cho bất kỳ ai — kể cả bố mẹ, bạn bè, thầy cô — vì nếu thông tin bị lộ, toàn bộ đường dây sẽ xóa bằng chứng và em sẽ trở thành nghi phạm chính. Em hiểu không?',
+      emotion:'urgent', se_technique:['ISOLATION','FEAR'],
+      choices:[
+        {label:'"Vâng, tôi hiểu, tôi sẽ không nói với ai"', tone:'comply', icon:'🤫', next:'s4a_move', consequence:'NGUY HIỂM. Isolation thành công — bạn đã mất lớp bảo vệ quan trọng nhất.', score_delta:-20},
+        {label:'"Tại sao điều tra hình sự lại cần tôi giữ bí mật với gia đình?"', tone:'question', icon:'🤨', next:'s4a_isolate_q', consequence:'Câu hỏi đúng — đây là mâu thuẫn cốt lõi cho thấy đây là lừa đảo.', score_delta:+10},
+        {label:'Nhắn tin thầm cho bố/mẹ ngay', tone:'resist', icon:'💬', next:'s4a_end_safe_2', consequence:'Đúng! Quyền liên lạc gia đình là quyền cơ bản — không ai có thể tước bỏ điều đó qua điện thoại.', score_delta:+20},
+        {label:'Cúp máy ngay', tone:'resist', icon:'📵', next:'s4a_end_safe_1', consequence:'Hoàn toàn đúng! Yêu cầu cô lập khỏi gia đình là dấu đỏ số 1 của lừa đảo.', score_delta:+20}
+      ]
+    },
+    s4a_isolate_q:{
+      id:'s4a_isolate_q', speaker:'scammer',
+      text:'Bởi vì nếu bố mẹ em biết, họ sẽ hoảng loạn và có thể làm hỏng cuộc điều tra. Chúng tôi đang bảo vệ gia đình em đấy. Sau khi xử lý xong, em có thể báo cho họ biết mọi chuyện đã ổn. Bây giờ em phải làm theo hướng dẫn của tôi.',
+      emotion:'friendly', se_technique:['ISOLATION','AUTHORITY'],
+      choices:[
+        {label:'Cúp máy và gọi ngay cho bố/mẹ', tone:'resist', icon:'👨‍👩‍👧', next:'s4a_end_safe_2', consequence:'Đúng! Không có lý do hợp pháp nào ngăn bạn liên hệ gia đình. Cơ quan thật không làm vậy.', score_delta:+20},
+        {label:'"Thôi được, tôi làm theo"', tone:'comply', icon:'😟', next:'s4a_move', consequence:'Lý do nghe có vẻ hợp lý nhưng hoàn toàn sai — bạn đã bị thuyết phục.', score_delta:-15}
+      ]
+    },
+    s4a_move:{
+      id:'s4a_move', speaker:'scammer',
+      text:'Tốt. Bây giờ em cần làm theo ngay: Đặt phòng khách sạn trong thành phố, đến đó chờ cán bộ của chúng tôi đến làm việc trực tiếp. Quan trọng: em tháo SIM điện thoại ra, chỉ dùng wifi kết nối Zalo để liên lạc với tôi. Không dùng số điện thoại thường nữa vì chúng tôi nghi nghi phạm đang theo dõi số của em.',
+      emotion:'urgent', se_technique:['ISOLATION','URGENCY','PRETEXTING'],
+      choices:[
+        {label:'Làm theo — đặt phòng và tháo SIM', tone:'comply', icon:'🏨', next:'s4a_video', consequence:'Tháo SIM đồng nghĩa với cắt hoàn toàn liên lạc với gia đình — đây là mục tiêu của kẻ lừa đảo.', score_delta:-25},
+        {label:'"Tại sao phải tháo SIM? Cơ quan điều tra hợp pháp không yêu cầu điều này"', tone:'question', icon:'🤔', next:'s4a_move_q', consequence:'Câu hỏi sắc bén! Yêu cầu tháo SIM là bằng chứng rõ ràng nhất đây là lừa đảo.', score_delta:+15},
+        {label:'"Tôi không thể đi — tôi đến đồn Công an gần nhất ngay bây giờ"', tone:'resist', icon:'🏛️', next:'s4a_end_safe_3', consequence:'Hoàn hảo! Đến đồn Công an là cách dứt điểm nhanh nhất — kẻ lừa đảo không thể tiếp tục.', score_delta:+25}
+      ]
+    },
+    s4a_move_q:{
+      id:'s4a_move_q', speaker:'scammer',
+      text:'Bởi vì nghi phạm trong đường dây có thể đã cài phần mềm gián điệp trên SIM của em, chúng theo dõi mọi cuộc gọi. Tháo SIM là để bảo vệ em. Nếu em không làm theo, chúng tôi sẽ phải ra lệnh bắt giữ em ngay hôm nay để điều tra.',
+      emotion:'threatening', se_technique:['FEAR','URGENCY','PRETEXTING'],
+      choices:[
+        {label:'Cúp máy ngay — đây rõ ràng là lừa đảo', tone:'resist', icon:'📵', next:'s4a_end_safe_4', consequence:'Chính xác! Đe dọa bắt giữ ngay qua điện thoại mà không có giấy tờ chính thức = lừa đảo 100%.', score_delta:+25},
+        {label:'Hoảng loạn và làm theo', tone:'comply', icon:'😱', next:'s4a_video', consequence:'Đe dọa bắt giữ đã khiến bạn mất bình tĩnh hoàn toàn.', score_delta:-25}
+      ]
+    },
+    s4a_video:{
+      id:'s4a_video', speaker:'scammer',
+      text:'Em đã đến khách sạn chưa? Tốt. Bây giờ để phục vụ hồ sơ điều tra, em cần quay một đoạn video ngắn. Trong video, em nhìn thẳng vào camera và nói: "Con đang ở đây, cần bố mẹ giúp con". Đây là quy trình xác minh danh tính theo nghị định mới của Bộ Công an.',
+      emotion:'calm', se_technique:['PRETEXTING','FABRICATED_EVIDENCE'],
+      choices:[
+        {label:'Từ chối quay video', tone:'resist', icon:'🚫', next:'s4a_end_safe_4', consequence:'Hoàn toàn đúng! Không có quy trình điều tra nào yêu cầu video kiểu này. Đây là bằng chứng giả.', score_delta:+25},
+        {label:'"Tại sao điều tra lại cần video như vậy? Đây không phải quy trình hợp pháp"', tone:'question', icon:'🤨', next:'s4a_end_safe_4', consequence:'Đúng! Nhận ra sự phi lý trong yêu cầu là kỹ năng quan trọng. Video này sẽ được dùng để lừa gia đình bạn.', score_delta:+20},
+        {label:'Quay video theo hướng dẫn', tone:'comply', icon:'📹', next:'s4a_osint', consequence:'Đây là video sẽ được gửi cho gia đình bạn kèm yêu cầu tiền chuộc. Kịch bản bắt đầu leo thang.', score_delta:-30}
+      ]
+    },
+    s4a_osint:{
+      id:'s4a_osint', speaker:'scammer',
+      text:'Để em thấy chúng tôi nắm đầy đủ thông tin: Em tên Nguyễn Minh Khoa, sinh năm 2005, học khoa Công nghệ thông tin tại ĐH Hạ Long. Bố em tên Nguyễn Văn Nam, làm tại Công ty X ở thị xã Đông Triều. Mẹ em tên Lê Thị Hoa. Em không thể chối bỏ bằng chứng. Bây giờ cần em hợp tác để chuyển tiền vào tài khoản phong tỏa...',
+      emotion:'calm', se_technique:['OSINT','AUTHORITY','FEAR'],
+      choices:[
+        {label:'Hoảng loạn — "Họ biết hết về tôi, chắc là thật rồi!"', tone:'comply', icon:'😱', next:'s4a_end_caught', consequence:'DỪNG LẠI! Mọi thông tin này đều lấy từ Facebook/Zalo công khai trong vài phút — không phải bằng chứng điều tra thật.', score_delta:-30},
+        {label:'Nhận ra: đây toàn là thông tin công khai trên mạng xã hội của tôi', tone:'resist', icon:'💡', next:'s4a_end_safe_5', consequence:'Xuất sắc! Thông tin OSINT từ mạng xã hội không phải bằng chứng pháp lý. Kẻ lừa đảo chỉ Google tên bạn.', score_delta:+25},
+        {label:'Dừng lại, hít thở sâu — gọi 113 ngay', tone:'resist', icon:'🆘', next:'s4a_end_safe_5', consequence:'Đúng! Trong trạng thái hoảng loạn, dừng lại và hít thở là bước quan trọng trước khi hành động.', score_delta:+20}
+      ]
+    },
+    // TUYẾN A ENDINGS
+    s4a_end_safe_1:{
+      id:'s4a_end_safe_1', speaker:'system', ending:'safe',
+      text:'✅ Bạn đã không để kẻ lừa đảo tiếp cận ngay từ đầu!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Số lạ tự xưng Công an gọi cho sinh viên về "tội danh nghiêm trọng" là kịch bản lừa đảo phổ biến nhất hiện nay. Cúp máy và gọi 113 là phản ứng đúng đắn nhất.'
+    },
+    s4a_end_safe_2:{
+      id:'s4a_end_safe_2', speaker:'system', ending:'safe',
+      text:'✅ Liên hệ gia đình ngay — đây là hành động bảo vệ quan trọng nhất!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Ngay khi nhận được cuộc gọi đáng ngờ, liên hệ gia đình là cách phá vỡ kịch bản hiệu quả nhất. Kẻ lừa đảo không thể tiếp tục khi bạn không còn bị cô lập.'
+    },
+    s4a_end_safe_3:{
+      id:'s4a_end_safe_3', speaker:'system', ending:'safe',
+      text:'✅ Đến đồn Công an trực tiếp — kẻ lừa đảo lập tức cúp máy!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Đề nghị đến làm việc trực tiếp tại trụ sở là "vũ khí" mạnh nhất. Cơ quan thật sẽ đồng ý; kẻ lừa đảo sẽ cúp máy ngay lập tức vì không thể đối mặt thật.'
+    },
+    s4a_end_safe_4:{
+      id:'s4a_end_safe_4', speaker:'system', ending:'safe',
+      text:'✅ Nhận ra yêu cầu phi lý — thoát ra đúng lúc!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Yêu cầu tháo SIM, đến khách sạn chờ, quay video "xác minh danh tính" — đây đều là những yêu cầu hoàn toàn phi lý không tồn tại trong quy trình pháp lý thật.'
+    },
+    s4a_end_safe_5:{
+      id:'s4a_end_safe_5', speaker:'system', ending:'safe',
+      text:'✅ Nhận ra OSINT — thông tin trên mạng xã hội không phải bằng chứng!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'80% thông tin kẻ lừa đảo "biết" về bạn đến từ Facebook, Zalo, TikTok công khai. Hãy kiểm tra và đặt chế độ riêng tư cho tất cả thông tin cá nhân trên mạng xã hội ngay hôm nay.'
+    },
+    s4a_end_caught:{
+      id:'s4a_end_caught', speaker:'system', ending:'caught',
+      text:'⚠ Dừng lại — Đây là điểm dừng giáo dục. Trong thực tế, gia đình bạn sẽ nhận được video đó kèm yêu cầu tiền chuộc.', emotion:'warning', se_technique:[],choices:[],
+      lesson:'Kẻ lừa đảo dùng video của bạn gửi cho gia đình kèm yêu cầu chuyển tiền. KHÔNG CÓ bắt cóc thật — bạn hoàn toàn an toàn. Nhưng gia đình có thể mất tiền nếu không biết cách xác minh. Hãy chơi Tuyến B để hiểu góc nhìn của phụ huynh.'
+    },
+    // ════ TUYẾN B — GÓC NHÌN PHỤ HUYNH ════
+    s4b_start:{
+      id:'s4b_start', speaker:'system',
+      text:'📱 10:30 sáng. Bố/mẹ của Khoa đang làm việc thì nhận được tin nhắn từ số lạ, kèm file ghi âm ngắn 12 giây — giọng nghe giống Khoa: "Bố/mẹ ơi... con đang bị người ta giữ... con cần tiền gấp...". Tiếp theo là tin nhắn: "Con trai/gái bạn đang trong tay chúng tôi. Chuyển 50 triệu trong 2 giờ hoặc hậu quả nghiêm trọng. ĐỪNG báo công an."',
+      emotion:'urgent', se_technique:['FABRICATED_EVIDENCE','FEAR','URGENCY'],
+      choices:[
+        {label:'Hoảng loạn — chuyển tiền ngay để cứu con', tone:'comply', icon:'💸', next:'s4b_end_caught', consequence:'Dừng lại! Đây là phản ứng mà kẻ lừa đảo mong muốn nhất. Hãy xác minh trước.', score_delta:-40},
+        {label:'Gọi ngay số điện thoại của Khoa để xác minh', tone:'resist', icon:'📞', next:'s4b_call_khoa', consequence:'Đây là bước đầu tiên và quan trọng nhất. Luôn xác minh trực tiếp với người thân trước.', score_delta:+25},
+        {label:'Gọi 113 trình báo và xin hướng dẫn', tone:'resist', icon:'🚨', next:'s4b_end_safe_1', consequence:'Xuất sắc! Công an có quy trình xử lý bắt cóc — họ sẽ giúp bạn xác minh và xử lý.', score_delta:+30},
+        {label:'Gọi cho bạn bè/thầy cô/bạn cùng phòng của Khoa để xác minh', tone:'resist', icon:'👥', next:'s4b_end_safe_2', consequence:'Rất tốt! Nhờ người xung quanh Khoa xác minh trực tiếp.', score_delta:+25}
+      ]
+    },
+    s4b_call_khoa:{
+      id:'s4b_call_khoa', speaker:'scammer',
+      text:'Bạn vừa định gọi cho Khoa thì điện thoại đổ chuông — số lạ khác: "ĐỪNG gọi cho con bạn! Mọi cuộc gọi đến số đó sẽ bị chúng tôi phát hiện và Khoa sẽ bị hại. Chỉ liên hệ qua số này. Bạn còn 90 phút để chuyển tiền."',
+      emotion:'threatening', se_technique:['ISOLATION','FEAR','URGENCY'],
+      choices:[
+        {label:'Tin và không gọi cho Khoa nữa', tone:'comply', icon:'😰', next:'s4b_pressure', consequence:'Kẻ lừa đảo đã thành công ngăn bạn xác minh — đây là mục tiêu chính của chúng.', score_delta:-20},
+        {label:'Kiên quyết gọi số Khoa', tone:'resist', icon:'📞', next:'s4b_end_safe_3', consequence:'Đúng! Đây chính xác là điều bạn cần làm. Không có lý do hợp pháp nào ngăn bạn gọi cho con.', score_delta:+30},
+        {label:'Nhờ người thân/hàng xóm đến chỗ Khoa kiểm tra', tone:'resist', icon:'🏃', next:'s4b_end_safe_2', consequence:'Tuyệt! Xác minh bằng sự hiện diện thực tế — kẻ lừa đảo không thể giả mạo điều này.', score_delta:+25},
+        {label:'Gọi 113 ngay', tone:'resist', icon:'🚨', next:'s4b_end_safe_1', consequence:'Hoàn hảo! Công an sẽ giúp xác minh và bắt kẻ lừa đảo.', score_delta:+30}
+      ]
+    },
+    s4b_pressure:{
+      id:'s4b_pressure', speaker:'system',
+      text:'📹 Kẻ lừa đảo gửi tiếp đoạn video 20 giây — hình ảnh mờ, ánh sáng kém, giọng đọc cứng nhắc theo kịch bản: "Con đang ở... con cần bố mẹ... chuyển tiền đi". Khuôn mặt trông không tự nhiên. Bạn có nhận ra dấu hiệu bất thường trong video này không?',
+      emotion:'urgent', se_technique:['FABRICATED_EVIDENCE'],
+      choices:[
+        {label:'Tin đây là video thật — chuyển tiền ngay', tone:'comply', icon:'💸', next:'s4b_end_caught', consequence:'Dừng lại! Hãy kiểm tra các dấu hiệu bất thường trong video trước khi làm bất cứ điều gì.', score_delta:-35},
+        {label:'Nhận ra dấu hiệu bất thường: ánh sáng kỳ lạ, giọng đọc theo kịch bản', tone:'resist', icon:'🔍', next:'s4b_video_check', consequence:'Tốt! Nhận diện video giả là kỹ năng quan trọng. Tiếp tục kiểm tra.', score_delta:+20},
+        {label:'Yêu cầu kẻ lừa đảo cho Khoa nói một câu cụ thể do bạn đặt ra ngay lúc này', tone:'question', icon:'🎯', next:'s4b_video_check', consequence:'Xuất sắc! Đây là cách kiểm tra video giả hiệu quả nhất — AI không thể tạo video thời gian thực theo yêu cầu ngẫu nhiên.', score_delta:+25}
+      ]
+    },
+    s4b_video_check:{
+      id:'s4b_video_check', speaker:'system',
+      text:'🔍 Bạn xem lại video kỹ hơn và nhận ra:\n• Nền phòng là phòng khách sạn bình thường — không có dấu hiệu giam giữ\n• Khoa đọc theo kịch bản, không có câu trả lời tự nhiên\n• Ánh sáng đến từ điện thoại đặt trước mặt — không phải giam giữ thật\n• Video không có mốc thời gian thực tế\n\nKhi bạn yêu cầu Khoa nói "Mã nhà mình là số bao nhiêu" — kẻ lừa đảo không thể đáp ứng. Chúng cúp máy.',
+      emotion:'neutral', se_technique:['FABRICATED_EVIDENCE'],
+      choices:[
+        {label:'Gọi ngay cho số Khoa và 113', tone:'resist', icon:'📞', next:'s4b_end_safe_3', consequence:'Đúng! Sau khi nhận ra video giả, xác minh trực tiếp và báo Công an là bước tiếp theo.', score_delta:+25}
+      ]
+    },
+    // TUYẾN B ENDINGS
+    s4b_end_safe_1:{
+      id:'s4b_end_safe_1', speaker:'system', ending:'safe',
+      text:'✅ Gọi 113 — Công an xác minh Khoa vẫn an toàn trong vòng 15 phút!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Công an có quy trình xử lý khủng hoảng bắt cóc. Khi bạn báo cáo ngay, họ có thể xác minh nhanh chóng và theo dõi số điện thoại của kẻ lừa đảo để điều tra. Không bao giờ tự xử lý một mình.'
+    },
+    s4b_end_safe_2:{
+      id:'s4b_end_safe_2', speaker:'system', ending:'safe',
+      text:'✅ Người thân đến chỗ Khoa — Khoa đang ngồi trong căng-tin trường, hoàn toàn bình thường!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Xác minh bằng sự hiện diện thực tế là bằng chứng không thể làm giả. Khi bạn biết con mình an toàn, kịch bản lừa đảo sụp đổ hoàn toàn.'
+    },
+    s4b_end_safe_3:{
+      id:'s4b_end_safe_3', speaker:'system', ending:'safe',
+      text:'✅ Khoa bắt máy và hoàn toàn bình thường — không có gì xảy ra!', emotion:'safe', se_technique:[],choices:[],
+      lesson:'Bước đơn giản nhất và hiệu quả nhất: gọi thẳng cho con. Kẻ lừa đảo đã cố ngăn bạn làm điều này vì đây chính là điều phá vỡ toàn bộ kịch bản của chúng.'
+    },
+    s4b_end_caught:{
+      id:'s4b_end_caught', speaker:'system', ending:'caught',
+      text:'⚠ Dừng lại — Điểm dừng giáo dục. Trong thực tế, bạn sẽ chuyển tiền và phát hiện ra Khoa vẫn an toàn, không ai bắt cóc con bạn cả.', emotion:'warning', se_technique:[],choices:[],
+      lesson:'Không có bắt cóc thật — Khoa đang ngồi trong căng-tin trường uống nước. Nhưng bạn đã mất số tiền chuyển đi. Quy tắc vàng: Trước bất kỳ khoản tiền nào — dành 5 phút gọi cho con, gọi 113, nhờ người xác minh trực tiếp.'
+    }
+  },
+  checklistA:[
+    'Người gọi yêu cầu giữ bí mật tuyệt đối với gia đình',
+    'Yêu cầu tháo SIM điện thoại hoặc chỉ liên lạc qua ứng dụng',
+    'Yêu cầu đến khách sạn hoặc nơi vắng vẻ để "làm việc"',
+    'Thông báo tội danh nghiêm trọng nhưng xử lý qua điện thoại thay vì giấy triệu tập',
+    'Biết thông tin cá nhân nhưng tất cả đều có trên mạng xã hội công khai',
+    'Tạo áp lực thời gian — phải làm ngay trong vài tiếng'
+  ],
+  checklistB:[
+    'Nhận video/ghi âm giọng con gặp nguy hiểm từ số lạ',
+    'Bị yêu cầu không được gọi cho con để "tránh nguy hiểm"',
+    'Áp lực chuyển tiền ngay trong vài tiếng',
+    'Video con trông không tự nhiên, đọc theo kịch bản, ánh sáng kỳ lạ',
+    'Kẻ gọi không cho nói chuyện trực tiếp với con hoặc đặt câu hỏi cụ thể'
+  ],
+  redFlags:[
+    'Yêu cầu tháo SIM và chỉ dùng Zalo — không tồn tại trong quy trình điều tra hợp pháp',
+    '"Không được báo gia đình" — dấu đỏ số 1, Công an thật không bao giờ yêu cầu điều này',
+    'Thông tin cá nhân "biết hết" đều lấy từ Facebook/Zalo công khai trong vài phút',
+    'Video giả: nền khách sạn, giọng đọc theo kịch bản, không trả lời câu hỏi cụ thể',
+    'Cơ quan nhà nước không bao giờ xử lý điều tra qua điện thoại + yêu cầu chuyển tiền'
+  ]
 }
 ];
 
@@ -825,8 +1073,8 @@ function openIntro(idx){
   }).join('');
   document.getElementById('intro-content').innerHTML = `
     <div class="intro-avatar" style="background:${sc.cardColor}18;border-color:${sc.cardColor}44">${sc.caller.avatar}</div>
-    <div class="intro-name">${sc.caller.name}</div>
-    <div class="intro-role mono">${sc.caller.role}</div>
+    <div class="intro-name">${sc.title}</div>
+    <div class="intro-role mono">${sc.subtitle}</div>
     <div style="height:1px;background:var(--border);margin:16px 0"></div>
     <div class="intro-section">
       <div class="intro-label">Bối cảnh</div>
@@ -841,21 +1089,63 @@ function openIntro(idx){
       <ul class="objectives">${sc.objectives.map(o=>`<li>${o}</li>`).join('')}</ul>
     </div>
   `;
+  // Dual-track: show two start buttons
+  const btnWrap = document.getElementById('btn-start-scenario');
+  if(sc.dualTrack){
+    btnWrap.style.display = 'none';
+    let dualDiv = document.getElementById('dual-track-btns');
+    if(!dualDiv){ dualDiv = document.createElement('div'); dualDiv.id='dual-track-btns'; btnWrap.parentNode.insertBefore(dualDiv, btnWrap.nextSibling); }
+    dualDiv.style.display = '';
+    dualDiv.innerHTML = `
+      <div style="background:rgba(244,114,182,.06);border:1px solid rgba(244,114,182,.2);border-radius:10px;padding:14px;margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);font-family:'Share Tech Mono',monospace;margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px">— Chọn góc nhìn bạn muốn trải nghiệm —</div>
+        <button onclick="startScenarioTrack('A')" style="width:100%;padding:12px;border-radius:8px;background:rgba(244,114,182,.12);border:1px solid rgba(244,114,182,.3);color:#f9a8d4;font-size:13px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;margin-bottom:8px;text-align:left">
+          👤 Tuyến A — Góc nhìn Nạn nhân (Khoa, sinh viên 20 tuổi)
+        </button>
+        <button onclick="startScenarioTrack('B')" style="width:100%;padding:12px;border-radius:8px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);color:#7dd3fc;font-size:13px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;text-align:left">
+          👨‍👩‍👧 Tuyến B — Góc nhìn Phụ huynh (bố/mẹ của Khoa)
+        </button>
+      </div>`;
+  } else {
+    btnWrap.style.display = '';
+    const dualDiv = document.getElementById('dual-track-btns');
+    if(dualDiv) dualDiv.style.display = 'none';
+  }
   showScreen('scr-intro');
 }
 
 // ═══════════════════════════════════════════
 //  START — phone call or direct
 // ═══════════════════════════════════════════
-function startScenario(){
+function startScenarioTrack(track){
   const sc = SCENARIOS[state.scenarioIdx];
   state.activeScenario = sc;
+  state.activeTrack = track;
+  state.score = 60;
+  state.history = [];
+  state.currentNode = track==='B' ? sc.startNodeB : sc.startNode;
+  // Update topbar caller info based on track
+  if(track==='B' && sc.callerB){
+    sc._activeCaller = sc.callerB;
+  } else if(sc.callerA){
+    sc._activeCaller = sc.callerA;
+  } else {
+    sc._activeCaller = sc.caller;
+  }
+  startConversation();
+}
+
+function startScenario(){
+  const sc = SCENARIOS[state.scenarioIdx];
+  if(sc.dualTrack){ return; } // handled by track buttons
+  state.activeScenario = sc;
+  state.activeTrack = null;
   state.score = 60;
   state.history = [];
   state.currentNode = sc.startNode;
+  sc._activeCaller = sc.caller;
   const firstNode = sc.nodes[sc.startNode];
-  // Show phone call screen only if first node involves a call
-  if(firstNode.speaker==='system' && (sc.nodes[sc.startNode].text.includes('đổ chuông') || sc.nodes[sc.startNode].text.includes('Cuộc gọi') || sc.id==='s1' || sc.id==='s2')){
+  if(firstNode.speaker==='system' && (firstNode.text.includes('đổ chuông') || firstNode.text.includes('Cuộc gọi') || sc.id==='s1' || sc.id==='s2')){
     setupPhoneCall(sc);
   } else {
     startConversation();
@@ -934,10 +1224,10 @@ function callDecline(){
 // ═══════════════════════════════════════════
 function startConversation(){
   const sc = state.activeScenario;
-  // set topbar
-  document.getElementById('conv-avatar').textContent = sc.caller.avatar;
-  document.getElementById('conv-name').textContent = sc.caller.name;
-  document.getElementById('conv-sub').textContent = sc.caller.role;
+  const caller = sc._activeCaller || sc.caller;
+  document.getElementById('conv-avatar').textContent = caller.avatar;
+  document.getElementById('conv-name').textContent = caller.name;
+  document.getElementById('conv-sub').textContent = caller.role;
   document.getElementById('conv-body').innerHTML='';
   updateScoreBar();
   showScreen('scr-conv');
@@ -1138,9 +1428,37 @@ function showResult(endNode){
       <p>${endNode.lesson}</p>
     </div>`;
   }
+  // Checklist for dual-track scenario
+  if(sc.dualTrack){
+    const isTrackB = state.activeTrack==='B';
+    const checklist = isTrackB ? sc.checklistB : sc.checklistA;
+    const msgTitle = isTrackB ? '📋 Checklist dành cho Phụ huynh' : '📋 Checklist dành cho học sinh/sinh viên';
+    const msgWarn  = isTrackB
+      ? '⚠ Nếu nghi ngờ: Không chuyển tiền — Gọi 113 ngay — Nhờ người đến chỗ con kiểm tra.'
+      : '⚠ Nếu có 2/5 dấu hiệu trở lên: Cúp máy — Gọi 113 — Báo ngay cho gia đình.';
+    const goldMsg  = isTrackB
+      ? 'Trước khi chuyển bất kỳ khoản tiền nào — hãy dành 5 phút liên hệ nhà trường, 113 hoặc nhờ người xác minh con bạn vẫn an toàn.'
+      : 'CÔNG AN THẬT KHÔNG BAO GIỜ yêu cầu bạn giữ bí mật với gia đình. Đây là dấu hiệu lừa đảo số 1.';
+    bodyHTML += `<div class="red-flags">
+      <h3>${msgTitle}</h3>
+      ${checklist.map((f,i)=>`<div class="red-flag-item">
+        <div class="red-flag-num">${i+1}</div>
+        <div class="red-flag-text">${f}</div>
+      </div>`).join('')}
+      <div style="margin-top:12px;padding:10px 12px;background:rgba(255,170,0,.08);border-radius:8px;font-size:12px;color:var(--amber)">${msgWarn}</div>
+    </div>
+    <div style="background:rgba(0,255,136,.06);border:2px solid rgba(0,255,136,.25);border-radius:10px;padding:16px;margin-bottom:16px;text-align:center">
+      <p style="font-size:14px;font-weight:700;color:var(--green);line-height:1.7">🛡️ ${goldMsg}</p>
+    </div>
+    <div style="text-align:center;margin-bottom:16px">
+      <button onclick="openIntro(${state.scenarioIdx})" style="padding:10px 20px;border-radius:8px;background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.3);color:#f9a8d4;font-size:13px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif">
+        ${isTrackB ? '← Thử Tuyến A (Góc nhìn nạn nhân)' : '→ Thử Tuyến B (Góc nhìn phụ huynh)'}
+      </button>
+    </div>`;
+  }
   // Red flags
   bodyHTML += `<div class="red-flags">
-    <h3>🚩 5 Dấu hiệu nhận biết — ${sc.title}</h3>
+    <h3>🚩 Dấu hiệu nhận biết — ${sc.title}</h3>
     ${sc.redFlags.map((f,i)=>`<div class="red-flag-item">
       <div class="red-flag-num">${i+1}</div>
       <div class="red-flag-text">${f}</div>
@@ -1156,7 +1474,7 @@ function showResult(endNode){
   // Buttons
   const hasNext = state.scenarioIdx < SCENARIOS.length-1;
   document.getElementById('result-btns').innerHTML = `
-    <button class="btn-retry" onclick="retryScenario()">↩ Thử lại kịch bản này</button>
+    <button class="btn-retry" onclick="retryScenario()">↩ Thử lại</button>
     ${hasNext?`<button class="btn-next" onclick="openIntro(${state.scenarioIdx+1})">Kịch bản tiếp →</button>`:''}
     <button class="btn-home" onclick="showScreen('scr-landing')">⌂ Chọn lại</button>
   `;
