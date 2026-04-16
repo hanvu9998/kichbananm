@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Kỹ Thuật Xã Hội — Mô phỏng lừa đảo | ANM&PCTP Quảng Ninh</title>
+<title>Kỹ Thuật Xã Hội — Mô phỏng lừa đảo | Phòng An ninh mạng & PCTP sử dụng CNC - CA tỉnh Quảng Ninh</title>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -219,7 +219,7 @@ html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);c
   </div>
   <div>
     <div class="hdr-title">Kỹ Thuật Xã Hội — Social Engineering</div>
-    <div class="hdr-sub mono">ANM&amp;PCTP · CA tỉnh Quảng Ninh</div>
+    <div class="hdr-sub mono">Phòng An ninh mạng & PCTP sử dụng CNC - CA tỉnh Quảng Ninh</div>
   </div>
   <a id="btn-back" href="index.html">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
@@ -823,7 +823,7 @@ const SCENARIOS = [
     },
     s4a_intro:{
       id:'s4a_intro', speaker:'scammer',
-      text:'Đây là Nguyễn Văn A, Cục Cảnh sát Hình sự, Bộ Công an. Tôi đang liên hệ với em Nguyễn Minh Khoa, sinh năm 2012, hiện đang học lớp 9 tại trường THCS tại Hạ Long — Quảng Ninh đúng không? Tài khoản ngân hàng mang tên em vừa bị phát hiện liên quan đến đường dây rửa tiền xuyên quốc gia. Em cần phối hợp ngay để làm rõ.',
+      text:'Tôi là Nguyễn Văn A, Cục Cảnh sát Hình sự, Bộ Công an. Tôi đang liên hệ với em Nguyễn Minh Khoa, sinh năm 2012, hiện đang học lớp 9 tại trường THCS tại Hạ Long — Quảng Ninh đúng không? Tài khoản ngân hàng mang tên em vừa bị phát hiện liên quan đến đường dây rửa tiền xuyên quốc gia. Em cần phối hợp ngay để làm rõ.',
       emotion:'calm', se_technique:['AUTHORITY','PRETEXTING'],
       choices:[
         {label:'"Vâng đúng ạ, nhưng tôi không biết gì về chuyện đó"', tone:'comply', icon:'😰', next:'s4a_isolate', consequence:'Khoa đã xác nhận danh tính và tỏ ra hoảng loạn — kẻ lừa đảo tiếp tục leo thang.', score_delta:-10},
@@ -863,7 +863,7 @@ const SCENARIOS = [
     },
     s4a_move:{
       id:'s4a_move', speaker:'scammer',
-      text:'Tốt. Bây giờ em cần làm theo ngay: Đặt phòng khách sạn trong thành phố, đến đó chờ cán bộ của chúng tôi đến làm việc trực tiếp. Quan trọng: em tháo SIM điện thoại ra, chỉ dùng wifi kết nối Zalo để liên lạc với tôi. Không dùng số điện thoại thường nữa vì chúng tôi nghi nghi phạm đang theo dõi số của em.',
+      text:'Tốt. Bây giờ em cần làm theo ngay: Thuê 1 phòng nhà nghỉ trong thành phố, đến đó chờ cán bộ của chúng tôi đến làm việc trực tiếp. Quan trọng: em tháo SIM điện thoại ra, chỉ dùng wifi kết nối Zalo để liên lạc với tôi. Không dùng số điện thoại thường nữa vì chúng tôi nghi ngờ nghi phạm đang theo dõi số của em.',
       emotion:'urgent', se_technique:['ISOLATION','URGENCY','PRETEXTING'],
       choices:[
         {label:'Làm theo — đặt phòng và tháo SIM', tone:'comply', icon:'🏨', next:'s4a_video', consequence:'Tháo SIM đồng nghĩa với cắt hoàn toàn liên lạc với gia đình — đây là mục tiêu của kẻ lừa đảo.', score_delta:-25},
