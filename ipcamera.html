@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Camera An Ninh Bị Xâm Nhập | ANM&PCTP Quảng Ninh</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080f;--bg2:#0a0f1a;--bg3:#0f1520;--bg4:#141e2e;
+  --border:#182030;--border2:#1e2d45;
+  --text:#c0d4f0;--text2:#6a8aaa;--text3:#2e4560;
+  --green:#00ff88;--red:#ff3b3b;--amber:#ffaa00;
+  --green-dim:rgba(0,255,136,.07);--red-dim:rgba(255,59,59,.07);
+  --cyan:#22d3ee;--purple:#a78bfa;
+}
+html,body{min-height:100vh;font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;font-size:15px}
+.mono{font-family:'Share Tech Mono',monospace}
+
+/* ── HEADER ── */
+#hdr{position:sticky;top:0;z-index:200;background:rgba(5,8,15,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;height:52px;gap:12px}
+.hdr-logo{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,#ff3b3b,#ff8c00);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-title{font-weight:700;font-size:13px;color:#fff}
+.hdr-sub{font-size:10px;color:var(--text3);font-family:'Share Tech Mono',monospace}
+#btn-back{margin-left:auto;display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:.15s}
+#btn-back:hover{border-color:var(--green);color:var(--green)}
+
+/* ── SCREENS ── */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ══ INTRO ══ */
+#scr-intro{min-height:calc(100vh - 52px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
+#scr-intro.active{display:flex}
+.intro-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.25);border-radius:20px;padding:5px 16px;font-size:11px;font-family:'Share Tech Mono',monospace;color:var(--red);margin-bottom:20px;animation:pulse-red 2s infinite}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 rgba(255,59,59,0)}50%{box-shadow:0 0 16px rgba(255,59,59,.25)}}
+.intro-h1{font-size:clamp(22px,4.5vw,40px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:14px}
+.intro-h1 span{color:var(--red)}
+.intro-desc{font-size:15px;color:var(--text2);line-height:1.7;max-width:580px;margin:0 auto 32px}
+.stats-row{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.stat-box{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px 24px;text-align:center;min-width:120px}
+.stat-num{font-size:28px;font-weight:800;font-family:'Share Tech Mono',monospace;color:var(--red)}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:3px}
+.intro-warn{background:rgba(255,170,0,.06);border:1px solid rgba(255,170,0,.2);border-radius:10px;padding:14px 18px;max-width:520px;margin:0 auto 28px;font-size:13px;color:var(--text2);line-height:1.6}
+.intro-warn strong{color:var(--amber)}
+#btn-enter{padding:14px 36px;border-radius:10px;background:var(--red);color:#fff;border:none;font-size:16px;font-weight:800;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s;letter-spacing:.5px}
+#btn-enter:hover{background:#e03030;box-shadow:0 0 24px rgba(255,59,59,.4)}
+
+/* ══ HACKER DASHBOARD ══ */
+#scr-hacker{background:var(--bg);min-height:calc(100vh - 52px);padding:16px}
+#scr-hacker.active{display:block}
+.hk-topbar{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:8px 14px;background:rgba(255,59,59,.06);border:1px solid rgba(255,59,59,.2);border-radius:8px}
+.hk-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:blink 1s infinite}
+.hk-title{font-size:12px;color:var(--red);font-family:'Share Tech Mono',monospace;font-weight:700}
+.hk-count{margin-left:auto;font-size:11px;color:var(--text2);font-family:'Share Tech Mono',monospace}
+.camera-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:640px){.camera-grid{grid-template-columns:repeat(2,1fr)}}
+
+.cam-feed{position:relative;border-radius:8px;overflow:hidden;border:1px solid #1a2a1a;background:#000;aspect-ratio:4/3;cursor:pointer}
+.cam-feed:hover{border-color:rgba(0,255,136,.3)}
+.cam-feed.active-cam{border-color:var(--red)!important;box-shadow:0 0 12px rgba(255,59,59,.3)}
+/* Scan lines */
+.cam-feed::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);pointer-events:none;z-index:3}
+/* Noise grain */
+.cam-svg{width:100%;height:100%;display:block}
+.cam-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(0,20,5,.3),rgba(0,0,0,.4));z-index:2;pointer-events:none}
+.cam-hud{position:absolute;inset:0;z-index:4;padding:6px 7px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+.cam-hud-top{display:flex;align-items:center;justify-content:space-between}
+.cam-rec{display:flex;align-items:center;gap:4px;font-size:10px;color:#ff3b3b;font-family:'Share Tech Mono',monospace;font-weight:700}
+.cam-rec-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1s infinite}
+.cam-time{font-size:9px;color:rgba(255,255,255,.7);font-family:'Share Tech Mono',monospace}
+.cam-hud-bot{display:flex;flex-direction:column;gap:2px}
+.cam-loc{font-size:9px;color:rgba(255,255,255,.85);font-family:'Share Tech Mono',monospace;font-weight:700}
+.cam-model{font-size:8px;color:rgba(0,255,136,.7);font-family:'Share Tech Mono',monospace}
+.cam-cred{font-size:8px;color:rgba(255,59,59,.9);font-family:'Share Tech Mono',monospace;font-weight:700}
+.cam-motion{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,59,59,.15);border:1px solid rgba(255,59,59,.5);border-radius:4px;padding:3px 8px;font-size:9px;color:var(--red);font-family:'Share Tech Mono',monospace;font-weight:700;z-index:5;animation:blink .7s infinite;display:none}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.hk-explainer{background:rgba(255,59,59,.05);border:1px solid rgba(255,59,59,.2);border-radius:10px;padding:18px 20px;margin-bottom:14px}
+.hk-explainer h2{font-size:16px;font-weight:700;color:var(--red);margin-bottom:8px}
+.hk-explainer p{font-size:13px;color:var(--text2);line-height:1.7}
+.hk-explainer strong{color:#fff}
+.hk-btn{width:100%;padding:13px;border-radius:8px;background:var(--red);color:#fff;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s;margin-top:4px}
+.hk-btn:hover{background:#e03030;box-shadow:0 0 20px rgba(255,59,59,.35)}
+
+/* ══ SHODAN SCREEN ══ */
+#scr-shodan{padding:20px;max-width:800px;margin:0 auto;min-height:calc(100vh - 52px)}
+.section-back{display:inline-flex;align-items:center;gap:6px;color:var(--text3);font-size:12px;cursor:pointer;margin-bottom:20px;transition:.15s}
+.section-back:hover{color:var(--green)}
+.shodan-terminal{background:#000;border:1px solid #1a3a1a;border-radius:10px;overflow:hidden;margin-bottom:16px}
+.shodan-bar{background:#0a1a0a;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1a3a1a}
+.shodan-dot{width:10px;height:10px;border-radius:50%}
+.shodan-title{font-size:11px;color:#4a7a4a;font-family:'Share Tech Mono',monospace;margin-left:6px}
+.shodan-body{padding:16px}
+.shodan-prompt{font-size:13px;color:#4af;font-family:'Share Tech Mono',monospace;margin-bottom:12px}
+.shodan-search-row{display:flex;gap:8px;margin-bottom:14px}
+.shodan-input{flex:1;background:#0a1a0a;border:1px solid #1a3a1a;border-radius:6px;padding:8px 12px;color:#00ff88;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none}
+.shodan-input:focus{border-color:rgba(0,255,136,.4)}
+.shodan-search-btn{padding:8px 16px;background:rgba(0,255,136,.15);border:1px solid rgba(0,255,136,.3);border-radius:6px;color:var(--green);font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;transition:.15s;white-space:nowrap}
+.shodan-search-btn:hover{background:rgba(0,255,136,.25)}
+.shodan-results{display:none}
+.shodan-result-header{font-size:11px;color:rgba(0,255,136,.6);font-family:'Share Tech Mono',monospace;margin-bottom:10px;border-bottom:1px solid #1a3a1a;padding-bottom:8px}
+.shodan-item{background:#0a1a0a;border:1px solid #1a3a1a;border-radius:6px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:.15s;position:relative}
+.shodan-item:hover{border-color:rgba(0,255,136,.3);background:#0d200d}
+.shodan-item-ip{font-size:12px;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-weight:700;margin-bottom:4px}
+.shodan-item-info{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;font-family:'Share Tech Mono',monospace}
+.shodan-tag{padding:1px 7px;border-radius:3px;font-size:10px;font-family:'Share Tech Mono',monospace}
+.tag-vuln{background:rgba(255,59,59,.15);color:var(--red);border:1px solid rgba(255,59,59,.3)}
+.tag-info{background:rgba(56,189,248,.1);color:var(--cyan);border:1px solid rgba(56,189,248,.2)}
+.tag-loc{background:rgba(255,170,0,.1);color:var(--amber);border:1px solid rgba(255,170,0,.2)}
+.shodan-access-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:5px 12px;background:rgba(255,59,59,.12);border:1px solid rgba(255,59,59,.3);border-radius:5px;color:var(--red);font-size:11px;font-family:'Share Tech Mono',monospace;cursor:pointer;transition:.15s}
+.shodan-access-btn:hover{background:rgba(255,59,59,.25)}
+.shodan-explain{background:rgba(255,170,0,.06);border:1px solid rgba(255,170,0,.2);border-radius:8px;padding:14px;font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.shodan-explain strong{color:var(--amber)}
+.next-btn{width:100%;padding:12px;border-radius:8px;background:var(--green);color:#000;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s}
+.next-btn:hover{background:#00e07a;box-shadow:0 0 18px rgba(0,255,136,.3)}
+
+/* ══ LOGIN SCREEN ══ */
+#scr-login{padding:20px;max-width:600px;margin:0 auto;min-height:calc(100vh - 52px)}
+.login-context{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.6}
+.login-context strong{color:#fff}
+.hikvision-frame{background:#1a1a2e;border:2px solid #2a2a4e;border-radius:8px;overflow:hidden;margin-bottom:16px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.hik-titlebar{background:#0d0d1f;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2a2a4e}
+.hik-logo{font-size:11px;color:#8888cc;font-family:'Share Tech Mono',monospace;font-weight:700}
+.hik-model{font-size:10px;color:#4a4a7a;font-family:'Share Tech Mono',monospace;margin-left:auto}
+.hik-body{padding:24px;background:linear-gradient(160deg,#0f0f20,#1a1a30)}
+.hik-cam-preview{width:100%;aspect-ratio:16/9;background:#000;border-radius:6px;margin-bottom:20px;position:relative;overflow:hidden}
+.hik-cam-preview svg{width:100%;height:100%}
+.hik-cam-preview::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.1) 3px,rgba(0,0,0,.1) 4px)}
+.hik-preview-label{position:absolute;bottom:6px;right:8px;font-size:9px;color:rgba(255,255,255,.5);font-family:'Share Tech Mono',monospace}
+.hik-form{display:flex;flex-direction:column;gap:10px}
+.hik-field{display:flex;flex-direction:column;gap:4px}
+.hik-label{font-size:11px;color:#8888aa;font-family:'Share Tech Mono',monospace}
+.hik-input{background:#0a0a18;border:1px solid #2a2a4e;border-radius:5px;padding:8px 12px;color:#ccccff;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;transition:.2s}
+.hik-input:focus{border-color:#4a4aaa}
+.hik-input.filled{border-color:rgba(255,59,59,.4);color:var(--red)}
+.hik-login-btn{padding:10px;border-radius:6px;background:#3a3a8e;color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.2s;margin-top:4px}
+.hik-login-btn:hover{background:#4a4aae}
+.hik-login-btn.loading{background:#2a2a6e;color:#8888aa}
+.hik-login-btn.success{background:#1a5a2a;color:var(--green)}
+.hik-login-btn.failed{background:#5a1a1a;color:var(--red)}
+.access-result{display:none;background:rgba(255,59,59,.07);border:1px solid rgba(255,59,59,.25);border-radius:8px;padding:16px;margin-bottom:16px}
+.access-result.show{display:block}
+.access-result h3{font-size:14px;color:var(--red);font-weight:700;margin-bottom:8px}
+.access-result p{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ══ CHECKLIST SCREEN ══ */
+#scr-check{padding:20px;max-width:700px;margin:0 auto;min-height:calc(100vh - 52px)}
+.check-intro{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.check-intro h2{font-size:16px;font-weight:700;color:#fff;margin-bottom:6px}
+.check-intro p{font-size:13px;color:var(--text2);line-height:1.6}
+.risk-item{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.2s;user-select:none}
+.risk-item:hover{border-color:var(--border2)}
+.risk-item.checked-yes{border-color:rgba(255,59,59,.4);background:rgba(255,59,59,.05)}
+.risk-item.checked-no{border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.04)}
+.risk-row{display:flex;align-items:flex-start;gap:12px}
+.risk-checkbox{width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;transition:.2s}
+.risk-item.checked-yes .risk-checkbox{background:rgba(255,59,59,.2);border-color:var(--red);color:var(--red)}
+.risk-item.checked-no .risk-checkbox{background:rgba(0,255,136,.15);border-color:var(--green);color:var(--green)}
+.risk-text{flex:1}
+.risk-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:3px}
+.risk-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.risk-result{font-size:11px;margin-top:6px;padding:6px 10px;border-radius:5px;display:none}
+.risk-item.checked-yes .risk-result{display:block;background:rgba(255,59,59,.08);color:#ffb3b3}
+.risk-item.checked-no .risk-result{display:block;background:rgba(0,255,136,.06);color:#b0ffdb}
+.risk-score-box{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;display:none}
+.risk-score-box.show{display:block}
+.risk-score-bar-outer{height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:10px 0}
+.risk-score-bar-inner{height:100%;border-radius:5px;transition:width .8s,background .5s}
+
+/* ══ FIX SCREEN ══ */
+#scr-fix{padding:20px;max-width:700px;margin:0 auto;min-height:calc(100vh - 52px)}
+.fix-step{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:10px;transition:.2s}
+.fix-step.done{border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.03)}
+.fix-step-header{display:flex;align-items:center;gap:12px;cursor:pointer}
+.fix-step-num{width:32px;height:32px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text2);font-family:'Share Tech Mono',monospace;flex-shrink:0;transition:.2s}
+.fix-step.done .fix-step-num{border-color:var(--green);color:var(--green);background:rgba(0,255,136,.1)}
+.fix-step-title{font-size:14px;font-weight:700;color:#fff;flex:1}
+.fix-step-status{font-size:11px;font-family:'Share Tech Mono',monospace;padding:2px 8px;border-radius:10px}
+.status-bad{background:rgba(255,59,59,.12);color:var(--red);border:1px solid rgba(255,59,59,.2)}
+.status-good{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.fix-step-body{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:none}
+.fix-step.open .fix-step-body{display:block}
+.fix-before-after{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.ba-box{border-radius:7px;padding:10px 12px;font-size:12px;font-family:'Share Tech Mono',monospace;line-height:1.6}
+.ba-before{background:rgba(255,59,59,.07);border:1px solid rgba(255,59,59,.2);color:#ffb3b3}
+.ba-after{background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);color:#b0ffdb}
+.ba-label{font-size:10px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;opacity:.7}
+.fix-explain{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
+.fix-action-btn{padding:9px 20px;border-radius:7px;background:var(--green);color:#000;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s}
+.fix-action-btn:hover{background:#00e07a}
+.fix-action-btn.done-btn{background:rgba(0,255,136,.15);color:var(--green);border:1px solid rgba(0,255,136,.3);cursor:default}
+.progress-bar-wrap{margin-bottom:16px}
+.progress-bar-outer{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.progress-bar-inner{height:100%;background:var(--green);border-radius:4px;transition:width .5s;width:0%}
+.progress-label{font-size:11px;color:var(--text2);font-family:'Share Tech Mono',monospace;margin-bottom:6px;display:flex;justify-content:space-between}
+
+/* ══ RESULT SCREEN ══ */
+#scr-result{padding:24px 20px 60px;max-width:700px;margin:0 auto}
+.result-hero{text-align:center;margin-bottom:28px}
+.result-icon{font-size:52px;margin-bottom:12px}
+.result-title{font-size:28px;font-weight:800;margin-bottom:8px}
+.result-sub{font-size:14px;color:var(--text2);line-height:1.6;max-width:480px;margin:0 auto 24px}
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:20px}
+.tip-card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px}
+.tip-card-icon{font-size:20px;margin-bottom:8px}
+.tip-card-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:5px}
+.tip-card-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.golden-rule{background:rgba(0,255,136,.05);border:2px solid rgba(0,255,136,.25);border-radius:12px;padding:18px 20px;text-align:center;margin-bottom:20px}
+.golden-rule p{font-size:15px;font-weight:700;color:var(--green);line-height:1.7}
+.result-btns{display:flex;gap:10px;flex-wrap:wrap}
+.result-btns button{flex:1;min-width:140px;padding:12px;border-radius:8px;border:1px solid;font-size:13px;font-weight:700;cursor:pointer;font-family:'Exo 2',sans-serif;transition:.15s}
+.btn-restart{background:rgba(255,59,59,.1);border-color:rgba(255,59,59,.3);color:var(--red)}
+.btn-restart:hover{background:rgba(255,59,59,.2)}
+.btn-home{background:var(--bg3);border-color:var(--border2);color:var(--text2)}
+.btn-home:hover{border-color:var(--green);color:var(--green)}
+
+/* ── UTILS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .35s ease forwards}
+@media(max-width:500px){.fix-before-after{grid-template-columns:1fr}.shodan-access-btn{position:static;margin-top:8px;display:block;text-align:center}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hdr">
+  <div class="hdr-logo">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+  </div>
+  <div>
+    <div class="hdr-title">Camera An Ninh Bị Xâm Nhập</div>
+    <div class="hdr-sub mono">ANM&amp;PCTP · CA tỉnh Quảng Ninh</div>
+  </div>
+  <a id="btn-back" href="index.html">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Trang chủ
+  </a>
+</div>
+
+<!-- ══ SCREEN: INTRO ══ -->
+<div id="scr-intro" class="screen active">
+  <div class="intro-badge">🔴 CẢNH BÁO AN NINH MẠNG</div>
+  <h1 class="intro-h1">Camera nhà bạn<br>đang bị <span>theo dõi</span>?</h1>
+  <p class="intro-desc">Hàng chục nghìn camera an ninh gia đình tại Việt Nam đang bị truy cập trái phép — không cần kỹ năng hacker, chỉ cần biết Google. Module này giúp bạn hiểu rõ nguy cơ và cách bảo vệ.</p>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num">47K+</div><div class="stat-lbl">Camera VN lộ trên Shodan</div></div>
+    <div class="stat-box"><div class="stat-num">68%</div><div class="stat-lbl">Dùng mật khẩu mặc định</div></div>
+    <div class="stat-box"><div class="stat-num">0</div><div class="stat-lbl">Kỹ năng cần để xâm nhập</div></div>
+  </div>
+  <div class="intro-warn"><strong>Mục đích giáo dục:</strong> Mọi camera, địa điểm và thông tin trong module này đều là <strong>mô phỏng hư cấu</strong> phục vụ tuyên truyền an ninh mạng. Không phản ánh bất kỳ hệ thống thực tế nào.</div>
+  <button id="btn-enter" onclick="showScreen('scr-hacker')">👁 Xem hacker nhìn thấy gì →</button>
+</div>
+
+<!-- ══ SCREEN: HACKER DASHBOARD ══ -->
+<div id="scr-hacker" class="screen">
+  <div class="hk-topbar">
+    <div class="hk-dot"></div>
+    <span class="hk-title mono">LIVE CAMERA FEED — TRUY CẬP TRÁI PHÉP</span>
+    <span class="hk-count mono" id="hk-count">6 camera · Việt Nam</span>
+  </div>
+
+  <div class="camera-grid">
+    <!-- CAM 1: Phòng khách -->
+    <div class="cam-feed" id="cam1">
+      <svg class="cam-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="120" fill="#0a1208"/>
+        <!-- floor -->
+        <rect x="0" y="75" width="160" height="45" fill="#0d1a0a"/>
+        <!-- sofa -->
+        <rect x="15" y="70" width="70" height="22" rx="3" fill="#1a2e14"/>
+        <rect x="15" y="65" width="70" height="8" rx="2" fill="#1e3418"/>
+        <rect x="15" y="65" width="10" height="27" rx="2" fill="#1e3418"/>
+        <rect x="75" y="65" width="10" height="27" rx="2" fill="#1e3418"/>
+        <!-- coffee table -->
+        <rect x="30" y="94" width="40" height="8" rx="2" fill="#142010"/>
+        <!-- TV -->
+        <rect x="110" y="30" width="40" height="28" rx="2" fill="#0a120a"/>
+        <rect x="112" y="32" width="36" height="24" fill="#050e05"/>
+        <rect x="125" y="58" width="10" height="4" rx="1" fill="#142010"/>
+        <!-- window -->
+        <rect x="40" y="10" width="50" height="35" rx="2" fill="#0a1a18"/>
+        <line x1="65" y1="10" x2="65" y2="45" stroke="#0d2020" stroke-width="1.5"/>
+        <line x1="40" y1="27" x2="90" y2="27" stroke="#0d2020" stroke-width="1.5"/>
+        <!-- plant -->
+        <rect x="5" y="82" width="8" height="10" rx="1" fill="#142010"/>
+        <ellipse cx="9" cy="82" rx="8" ry="6" fill="#1a2e10"/>
+      </svg>
+      <div class="cam-overlay"></div>
+      <div class="cam-hud">
+        <div class="cam-hud-top">
+          <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+          <div class="cam-time mono" id="ct1"></div>
+        </div>
+        <div class="cam-hud-bot">
+          <div class="cam-loc">📍 Phòng khách · Hạ Long</div>
+          <div class="cam-model">Hikvision DS-2CD2143</div>
+          <div class="cam-cred">⚠ admin / admin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAM 2: Bếp -->
+    <div class="cam-feed" id="cam2">
+      <svg class="cam-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="120" fill="#0a0e12"/>
+        <rect x="0" y="80" width="160" height="40" fill="#0d1218"/>
+        <!-- counter -->
+        <rect x="0" y="60" width="100" height="25" rx="0" fill="#141c24"/>
+        <rect x="0" y="57" width="100" height="5" rx="0" fill="#1a2430"/>
+        <!-- sink -->
+        <rect x="15" y="62" width="28" height="18" rx="2" fill="#0d1820"/>
+        <ellipse cx="29" cy="71" rx="10" ry="7" fill="#0a1218"/>
+        <rect x="27" y="62" width="4" height="5" rx="1" fill="#1e2e3a"/>
+        <!-- stove -->
+        <rect x="55" y="62" width="35" height="18" rx="2" fill="#141c24"/>
+        <circle cx="64" cy="68" r="5" fill="#1a2430" stroke="#0a1820" stroke-width="1"/>
+        <circle cx="80" cy="68" r="5" fill="#1a2430" stroke="#0a1820" stroke-width="1"/>
+        <circle cx="64" cy="76" r="5" fill="#1a2430" stroke="#0a1820" stroke-width="1"/>
+        <circle cx="80" cy="76" r="5" fill="#1a2430" stroke="#0a1820" stroke-width="1"/>
+        <!-- fridge -->
+        <rect x="110" y="30" width="42" height="55" rx="3" fill="#141c28"/>
+        <rect x="113" y="33" width="36" height="24" rx="2" fill="#0d1520"/>
+        <rect x="113" y="59" width="36" height="23" rx="2" fill="#0d1520"/>
+        <circle cx="147" cy="45" r="2" fill="#1e2e3a"/>
+        <circle cx="147" cy="70" r="2" fill="#1e2e3a"/>
+        <!-- window above counter -->
+        <rect x="5" y="20" width="85" height="35" rx="2" fill="#0d1e2a"/>
+        <line x1="47" y1="20" x2="47" y2="55" stroke="#0f2030" stroke-width="1.5"/>
+        <line x1="5" y1="37" x2="90" y2="37" stroke="#0f2030" stroke-width="1.5"/>
+      </svg>
+      <div class="cam-overlay"></div>
+      <div class="cam-hud">
+        <div class="cam-hud-top">
+          <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+          <div class="cam-time mono" id="ct2"></div>
+        </div>
+        <div class="cam-hud-bot">
+          <div class="cam-loc">📍 Nhà bếp · Hải Phòng</div>
+          <div class="cam-model">Dahua IPC-HDW2831T</div>
+          <div class="cam-cred">⚠ admin / 12345</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAM 3: Cửa hàng -->
+    <div class="cam-feed" id="cam3">
+      <div class="cam-motion" id="motion3">⚡ MOTION DETECTED</div>
+      <svg class="cam-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="120" fill="#080a0e"/>
+        <rect x="0" y="85" width="160" height="35" fill="#0a0c12"/>
+        <!-- shelves -->
+        <rect x="5" y="20" width="18" height="70" rx="1" fill="#10141e"/>
+        <rect x="5" y="35" width="18" height="2" fill="#181e2e"/>
+        <rect x="5" y="50" width="18" height="2" fill="#181e2e"/>
+        <rect x="5" y="65" width="18" height="2" fill="#181e2e"/>
+        <rect x="30" y="20" width="18" height="70" rx="1" fill="#10141e"/>
+        <rect x="30" y="35" width="18" height="2" fill="#181e2e"/>
+        <rect x="30" y="50" width="18" height="2" fill="#181e2e"/>
+        <rect x="30" y="65" width="18" height="2" fill="#181e2e"/>
+        <!-- counter/cashier -->
+        <rect x="100" y="55" width="55" height="35" rx="2" fill="#10141e"/>
+        <rect x="100" y="52" width="55" height="5" rx="1" fill="#141a28"/>
+        <!-- monitor -->
+        <rect x="115" y="35" width="28" height="18" rx="2" fill="#0a0e18"/>
+        <rect x="117" y="37" width="24" height="14" fill="#050810"/>
+        <rect x="126" y="53" width="6" height="3" rx="1" fill="#10141e"/>
+        <!-- door -->
+        <rect x="130" y="15" width="28" height="50" rx="2" fill="#0d111e"/>
+        <rect x="132" y="17" width="24" height="46" rx="1" fill="#090d18"/>
+        <circle cx="145" cy="41" r="2" fill="#1a2030"/>
+      </svg>
+      <div class="cam-overlay"></div>
+      <div class="cam-hud">
+        <div class="cam-hud-top">
+          <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+          <div class="cam-time mono" id="ct3"></div>
+        </div>
+        <div class="cam-hud-bot">
+          <div class="cam-loc">📍 Cửa hàng · Hạ Long</div>
+          <div class="cam-model">Generic IP Cam v2.1</div>
+          <div class="cam-cred">⚠ Không có mật khẩu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAM 4: Phòng ngủ trẻ em -->
+    <div class="cam-feed" id="cam4">
+      <svg class="cam-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="120" fill="#0c0a10"/>
+        <rect x="0" y="78" width="160" height="42" fill="#100e14"/>
+        <!-- bed -->
+        <rect x="20" y="68" width="70" height="30" rx="3" fill="#18141e"/>
+        <rect x="20" y="64" width="70" height="8" rx="2" fill="#1e1828"/>
+        <!-- pillow -->
+        <rect x="26" y="66" width="20" height="10" rx="2" fill="#241e30"/>
+        <!-- blanket pattern -->
+        <rect x="20" y="74" width="70" height="24" rx="2" fill="#1a1622"/>
+        <!-- desk -->
+        <rect x="105" y="65" width="48" height="18" rx="2" fill="#14101e"/>
+        <rect x="105" y="83" width="5" height="15" rx="1" fill="#10101a"/>
+        <rect x="148" y="83" width="5" height="15" rx="1" fill="#10101a"/>
+        <!-- window -->
+        <rect x="30" y="10" width="55" height="38" rx="2" fill="#0a0e18"/>
+        <line x1="57" y1="10" x2="57" y2="48" stroke="#0d1220" stroke-width="1.5"/>
+        <line x1="30" y1="29" x2="85" y2="29" stroke="#0d1220" stroke-width="1.5"/>
+        <!-- toy -->
+        <circle cx="112" cy="65" r="5" fill="#1a1020"/>
+      </svg>
+      <div class="cam-overlay"></div>
+      <div class="cam-hud">
+        <div class="cam-hud-top">
+          <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+          <div class="cam-time mono" id="ct4"></div>
+        </div>
+        <div class="cam-hud-bot">
+          <div class="cam-loc">📍 Phòng trẻ em · Hạ Long</div>
+          <div class="cam-model">Baby Monitor BM-200</div>
+          <div class="cam-cred">⚠ admin / 888888</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAM 5: Văn phòng -->
+    <div class="cam-feed" id="cam5">
+      <svg class="cam-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="120" fill="#080c0a"/>
+        <rect x="0" y="80" width="160" height="40" fill="#0a100c"/>
+        <!-- desks -->
+        <rect x="5" y="65" width="50" height="18" rx="2" fill="#0f1812"/>
+        <rect x="60" y="65" width="50" height="18" rx="2" fill="#0f1812"/>
+        <!-- monitors -->
+        <rect x="12" y="48" width="35" height="20" rx="2" fill="#0a120c"/>
+        <rect x="14" y="50" width="31" height="16" fill="#060e08"/>
+        <rect x="25" y="68" width="10" height="3" rx="1" fill="#0f1812"/>
+        <rect x="68" y="48" width="35" height="20" rx="2" fill="#0a120c"/>
+        <rect x="70" y="50" width="31" height="16" fill="#060e08"/>
+        <rect x="81" y="68" width="10" height="3" rx="1" fill="#0f1812"/>
+        <!-- chairs -->
+        <ellipse cx="30" cy="85" rx="14" ry="6" fill="#0c1610"/>
+        <ellipse cx="85" cy="85" rx="14" ry="6" fill="#0c1610"/>
+        <!-- whiteboard -->
+        <rect x="115" y="15" width="42" height="30" rx="2" fill="#0d1810"/>
+        <rect x="117" y="17" width="38" height="26" fill="#0a1408"/>
+      </svg>
+      <div class="cam-overlay"></div>
+      <div class="cam-hud">
+        <div class="cam-hud-top">
+          <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+          <div class="cam-time mono" id="ct5"></div>
+        </div>
+        <div class="cam-hud-bot">
+          <div class="cam-loc">📍 Văn phòng · Uông Bí</div>
+          <div class="cam-model">Reolink RLC-810A</div>
+          <div class="cam-cred">⚠ admin / admin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAM 6: Hành lang -->
+    <div class="cam-feed" id="cam6">
+      <svg class="cam-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="120" fill="#0a0a08"/>
+        <rect x="0" y="85" width="160" height="35" fill="#0c0c0a"/>
+        <!-- corridor walls -->
+        <rect x="30" y="0" width="100" height="120" fill="#0e0e0c"/>
+        <!-- door end of corridor -->
+        <rect x="55" y="15" width="50" height="75" rx="2" fill="#141410"/>
+        <rect x="57" y="17" width="46" height="71" rx="1" fill="#0a0a08"/>
+        <circle cx="93" cy="52" r="3" fill="#1e1e18"/>
+        <!-- floor perspective lines -->
+        <line x1="30" y1="85" x2="55" y2="90" stroke="#12120e" stroke-width="1"/>
+        <line x1="130" y1="85" x2="105" y2="90" stroke="#12120e" stroke-width="1"/>
+        <!-- ceiling light -->
+        <rect x="70" y="5" width="20" height="4" rx="1" fill="#1a1a14"/>
+        <ellipse cx="80" cy="12" rx="12" ry="4" fill="rgba(255,255,200,.03)"/>
+      </svg>
+      <div class="cam-overlay"></div>
+      <div class="cam-hud">
+        <div class="cam-hud-top">
+          <div class="cam-rec"><div class="cam-rec-dot"></div>REC</div>
+          <div class="cam-time mono" id="ct6"></div>
+        </div>
+        <div class="cam-hud-bot">
+          <div class="cam-loc">📍 Hành lang · Cẩm Phả</div>
+          <div class="cam-model">TP-Link Tapo C320WS</div>
+          <div class="cam-cred">⚠ admin / tp-link</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hk-explainer">
+    <h2>⚠ Đây là những gì đang xảy ra ngay lúc này</h2>
+    <p>Giao diện trên mô phỏng <strong>dashboard của một kẻ tấn công</strong> đang theo dõi nhiều camera cùng lúc. Để làm được điều này, họ không cần kỹ năng đặc biệt — chỉ cần vào Shodan.io, tìm camera tại Việt Nam với mật khẩu mặc định, và đăng nhập thẳng bằng <strong>admin/admin</strong>. Toàn bộ quá trình mất chưa đến 5 phút.</p>
+  </div>
+  <button class="hk-btn" onclick="showScreen('scr-shodan')">Xem kẻ tấn công tìm camera như thế nào →</button>
+</div>
+
+<!-- ══ SCREEN: SHODAN SIMULATION ══ -->
+<div id="scr-shodan" class="screen">
+  <div style="max-width:800px;margin:0 auto;padding:20px;min-height:calc(100vh - 52px)">
+    <div class="section-back" onclick="showScreen('scr-hacker')">← Quay lại</div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:6px">Bước 1: Tìm camera mục tiêu</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">Shodan là công cụ tìm kiếm thiết bị kết nối internet. Bất kỳ ai cũng có thể dùng để tìm camera đang lộ — hoàn toàn hợp pháp và miễn phí.</div>
+    </div>
+
+    <div class="shodan-terminal">
+      <div class="shodan-bar">
+        <div class="shodan-dot" style="background:#ff5f56"></div>
+        <div class="shodan-dot" style="background:#ffbd2e"></div>
+        <div class="shodan-dot" style="background:#27c93f"></div>
+        <span class="shodan-title">shodan.io — Camera Search (Mô phỏng)</span>
+      </div>
+      <div class="shodan-body">
+        <div class="shodan-prompt mono">$ shodan search --fields ip_str,port,org,product</div>
+        <div class="shodan-search-row">
+          <input class="shodan-input" id="shodan-query" value='country:"VN" port:8080 "Authorization: Basic" "default"' readonly>
+          <button class="shodan-search-btn mono" onclick="runShodanSearch()">▶ TÌM KIẾM</button>
+        </div>
+        <div class="shodan-results" id="shodan-results">
+          <div class="shodan-result-header">Tìm thấy <span style="color:var(--red);font-weight:700">47,382</span> kết quả · Hiển thị 5 kết quả đầu</div>
+
+          <div class="shodan-item">
+            <div class="shodan-item-ip">14.xxx.xxx.12</div>
+            <div class="shodan-item-info">
+              <span class="shodan-tag tag-info">Hikvision DS-2CD2143</span>
+              <span class="shodan-tag tag-loc">Hạ Long, Quảng Ninh</span>
+              <span class="shodan-tag tag-vuln">DEFAULT CREDS</span>
+              <span class="shodan-tag tag-info">Port: 8080</span>
+            </div>
+            <button class="shodan-access-btn" onclick="goToLogin('Hikvision DS-2CD2143','14.xxx.xxx.12','admin','admin','Hạ Long')">Truy cập →</button>
+          </div>
+
+          <div class="shodan-item">
+            <div class="shodan-item-ip">27.xxx.xxx.84</div>
+            <div class="shodan-item-info">
+              <span class="shodan-tag tag-info">Dahua IPC-HDW2831T</span>
+              <span class="shodan-tag tag-loc">Uông Bí, Quảng Ninh</span>
+              <span class="shodan-tag tag-vuln">NO AUTH</span>
+              <span class="shodan-tag tag-info">Port: 80</span>
+            </div>
+            <button class="shodan-access-btn" onclick="goToLogin('Dahua IPC-HDW2831T','27.xxx.xxx.84','admin','','Uông Bí')">Truy cập →</button>
+          </div>
+
+          <div class="shodan-item">
+            <div class="shodan-item-ip">42.xxx.xxx.201</div>
+            <div class="shodan-item-info">
+              <span class="shodan-tag tag-info">Generic IP Camera</span>
+              <span class="shodan-tag tag-loc">Hải Phòng</span>
+              <span class="shodan-tag tag-vuln">DEFAULT CREDS</span>
+              <span class="shodan-tag tag-info">Port: 8554</span>
+            </div>
+            <button class="shodan-access-btn" onclick="goToLogin('Generic IP Camera','42.xxx.xxx.201','admin','12345','Hải Phòng')">Truy cập →</button>
+          </div>
+
+          <div class="shodan-item" style="border-color:rgba(0,255,136,.25);background:rgba(0,255,136,.03)">
+            <div class="shodan-item-ip" style="color:var(--green)">118.xxx.xxx.7</div>
+            <div class="shodan-item-info">
+              <span class="shodan-tag tag-info">TP-Link Tapo C320WS</span>
+              <span class="shodan-tag tag-loc">Cẩm Phả, Quảng Ninh</span>
+              <span class="shodan-tag" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)">SECURED ✓</span>
+              <span class="shodan-tag tag-info">Port: 443 (HTTPS)</span>
+            </div>
+            <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--green);font-family:'Share Tech Mono',monospace">✓ Bảo mật tốt</span>
+          </div>
+
+          <div class="shodan-item">
+            <div class="shodan-item-ip">103.xxx.xxx.45</div>
+            <div class="shodan-item-info">
+              <span class="shodan-tag tag-info">Baby Monitor BM-200</span>
+              <span class="shodan-tag tag-loc">Hạ Long, Quảng Ninh</span>
+              <span class="shodan-tag tag-vuln">DEFAULT CREDS</span>
+              <span class="shodan-tag tag-info">Firmware: 2019</span>
+            </div>
+            <button class="shodan-access-btn" onclick="goToLogin('Baby Monitor BM-200','103.xxx.xxx.45','admin','888888','Hạ Long')">Truy cập →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shodan-explain">
+      <strong>Lưu ý quan trọng:</strong> Việc truy cập camera người khác mà không có sự cho phép là <strong style="color:var(--red)">vi phạm pháp luật</strong> (Điều 80 Nghị định 15/2020/NĐ-CP, Điều 226 Bộ luật Hình sự 2015). Module này chỉ mô phỏng để bạn <strong>hiểu nguy cơ và bảo vệ camera của chính mình</strong>.
+    </div>
+    <button class="next-btn" onclick="goToLogin('Hikvision DS-2CD2143','14.xxx.xxx.12','admin','admin','Hạ Long')">Xem bước đăng nhập →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: LOGIN SIMULATION ══ -->
+<div id="scr-login" class="screen">
+  <div style="max-width:600px;margin:0 auto;padding:20px;min-height:calc(100vh - 52px)">
+    <div class="section-back" onclick="showScreen('scr-shodan')">← Quay lại</div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:6px">Bước 2: Đăng nhập vào camera</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">Sau khi tìm được camera lộ, kẻ tấn công truy cập giao diện web quản trị. Với mật khẩu mặc định, việc này chỉ mất vài giây.</div>
+    </div>
+
+    <div class="login-context">
+      Mục tiêu: <strong id="login-target-name">—</strong> · IP: <span class="mono" id="login-target-ip" style="color:var(--cyan)">—</span> · Địa điểm: <span id="login-target-loc" style="color:var(--amber)">—</span>
+    </div>
+
+    <div class="hikvision-frame">
+      <div class="hik-titlebar">
+        <span class="hik-logo" id="hik-brand">HIKVISION</span>
+        <span style="font-size:9px;color:#4a4a8a;font-family:'Share Tech Mono',monospace;margin-left:6px" id="hik-model-label">DS-2CD2143G0</span>
+        <span class="hik-model mono">192.168.1.x</span>
+      </div>
+      <div class="hik-body">
+        <div class="hik-cam-preview" id="hik-preview">
+          <!-- Preview before login: static -->
+          <svg id="preview-static" width="100%" height="100%" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <rect width="320" height="180" fill="#050808"/>
+            <text x="160" y="85" text-anchor="middle" fill="#1a2a1a" font-family="monospace" font-size="11">AUTHENTICATING...</text>
+            <text x="160" y="100" text-anchor="middle" fill="#0f1f0f" font-family="monospace" font-size="9">Nhập thông tin đăng nhập để xem feed</text>
+          </svg>
+          <div class="hik-preview-label mono" id="preview-label">● CONNECTING</div>
+        </div>
+        <div class="hik-form">
+          <div class="hik-field">
+            <div class="hik-label">TÊN ĐĂNG NHẬP</div>
+            <input class="hik-input filled" id="hik-user" type="text" value="admin" readonly>
+          </div>
+          <div class="hik-field">
+            <div class="hik-label">MẬT KHẨU</div>
+            <input class="hik-input filled" id="hik-pass" type="password" value="admin" readonly>
+          </div>
+          <button class="hik-login-btn" id="hik-login-btn" onclick="doLogin()">ĐĂNG NHẬP</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="access-result" id="access-result">
+      <h3 id="access-result-title">—</h3>
+      <p id="access-result-text">—</p>
+    </div>
+
+    <div id="login-next-area" style="display:none">
+      <div class="shodan-explain" style="margin-bottom:14px">
+        Đây là khoảnh khắc nguy hiểm nhất: kẻ tấn công có thể <strong>xem live feed, xem lại lịch sử video, điều chỉnh góc camera, tắt camera, và tải xuống toàn bộ dữ liệu</strong> — mà chủ nhà hoàn toàn không hay biết.
+      </div>
+      <button class="next-btn" onclick="showScreen('scr-check')">Kiểm tra camera của bạn →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: CHECK YOUR CAMERA ══ -->
+<div id="scr-check" class="screen">
+  <div style="max-width:700px;margin:0 auto;padding:20px;min-height:calc(100vh - 52px)">
+    <div class="section-back" onclick="showScreen('scr-login')">← Quay lại</div>
+    <div class="check-intro">
+      <h2>Camera của bạn có đang bị lộ không?</h2>
+      <p>Trả lời 5 câu hỏi dưới đây để đánh giá mức độ rủi ro. Bấm vào mỗi mục để chọn <strong style="color:var(--red)">Có (rủi ro)</strong> hoặc <strong style="color:var(--green)">Không (an toàn)</strong>.</p>
+    </div>
+
+    <div id="risk-items">
+      <div class="risk-item" id="ri0" onclick="toggleRisk(0)">
+        <div class="risk-row">
+          <div class="risk-checkbox" id="rc0">?</div>
+          <div class="risk-text">
+            <div class="risk-title">Bạn chưa đổi mật khẩu mặc định của camera</div>
+            <div class="risk-desc">Mật khẩu mặc định (admin/admin, admin/12345...) được liệt kê công khai trong manual và trên Shodan.</div>
+            <div class="risk-result" id="rr0">⚠ Mật khẩu mặc định là nguyên nhân của 68% vụ xâm nhập camera. Đổi ngay hôm nay.</div>
+          </div>
+        </div>
+      </div>
+      <div class="risk-item" id="ri1" onclick="toggleRisk(1)">
+        <div class="risk-row">
+          <div class="risk-checkbox" id="rc1">?</div>
+          <div class="risk-text">
+            <div class="risk-title">Camera kết nối trực tiếp ra internet (không qua VPN)</div>
+            <div class="risk-desc">Camera có IP công cộng hoặc router có port forwarding/UPnP mở cho camera ra ngoài.</div>
+            <div class="risk-result" id="rr1">⚠ Camera lộ trực tiếp trên internet = bất kỳ ai cũng có thể thử đăng nhập 24/7.</div>
+          </div>
+        </div>
+      </div>
+      <div class="risk-item" id="ri2" onclick="toggleRisk(2)">
+        <div class="risk-row">
+          <div class="risk-checkbox" id="rc2">?</div>
+          <div class="risk-text">
+            <div class="risk-title">Firmware camera chưa cập nhật từ hơn 1 năm</div>
+            <div class="risk-desc">Firmware cũ chứa lỗ hổng bảo mật đã được công bố — kẻ tấn công có thể khai thác ngay cả khi bạn đã đổi mật khẩu.</div>
+            <div class="risk-result" id="rr2">⚠ Nhiều dòng camera Hikvision/Dahua có lỗ hổng CVE nghiêm trọng trong firmware 2019-2021.</div>
+          </div>
+        </div>
+      </div>
+      <div class="risk-item" id="ri3" onclick="toggleRisk(3)">
+        <div class="risk-row">
+          <div class="risk-checkbox" id="rc3">?</div>
+          <div class="risk-text">
+            <div class="risk-title">Router nhà bạn bật UPnP (Universal Plug and Play)</div>
+            <div class="risk-desc">UPnP tự động mở cổng cho thiết bị — camera có thể tự mở cổng ra internet mà bạn không biết.</div>
+            <div class="risk-result" id="rr3">⚠ Hầu hết router mặc định bật UPnP. Kiểm tra trong phần cài đặt router và tắt ngay.</div>
+          </div>
+        </div>
+      </div>
+      <div class="risk-item" id="ri4" onclick="toggleRisk(4)">
+        <div class="risk-row">
+          <div class="risk-checkbox" id="rc4">?</div>
+          <div class="risk-text">
+            <div class="risk-title">Camera kết nối cùng mạng wifi với máy tính/điện thoại</div>
+            <div class="risk-desc">Camera bị hack có thể trở thành bàn đạp để tấn công các thiết bị khác trong cùng mạng nội bộ.</div>
+            <div class="risk-result" id="rr4">⚠ Nên đặt camera trong VLAN/mạng guest riêng, tách khỏi mạng chính.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-score-box" id="risk-score-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:700;color:#fff">Mức độ rủi ro của bạn</span>
+        <span style="font-size:13px;font-weight:800;font-family:'Share Tech Mono',monospace" id="risk-score-text">—</span>
+      </div>
+      <div class="risk-score-bar-outer"><div class="risk-score-bar-inner" id="risk-score-bar"></div></div>
+      <div style="font-size:12px;color:var(--text2);margin-top:6px" id="risk-score-advice">—</div>
+    </div>
+
+    <div id="check-next-area" style="display:none;margin-top:14px">
+      <button class="next-btn" onclick="showScreen('scr-fix')">Cách bảo vệ camera đúng cách →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: FIX WALKTHROUGH ══ -->
+<div id="scr-fix" class="screen">
+  <div style="max-width:700px;margin:0 auto;padding:20px;min-height:calc(100vh - 52px)">
+    <div class="section-back" onclick="showScreen('scr-check')">← Quay lại</div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:6px">Bảo vệ camera của bạn</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">Thực hiện 5 bước dưới đây để đưa camera từ trạng thái <span style="color:var(--red)">⚠ LỘ</span> sang <span style="color:var(--green)">✓ AN TOÀN</span>.</div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-label"><span class="mono">Tiến độ bảo mật</span><span class="mono" id="fix-progress-label">0/5</span></div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="fix-progress-bar"></div></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="fix-step" id="fs0">
+      <div class="fix-step-header" onclick="toggleFixStep(0)">
+        <div class="fix-step-num" id="fsn0">1</div>
+        <div class="fix-step-title">Đổi mật khẩu mặc định</div>
+        <span class="fix-step-status status-bad" id="fss0">⚠ CHƯA LÀM</span>
+      </div>
+      <div class="fix-step-body" id="fsb0">
+        <div class="fix-before-after">
+          <div class="ba-box ba-before"><div class="ba-label">Trước</div>Tên đăng nhập: admin<br>Mật khẩu: admin<br>Bất kỳ ai cũng vào được</div>
+          <div class="ba-box ba-after"><div class="ba-label">Sau</div>Tên đăng nhập: [tên riêng]<br>Mật khẩu: ≥12 ký tự, có số + ký tự đặc biệt<br>Chỉ bạn mới biết</div>
+        </div>
+        <div class="fix-explain">Vào giao diện web quản trị camera (thường là 192.168.1.x:8080), tìm mục <strong>User Management → Change Password</strong>. Dùng mật khẩu dài ít nhất 12 ký tự, kết hợp chữ hoa, chữ thường, số và ký tự đặc biệt. Không dùng ngày sinh, tên người thân.</div>
+        <button class="fix-action-btn" id="fab0" onclick="completeStep(0)">✓ Đã thực hiện</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="fix-step" id="fs1">
+      <div class="fix-step-header" onclick="toggleFixStep(1)">
+        <div class="fix-step-num" id="fsn1">2</div>
+        <div class="fix-step-title">Cập nhật firmware</div>
+        <span class="fix-step-status status-bad" id="fss1">⚠ CHƯA LÀM</span>
+      </div>
+      <div class="fix-step-body" id="fsb1">
+        <div class="fix-before-after">
+          <div class="ba-box ba-before"><div class="ba-label">Trước</div>Firmware: v3.2.1 (2021)<br>Chứa 12 lỗ hổng CVE đã biết<br>Có thể bị bypass xác thực</div>
+          <div class="ba-box ba-after"><div class="ba-label">Sau</div>Firmware: v5.1.3 (mới nhất)<br>Vá tất cả lỗ hổng đã biết<br>Bảo mật cập nhật</div>
+        </div>
+        <div class="fix-explain">Truy cập website chính hãng (hikvision.com, dahua.com...), tìm model camera của bạn, tải firmware mới nhất. Trong giao diện admin camera, vào <strong>System → Firmware Update</strong>. Đặt lịch kiểm tra firmware mỗi 3 tháng.</div>
+        <button class="fix-action-btn" id="fab1" onclick="completeStep(1)">✓ Đã thực hiện</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="fix-step" id="fs2">
+      <div class="fix-step-header" onclick="toggleFixStep(2)">
+        <div class="fix-step-num" id="fsn2">3</div>
+        <div class="fix-step-title">Tắt UPnP trên router</div>
+        <span class="fix-step-status status-bad" id="fss2">⚠ CHƯA LÀM</span>
+      </div>
+      <div class="fix-step-body" id="fsb2">
+        <div class="fix-before-after">
+          <div class="ba-box ba-before"><div class="ba-label">Trước</div>UPnP: BẬT<br>Camera tự mở port 8080<br>Lộ trực tiếp ra internet</div>
+          <div class="ba-box ba-after"><div class="ba-label">Sau</div>UPnP: TẮT<br>Không có port nào tự mở<br>Camera không thể truy cập từ ngoài</div>
+        </div>
+        <div class="fix-explain">Vào giao diện router (thường 192.168.1.1), đăng nhập bằng tài khoản admin router, tìm <strong>Advanced → UPnP → Disable</strong>. Đồng thời xóa tất cả quy tắc Port Forwarding liên quan đến camera trong mục NAT/Port Forwarding.</div>
+        <button class="fix-action-btn" id="fab2" onclick="completeStep(2)">✓ Đã thực hiện</button>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="fix-step" id="fs3">
+      <div class="fix-step-header" onclick="toggleFixStep(3)">
+        <div class="fix-step-num" id="fsn3">4</div>
+        <div class="fix-step-title">Tách mạng camera (VLAN / Guest WiFi)</div>
+        <span class="fix-step-status status-bad" id="fss3">⚠ CHƯA LÀM</span>
+      </div>
+      <div class="fix-step-body" id="fsb3">
+        <div class="fix-before-after">
+          <div class="ba-box ba-before"><div class="ba-label">Trước</div>Camera cùng mạng laptop, điện thoại<br>Nếu camera bị hack = toàn bộ mạng bị đe dọa</div>
+          <div class="ba-box ba-after"><div class="ba-label">Sau</div>Camera trên mạng Guest/VLAN riêng<br>Không thể truy cập thiết bị khác</div>
+        </div>
+        <div class="fix-explain">Trong cài đặt router, bật tính năng <strong>Guest Network</strong> và kết nối camera vào mạng này. Mạng guest bị cô lập với mạng chính, ngăn camera bị dùng làm bàn đạp tấn công các thiết bị khác.</div>
+        <button class="fix-action-btn" id="fab3" onclick="completeStep(3)">✓ Đã thực hiện</button>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="fix-step" id="fs4">
+      <div class="fix-step-header" onclick="toggleFixStep(4)">
+        <div class="fix-step-num" id="fsn4">5</div>
+        <div class="fix-step-title">Bật thông báo đăng nhập & xem log truy cập</div>
+        <span class="fix-step-status status-bad" id="fss4">⚠ CHƯA LÀM</span>
+      </div>
+      <div class="fix-step-body" id="fsb4">
+        <div class="fix-before-after">
+          <div class="ba-box ba-before"><div class="ba-label">Trước</div>Không có cảnh báo<br>Ai đăng nhập bạn không biết<br>Log truy cập bị xóa</div>
+          <div class="ba-box ba-after"><div class="ba-label">Sau</div>Nhận thông báo đăng nhập lạ<br>Log lưu 30 ngày<br>Phát hiện xâm nhập sớm</div>
+        </div>
+        <div class="fix-explain">Trong giao diện admin camera, bật <strong>Event → Login Notification</strong> để nhận email/push khi có đăng nhập mới. Kiểm tra <strong>System → Log</strong> định kỳ để phát hiện IP lạ. Nếu thấy IP nước ngoài — đổi mật khẩu và báo cáo ngay.</div>
+        <button class="fix-action-btn" id="fab4" onclick="completeStep(4)">✓ Đã thực hiện</button>
+      </div>
+    </div>
+
+    <div id="fix-next-area" style="display:none;margin-top:16px">
+      <button class="next-btn" onclick="showScreen('scr-result')">Xem tổng kết →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: RESULT ══ -->
+<div id="scr-result" class="screen">
+  <div style="max-width:700px;margin:0 auto;padding:24px 20px 60px">
+    <div class="result-hero">
+      <div class="result-icon">🛡️</div>
+      <div class="result-title" style="color:var(--green)">Camera đã được bảo vệ</div>
+      <div class="result-sub">Bạn đã hoàn thành 5 bước bảo mật cơ bản. Áp dụng cho tất cả camera, router và thiết bị IoT trong nhà.</div>
+    </div>
+
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-card-icon">🔑</div>
+        <div class="tip-card-title">Mật khẩu mạnh & duy nhất</div>
+        <div class="tip-card-desc">Mỗi thiết bị một mật khẩu riêng. Dùng trình quản lý mật khẩu (Bitwarden, 1Password) để lưu an toàn.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-card-icon">🔄</div>
+        <div class="tip-card-title">Cập nhật firmware định kỳ</div>
+        <div class="tip-card-desc">Đặt lịch nhắc kiểm tra firmware mỗi 3 tháng. Bật tự động cập nhật nếu camera hỗ trợ.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-card-icon">🌐</div>
+        <div class="tip-card-title">Dùng app chính hãng</div>
+        <div class="tip-card-desc">Truy cập camera qua app hãng (Hik-Connect, iDMSS, Tapo) thay vì mở cổng trực tiếp ra internet.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-card-icon">📋</div>
+        <div class="tip-card-title">Kiểm tra log hàng tuần</div>
+        <div class="tip-card-desc">IP đăng nhập lạ, múi giờ bất thường, truy cập lúc 2-4h sáng — đó là dấu hiệu cần điều tra ngay.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-card-icon">📍</div>
+        <div class="tip-card-title">Đặt camera đúng chỗ</div>
+        <div class="tip-card-desc">Camera không nên hướng vào khu vực riêng tư (phòng ngủ, nhà tắm). Chỉ hướng vào lối ra vào, cổng, kho.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-card-icon">🏷️</div>
+        <div class="tip-card-title">Tránh camera no-brand giá rẻ</div>
+        <div class="tip-card-desc">Camera không rõ nguồn gốc thường không có bản vá bảo mật và có thể gửi dữ liệu về server nước ngoài.</div>
+      </div>
+    </div>
+
+    <div class="golden-rule">
+      <p>🛡️ Camera an ninh có mục đích <strong>BẢO VỆ</strong> bạn.<br>Nếu không được cấu hình đúng, nó sẽ trở thành<br><strong>lỗ hổng lớn nhất trong nhà bạn.</strong></p>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:12px;font-family:'Share Tech Mono',monospace;text-transform:uppercase;letter-spacing:.5px">📞 BÁO CÁO XÂM NHẬP CAMERA</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="color:var(--text2)">Đường dây nóng Công an</span><span style="color:var(--green);font-family:'Share Tech Mono',monospace;font-weight:700">113</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="color:var(--text2)">CA tỉnh Quảng Ninh</span><span style="color:var(--green);font-family:'Share Tech Mono',monospace;font-weight:700">0203.3838.113</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:13px">
+        <span style="color:var(--text2)">Cổng phản ánh tội phạm CNC</span><span style="color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:11px">dichvucong.bocongan.gov.vn</span>
+      </div>
+    </div>
+
+    <div class="result-btns">
+      <button class="btn-restart" onclick="showScreen('scr-intro')">↩ Bắt đầu lại</button>
+      <button class="btn-home" onclick="window.location.href='index.html'">⌂ Trang chủ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ═══════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════
+//  CAMERA CLOCK UPDATES
+// ═══════════════════════════════════════
+function updateCamTimes(){
+  const now = new Date();
+  const t = now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  for(let i=1;i<=6;i++){
+    const el = document.getElementById('ct'+i);
+    if(el) el.textContent = t;
+  }
+}
+updateCamTimes();
+setInterval(updateCamTimes, 1000);
+
+// Motion detected animation on cam3
+setTimeout(()=>{
+  const m = document.getElementById('motion3');
+  if(m){ m.style.display='block'; setTimeout(()=>{m.style.display='none'},2500); }
+},3000);
+setInterval(()=>{
+  const m = document.getElementById('motion3');
+  if(m){ m.style.display='block'; setTimeout(()=>{if(m)m.style.display='none'},2500); }
+},8000);
+
+// ═══════════════════════════════════════
+//  SHODAN SEARCH
+// ═══════════════════════════════════════
+function runShodanSearch(){
+  const res = document.getElementById('shodan-results');
+  const btn = document.querySelector('.shodan-search-btn');
+  btn.textContent = '⟳ ĐANG TÌM...';
+  btn.disabled = true;
+  setTimeout(()=>{
+    res.style.display='block';
+    btn.textContent='▶ TÌM KIẾM';
+    btn.disabled = false;
+  },1200);
+}
+
+// ═══════════════════════════════════════
+//  LOGIN SIMULATION
+// ═══════════════════════════════════════
+let loginData = {name:'',ip:'',user:'',pass:'',loc:''};
+function goToLogin(name,ip,user,pass,loc){
+  loginData = {name,ip,user,pass,loc};
+  document.getElementById('login-target-name').textContent = name;
+  document.getElementById('login-target-ip').textContent = ip;
+  document.getElementById('login-target-loc').textContent = loc;
+  document.getElementById('hik-brand').textContent = name.includes('Dahua')?'DAHUA':name.includes('TP-Link')||name.includes('Tapo')?'TP-LINK':name.includes('Reolink')?'REOLINK':name.includes('Baby')?'BABY MONITOR':'HIKVISION';
+  document.getElementById('hik-model-label').textContent = name;
+  document.getElementById('hik-user').value = user;
+  document.getElementById('hik-pass').value = pass || '';
+  const btn = document.getElementById('hik-login-btn');
+  btn.textContent = 'ĐĂNG NHẬP';
+  btn.className = 'hik-login-btn';
+  document.getElementById('access-result').classList.remove('show');
+  document.getElementById('login-next-area').style.display = 'none';
+  // Reset preview
+  document.getElementById('preview-static').style.display = '';
+  document.getElementById('preview-label').textContent = '● CONNECTING';
+  showScreen('scr-login');
+}
+
+function doLogin(){
+  const btn = document.getElementById('hik-login-btn');
+  btn.textContent = 'Đang xác thực...';
+  btn.className = 'hik-login-btn loading';
+  btn.disabled = true;
+  setTimeout(()=>{
+    const isSecure = loginData.pass === '' && false; // all demo cams are vulnerable
+    btn.textContent = '✓ ĐĂNG NHẬP THÀNH CÔNG';
+    btn.className = 'hik-login-btn success';
+    // Show live feed (replace SVG)
+    const preview = document.getElementById('hik-preview');
+    document.getElementById('preview-static').style.display = 'none';
+    // inject live-looking SVG
+    const feedSvg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    feedSvg.setAttribute('width','100%'); feedSvg.setAttribute('height','100%');
+    feedSvg.setAttribute('viewBox','0 0 320 180');
+    feedSvg.innerHTML = `
+      <rect width="320" height="180" fill="#080e08"/>
+      <rect x="0" y="120" width="320" height="60" fill="#0a120a"/>
+      <rect x="20" y="100" width="100" height="38" rx="3" fill="#112011"/>
+      <rect x="20" y="93" width="100" height="10" rx="2" fill="#142814"/>
+      <rect x="130" y="60" width="60" height="70" rx="2" fill="#0e1c0e"/>
+      <rect x="200" y="90" width="80" height="45" rx="2" fill="#0d1a0d"/>
+      <circle cx="248" cy="65" r="18" fill="rgba(255,255,200,.03)"/>
+      <text x="160" y="170" text-anchor="middle" fill="rgba(0,255,136,.25)" font-family="monospace" font-size="8">${loginData.ip} · LIVE · ${loginData.loc}</text>`;
+    preview.appendChild(feedSvg);
+    document.getElementById('preview-label').textContent = '● LIVE';
+    document.getElementById('preview-label').style.color = 'rgba(255,59,59,.8)';
+    // Show result
+    const res = document.getElementById('access-result');
+    res.classList.add('show');
+    document.getElementById('access-result-title').textContent = '🔓 Truy cập thành công — ' + loginData.name;
+    document.getElementById('access-result-text').innerHTML = `Kẻ tấn công đang xem camera tại <strong>${loginData.loc}</strong> bằng mật khẩu <strong style="font-family:monospace">${loginData.user}/${loginData.pass||'(không cần mật khẩu)'}</strong>. Họ có thể xem live, xem lại lịch sử, xuất video, tắt camera, hoặc dùng thiết bị này để xâm nhập mạng nội bộ — tất cả trong khi chủ nhà không hay biết.`;
+    document.getElementById('login-next-area').style.display = 'block';
+    btn.disabled = false;
+  },1500);
+}
+
+// ═══════════════════════════════════════
+//  RISK CHECKLIST
+// ═══════════════════════════════════════
+let riskState = [null,null,null,null,null];
+function toggleRisk(i){
+  const item = document.getElementById('ri'+i);
+  const cb = document.getElementById('rc'+i);
+  // Cycle: null → yes → no → null
+  if(riskState[i]===null){ riskState[i]=true; item.className='risk-item checked-yes'; cb.textContent='✕'; }
+  else if(riskState[i]===true){ riskState[i]=false; item.className='risk-item checked-no'; cb.textContent='✓'; }
+  else { riskState[i]=null; item.className='risk-item'; cb.textContent='?'; }
+  updateRiskScore();
+}
+function updateRiskScore(){
+  const answered = riskState.filter(v=>v!==null).length;
+  if(answered < 3) return;
+  const yesCount = riskState.filter(v=>v===true).length;
+  const box = document.getElementById('risk-score-box');
+  const bar = document.getElementById('risk-score-bar');
+  const txt = document.getElementById('risk-score-text');
+  const adv = document.getElementById('risk-score-advice');
+  const checkNext = document.getElementById('check-next-area');
+  box.classList.add('show');
+  const pct = Math.round((yesCount/5)*100);
+  bar.style.width = pct+'%';
+  if(yesCount>=4){ bar.style.background='var(--red)'; txt.style.color='var(--red)'; txt.textContent='RỦI RO RẤT CAO'; adv.textContent='Camera của bạn có thể đang bị theo dõi ngay lúc này. Thực hiện các bước bảo mật ngay hôm nay.'; }
+  else if(yesCount>=2){ bar.style.background='var(--amber)'; txt.style.color='var(--amber)'; txt.textContent='RỦI RO TRUNG BÌNH'; adv.textContent='Cần cải thiện một số điểm. Thực hiện các bước bảo mật để giảm thiểu nguy cơ.'; }
+  else { bar.style.background='var(--green)'; txt.style.color='var(--green)'; txt.textContent='RỦI RO THẤP'; adv.textContent='Tốt! Bạn đã có ý thức bảo mật camera. Tiếp tục duy trì và cải thiện thêm.'; }
+  checkNext.style.display='block';
+}
+
+// ═══════════════════════════════════════
+//  FIX WALKTHROUGH
+// ═══════════════════════════════════════
+let fixDone = [false,false,false,false,false];
+function toggleFixStep(i){
+  const el = document.getElementById('fs'+i);
+  el.classList.toggle('open');
+}
+function completeStep(i){
+  fixDone[i] = true;
+  const el = document.getElementById('fs'+i);
+  el.classList.add('done');
+  el.classList.remove('open');
+  document.getElementById('fss'+i).textContent = '✓ HOÀN THÀNH';
+  document.getElementById('fss'+i).className = 'fix-step-status status-good';
+  document.getElementById('fsn'+i).textContent = '✓';
+  document.getElementById('fab'+i).textContent = '✓ Đã xong';
+  document.getElementById('fab'+i).className = 'fix-action-btn done-btn';
+  const done = fixDone.filter(Boolean).length;
+  document.getElementById('fix-progress-bar').style.width = (done/5*100)+'%';
+  document.getElementById('fix-progress-label').textContent = done+'/5';
+  if(done >= 3) document.getElementById('fix-next-area').style.display='block';
+}
+// Auto-open first step
+setTimeout(()=>document.getElementById('fs0').classList.add('open'),300);
+</script>
+</body>
+</html>
