@@ -15,7 +15,7 @@
   --green-dim:rgba(0,255,136,.07);--red-dim:rgba(255,59,59,.07);
   --cyan:#22d3ee;--purple:#a78bfa;
 }
-html,body{height:100%;font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;font-size:15px}
+html,body{height:100%;font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;font-size:15px;overscroll-behavior:none}
 .mono{font-family:'Share Tech Mono',monospace}
 
 /* ── HEADER ── */
@@ -26,13 +26,12 @@ html,body{height:100%;font-family:'Exo 2',sans-serif;background:var(--bg);color:
 #btn-back{margin-left:auto;display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:.15s}
 #btn-back:hover{border-color:var(--green);color:var(--green)}
 
+/* ── APP WRAPPER (single scrollable layer — iOS Safari compatible) ── */
+#app{position:fixed;top:52px;left:0;right:0;bottom:0;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#app::-webkit-scrollbar{display:none}
 /* ── SCREENS ── */
-.screen{display:none;position:fixed;top:52px;left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.screen::-webkit-scrollbar{display:none}
+.screen{display:none}
 .screen.active{display:block}
-/* Safe area padding for mobile browser chrome (iOS Safari bottom bar) */
-.screen > *:last-child,.screen > div:last-child{padding-bottom:env(safe-area-inset-bottom,0px)}
-#scr-hacker{padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
 
 /* ══ INTRO ══ */
 #scr-intro{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
@@ -244,6 +243,7 @@ html,body{height:100%;font-family:'Exo 2',sans-serif;background:var(--bg);color:
   </a>
 </div>
 
+<div id="app">
 <!-- ══ SCREEN: INTRO ══ -->
 <div id="scr-intro" class="screen active">
   <div class="intro-badge">🔴 CẢNH BÁO AN NINH MẠNG</div>
@@ -1067,20 +1067,17 @@ html,body{height:100%;font-family:'Exo 2',sans-serif;background:var(--bg);color:
       <button class="btn-home" onclick="window.location.href='index.html'">⌂ Trang chủ</button>
     </div>
   </div>
-</div>
+</div><!-- /scr-result -->
+</div><!-- /app -->
 
 <script>
 // ═══════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ═══════════════════════════════════════
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>{
-    s.classList.remove('active');
-    s.scrollTop = 0;
-  });
-  const next = document.getElementById(id);
-  next.scrollTop = 0;
-  next.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('app').scrollTop = 0;
 }
 
 // ═══════════════════════════════════════
