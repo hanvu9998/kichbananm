@@ -499,6 +499,60 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
 #adv-sb ::-webkit-scrollbar{width:5px;height:5px;}
 #adv-sb ::-webkit-scrollbar-track{background:transparent;}
 #adv-sb ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:3px;}
+
+/* ── Mustang Panda Overlay ── */
+#adv-mp{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:8500;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#adv-mp.adv-show{display:block;}
+.adv-mp-wrap{max-width:720px;margin:0 auto;padding:30px 20px 60px;}
+.adv-mp-hdr{text-align:center;margin-bottom:28px;}
+.adv-mp-apt-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.4);border-radius:20px;padding:5px 16px;font-size:11px;color:#f87171;font-family:monospace;margin-bottom:14px;letter-spacing:.5px;}
+.adv-mp-title{color:#f87171;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+.adv-mp-sub{color:#94a3b8;font-size:13px;}
+.adv-mp-chain{display:flex;flex-direction:column;gap:4px;margin-bottom:24px;}
+.adv-mp-step{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);opacity:.35;transition:opacity .4s,border-color .4s,background .4s;}
+.adv-mp-step.mp-active{opacity:1;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.05);}
+.adv-mp-step.mp-done{opacity:1;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04);}
+.adv-mp-step.mp-danger{border-color:rgba(239,68,68,.4)!important;background:rgba(239,68,68,.06)!important;}
+.adv-mp-step-num{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.1);color:#94a3b8;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.adv-mp-step.mp-active .adv-mp-step-num{background:#fbbf24;color:#000;}
+.adv-mp-step.mp-done .adv-mp-step-num{background:#22c55e;color:#000;}
+.adv-mp-step-body{flex:1;}
+.adv-mp-step-title{font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:3px;}
+.adv-mp-step-desc{font-size:12px;color:#94a3b8;line-height:1.6;}
+.adv-mp-step-code{font-family:monospace;font-size:11px;background:#0c0c0c;border:1px solid #333;border-radius:4px;padding:6px 10px;color:#a78bfa;margin-top:6px;display:none;word-break:break-all;}
+.adv-mp-step.mp-active .adv-mp-step-code,.adv-mp-step.mp-done .adv-mp-step-code{display:block;}
+.adv-mp-log{background:#0a0a0a;border:1px solid #1e2d1e;border-radius:8px;padding:12px;font-family:monospace;font-size:11.5px;line-height:1.8;margin-bottom:24px;max-height:200px;overflow-y:auto;color:#4ade80;}
+.adv-mp-log-line{margin:0;white-space:pre-wrap;word-break:break-all;}
+.adv-mp-log-line.mp-red{color:#f87171;}
+.adv-mp-log-line.mp-yellow{color:#fbbf24;}
+.adv-mp-log-line.mp-cyan{color:#22d3ee;}
+.adv-mp-log-line.mp-gray{color:#6b7280;}
+.adv-mp-section{margin-bottom:22px;}
+.adv-mp-section-title{font-size:13px;font-weight:700;color:#fbbf24;margin-bottom:10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(251,191,36,.2);padding-bottom:6px;}
+.adv-mp-ioc-row{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.06);font-size:12px;}
+.adv-mp-ioc-row:last-child{border-bottom:none;}
+.adv-mp-ioc-label{background:rgba(239,68,68,.15);color:#f87171;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;flex-shrink:0;font-family:monospace;}
+.adv-mp-ioc-val{color:#e2e8f0;font-family:monospace;flex:1;word-break:break-all;}
+.adv-mp-ioc-note{color:#6b7280;font-size:11px;margin-left:auto;flex-shrink:0;max-width:180px;text-align:right;}
+.adv-mp-tip-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-radius:6px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);margin-bottom:6px;font-size:12.5px;color:#d1fae5;}
+.adv-mp-tip-item::before{content:'✓';color:#22c55e;font-weight:900;flex-shrink:0;}
+.adv-mp-actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;}
+.adv-mp-btn{flex:1;padding:12px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;min-width:120px;}
+.adv-mp-btn.primary{background:#2563eb;color:#fff;}
+.adv-mp-btn.primary:hover{background:#1d4ed8;}
+.adv-mp-btn.danger{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);}
+.adv-mp-btn.danger:hover{background:rgba(239,68,68,.25);}
+.adv-mp-progress{height:3px;background:#1e293b;border-radius:2px;margin-bottom:24px;overflow:hidden;}
+.adv-mp-progress-fill{height:100%;background:linear-gradient(90deg,#f87171,#fbbf24);border-radius:2px;width:0%;transition:width .5s;}
+/* USB file badge */
+.adv-fitem.adv-lnk .afn{color:#fbbf24;}
+.adv-fitem.adv-hidden{opacity:.55;}
+.adv-fitem.adv-hidden .afn::after{content:' [ẩn]';font-size:9px;color:#6b7280;}
+.adv-fitem.adv-exfil .afn{color:#f87171;text-decoration:line-through;}
+.adv-fitem.adv-exfil .afi::after{content:'📤';font-size:10px;vertical-align:super;}
+/* USB plug button on desktop */
+#adv-usb-btn{position:absolute;right:20px;bottom:20px;padding:9px 18px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:#fbbf24;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.15s;}
+#adv-usb-btn:hover{background:rgba(251,191,36,.22);}
 </style>
 
 <!-- Sandbox bar -->
@@ -536,6 +590,13 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
         <div class="adv-dicon-img" style="background:linear-gradient(135deg,#831843,#9d174d)">🔧</div>
         <span class="adv-dicon-label" style="color:#fbbf24">crack_tools.exe</span>
     </div>
+    <!-- USB Drive icon — hidden until plugged in -->
+    <div class="adv-dicon" id="adv-usb-icon" style="right:90px;top:228px;display:none" ondblclick="advExpNav('E:\\')&&advOpenWin('adv-win-exp')">
+        <div class="adv-dicon-img" style="background:linear-gradient(135deg,#b45309,#92400e)">🔌</div>
+        <span class="adv-dicon-label" style="color:#fbbf24">KINGSTON (E:)</span>
+    </div>
+    <!-- USB plug simulation button -->
+    <button id="adv-usb-btn" onclick="advPlugUSB()">🔌 Giả lập cắm USB</button>
 </div>
 
 <!-- FILE EXPLORER -->
@@ -563,6 +624,7 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
                 <div class="adv-exp-side-item" onclick="advExpNav('C:\\Users\\NguoiDung')">👤 NguoiDung</div>
                 <div class="adv-exp-side-item" onclick="advExpNav('C:\\Users\\NguoiDung\\Pictures')">🖼️ Pictures</div>
                 <div class="adv-exp-side-item" onclick="advExpNav('C:\\Windows\\System32')">⚙️ System32</div>
+                <div class="adv-exp-side-item" id="adv-side-usb" style="display:none;color:#fbbf24" onclick="advExpNav('E:\\')">🔌 KINGSTON (E:)</div>
             </div>
             <div class="adv-exp-main" id="adv-exp-files"></div>
         </div>
@@ -755,6 +817,117 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
         <ul class="adv-lrn-tips" id="adv-lrn-tips"></ul>
         <button class="adv-lrn-ok" onclick="advLrnClose()">✓ Đã hiểu — Tiếp tục trải nghiệm</button>
     </div>
+</div>
+
+<!-- Mustang Panda Infection Overlay -->
+<div id="adv-mp">
+  <div class="adv-mp-wrap">
+    <div class="adv-mp-hdr">
+      <div class="adv-mp-apt-badge">🐼 APT — MUSTANG PANDA / BRONZE PRESIDENT</div>
+      <div class="adv-mp-title">Mã độc đang lây nhiễm</div>
+      <div class="adv-mp-sub">DLL Side-Loading · PlugX/Korplug Backdoor · MITRE T1574.002</div>
+    </div>
+    <div class="adv-mp-progress"><div class="adv-mp-progress-fill" id="adv-mp-prog"></div></div>
+
+    <!-- Kill chain steps -->
+    <div class="adv-mp-chain" id="adv-mp-chain">
+      <div class="adv-mp-step" id="adv-mps-0">
+        <div class="adv-mp-step-num">1</div>
+        <div class="adv-mp-step-body">
+          <div class="adv-mp-step-title">🔗 Shortcut lừa đảo được kích hoạt</div>
+          <div class="adv-mp-step-desc">File <b>"Tài liệu công việc.lnk"</b> trên USB trông như thư mục thật — nhưng thực ra là Windows Shortcut (.lnk) chứa lệnh ẩn.</div>
+          <div class="adv-mp-step-code">cmd /c start "" "%CD%\AdobeUpdate.exe" &amp; attrib +h +s *.exe *.dll *.dat</div>
+        </div>
+      </div>
+      <div class="adv-mp-step" id="adv-mps-1">
+        <div class="adv-mp-step-num">2</div>
+        <div class="adv-mp-step-body">
+          <div class="adv-mp-step-title">📄 File thực thi hợp lệ bị lợi dụng</div>
+          <div class="adv-mp-step-desc"><b>AdobeUpdate.exe</b> là file thực thi thật của Adobe, có chữ ký số hợp lệ. AV/EDR tin tưởng và cho phép chạy. Khi khởi động, nó tìm kiếm <b>libcef.dll</b> trong cùng thư mục.</div>
+          <div class="adv-mp-step-code">PID 4921: AdobeUpdate.exe [Adobe Inc — Signed ✓] → LoadLibrary("libcef.dll")</div>
+        </div>
+      </div>
+      <div class="adv-mp-step" id="adv-mps-2">
+        <div class="adv-mp-step-num">3</div>
+        <div class="adv-mp-step-body">
+          <div class="adv-mp-step-title">💉 DLL Side-Loading — libcef.dll độc hại nạp vào</div>
+          <div class="adv-mp-step-desc">Windows tải <b>libcef.dll giả mạo</b> từ thư mục USB (search order ưu tiên thư mục hiện tại). DLL độc hại chạy dưới danh nghĩa process Adobe hợp lệ — vượt qua whitelist của AV.</div>
+          <div class="adv-mp-step-code">WARN: libcef.dll hash mismatch! Expected: a3f2... Got: 9d71...<br>DLL injected into AdobeUpdate.exe (PID 4921) — EVADING EDR</div>
+        </div>
+      </div>
+      <div class="adv-mp-step" id="adv-mps-3">
+        <div class="adv-mp-step-num">4</div>
+        <div class="adv-mp-step-body">
+          <div class="adv-mp-step-title">🔓 Giải mã payload — PlugX/Korplug khởi động</div>
+          <div class="adv-mp-step-desc"><b>libcef.dll</b> đọc file <b>data.dat</b> (payload mã hóa XOR), giải mã trong bộ nhớ và thực thi shellcode. PlugX backdoor khởi chạy hoàn toàn trong RAM — không ghi file .exe mới.</div>
+          <div class="adv-mp-step-code">data.dat → XOR decrypt (key: 0xA3) → PlugX shellcode (size: 287KB)<br>Injecting into svchost.exe (PID 892) — PROCESS HOLLOWING</div>
+        </div>
+      </div>
+      <div class="adv-mp-step mp-danger" id="adv-mps-4">
+        <div class="adv-mp-step-num">5</div>
+        <div class="adv-mp-step-body">
+          <div class="adv-mp-step-title">📡 Kết nối C2 — Beacon đến máy chủ Mustang Panda</div>
+          <div class="adv-mp-step-desc">PlugX thiết lập kết nối HTTPS đến máy chủ C2. Giao tiếp ngụy trang như traffic Adobe bình thường. Kẻ tấn công giờ có toàn quyền điều khiển máy từ xa.</div>
+          <div class="adv-mp-step-code">CONNECT 45.77.178.99:443 (update.adobe-cdn[.]info)<br>GET /api/check-in HTTP/1.1 Host: update.adobe-cdn[.]info<br>→ Response: {"cmd":"survey","interval":300}</div>
+        </div>
+      </div>
+      <div class="adv-mp-step mp-danger" id="adv-mps-5">
+        <div class="adv-mp-step-num">6</div>
+        <div class="adv-mp-step-body">
+          <div class="adv-mp-step-title">📁 Đánh cắp tài liệu — Exfiltration</div>
+          <div class="adv-mp-step-desc">PlugX quét toàn bộ ổ đĩa tìm file .pdf .docx .xlsx .txt có kích thước &lt;50MB. Nén và mã hóa, sau đó tải lên C2 qua HTTPS — không thể phân biệt với traffic thường.</div>
+          <div class="adv-mp-step-code">Scanning: C:\Users\NguoiDung\Documents\... (3 files found)<br>Exfil: MatKhau_Backup.txt + BaoCao2024.docx + HoSoLyLich.pdf<br>PUT /api/upload — 4.6MB transferred to 45.77.178.99</div>
+        </div>
+      </div>
+      <div class="adv-mp-step mp-danger" id="adv-mps-6">
+        <div class="adv-mp-step-num">7</div>
+        <div class="adv-mp-step-body">
+          <div class="adv-mp-step-title">🔑 Persistence — Tồn tại dai dẳng trong hệ thống</div>
+          <div class="adv-mp-step-desc">Mustang Panda cài đặt 2 cơ chế để duy trì hoạt động sau khi khởi động lại: Registry Run key và Scheduled Task ngụy trang là dịch vụ Adobe.</div>
+          <div class="adv-mp-step-code">REG ADD HKCU\Software\Microsoft\Windows\CurrentVersion\Run<br>  /v "Adobe Update Service" /t REG_SZ /d "C:\Users\NguoiDung\AppData\Roaming\AdobeUpdate\AdobeUpdate.exe"<br>SCHTASKS /Create /SC ONLOGON /TN "Adobe Updater" /TR "..."</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live log -->
+    <div class="adv-mp-section">
+      <div class="adv-mp-section-title">📋 System Log (mô phỏng)</div>
+      <div class="adv-mp-log" id="adv-mp-log"></div>
+    </div>
+
+    <!-- IOC section (shown after chain completes) -->
+    <div id="adv-mp-ioc-section" style="display:none">
+      <div class="adv-mp-section">
+        <div class="adv-mp-section-title">🔍 Indicators of Compromise (IOC)</div>
+        <div class="adv-mp-ioc-row"><span class="adv-mp-ioc-label">IP C2</span><span class="adv-mp-ioc-val">45.77.178.99</span><span class="adv-mp-ioc-note">Mustang Panda infra (Vultr)</span></div>
+        <div class="adv-mp-ioc-row"><span class="adv-mp-ioc-label">DOMAIN</span><span class="adv-mp-ioc-val">update.adobe-cdn[.]info</span><span class="adv-mp-ioc-note">Typosquatting Adobe</span></div>
+        <div class="adv-mp-ioc-row"><span class="adv-mp-ioc-label">FILE</span><span class="adv-mp-ioc-val">libcef.dll (hash: 9d71f3a2...)</span><span class="adv-mp-ioc-note">DLL độc hại</span></div>
+        <div class="adv-mp-ioc-row"><span class="adv-mp-ioc-label">FILE</span><span class="adv-mp-ioc-val">data.dat (XOR key: 0xA3)</span><span class="adv-mp-ioc-note">Payload mã hóa</span></div>
+        <div class="adv-mp-ioc-row"><span class="adv-mp-ioc-label">REGISTRY</span><span class="adv-mp-ioc-val">HKCU\...\Run → AdobeUpdate.exe</span><span class="adv-mp-ioc-note">Persistence key</span></div>
+        <div class="adv-mp-ioc-row"><span class="adv-mp-ioc-label">MITRE</span><span class="adv-mp-ioc-val">T1574.002 · T1059.003 · T1547.001 · T1041</span><span class="adv-mp-ioc-note">ATT&amp;CK techniques</span></div>
+      </div>
+      <div class="adv-mp-section">
+        <div class="adv-mp-section-title">🛡️ Cách phát hiện và phòng chống</div>
+        <div class="adv-mp-tip-item">Kiểm tra file thực thi hợp lệ đặt ở vị trí bất thường (USB, %APPDATA%, %TEMP%) — đây là dấu hiệu DLL Side-Loading</div>
+        <div class="adv-mp-tip-item">So sánh hash DLL với bản gốc của hãng (libcef.dll của Adobe/Google có hash cố định)</div>
+        <div class="adv-mp-tip-item">Giám sát process có chữ ký hợp lệ nhưng tạo kết nối mạng bất thường (AdobeUpdate.exe kết nối HTTPS ra ngoài)</div>
+        <div class="adv-mp-tip-item">Tắt AutoRun/AutoPlay cho USB; dùng Group Policy chặn thực thi file từ ổ đĩa di động</div>
+        <div class="adv-mp-tip-item">Bật Windows Defender Credential Guard và Attack Surface Reduction rules</div>
+        <div class="adv-mp-tip-item">Không mở shortcut (.lnk) từ USB không rõ nguồn gốc — luôn xem bằng File Explorer với "Show hidden files" bật</div>
+        <div class="adv-mp-tip-item">Hotline báo cáo: Phòng ANM&amp;PCTP — Công an tỉnh Quảng Ninh (069.247.247)</div>
+      </div>
+      <div class="adv-mp-actions">
+        <button class="adv-mp-btn primary" onclick="advMpClose()">✓ Đã hiểu — Thoát về Desktop</button>
+        <button class="adv-mp-btn danger" onclick="advMpTerminal()">💻 Xem trong Terminal</button>
+      </div>
+    </div>
+
+    <!-- Initial action button -->
+    <div id="adv-mp-start-area" style="text-align:center;padding:20px 0;">
+      <div style="color:#94a3b8;font-size:13px;margin-bottom:16px;">USB <b style="color:#fbbf24">KINGSTON</b> đã cắm vào. Mở shortcut <b style="color:#fbbf24">"Tài liệu công việc"</b> trong File Explorer để xem điều gì xảy ra.</div>
+      <button class="adv-mp-btn primary" style="max-width:320px;margin:0 auto;display:block" onclick="advMpRunChain()">▶ Mô phỏng: Mở shortcut và xem chuỗi tấn công</button>
+    </div>
+  </div>
 </div>
 
 <!-- Notifications -->
@@ -1967,7 +2140,9 @@ const ADV_VFS={
         }},
         'Program Files':{type:'dir',icon:'📦',children:{}},
     }},
+    // USB Drive — added dynamically by advPlugUSB()
 };
+let advUsbPlugged=false;
 let advExpCwd='C:\\Users\\NguoiDung\\Desktop';
 function advVfsGet(path) {
     const parts=path.replace(/\\/g,'/').replace(/\/+/g,'/').split('/').filter(Boolean);
@@ -1985,7 +2160,7 @@ function advExpNav(path) {
     const entries=Object.entries(node.children||{});
     entries.forEach(([name,item])=>{
         const d=document.createElement('div');
-        d.className='adv-fitem'+(item.sus?' adv-sus':'');
+        d.className='adv-fitem'+(item.sus?' adv-sus':'')+(item.lnk?' adv-lnk':'')+(item.hidden?' adv-hidden':'')+(item.exfil?' adv-exfil':'');
         d.innerHTML=`<div class="afi">${item.icon||(item.type==='dir'?'📁':'📄')}</div><div class="afn">${name}</div>`;
         if(item.type==='dir') d.ondblclick=()=>advExpNav(path+'\\'+name);
         else d.ondblclick=()=>advOpenFile(name,item);
@@ -1995,6 +2170,7 @@ function advExpNav(path) {
     const st=document.getElementById('adv-exp-status'); if(st) st.textContent=entries.length+' mục';
 }
 function advOpenFile(name,item) {
+    if(item.lnk){advMpShow();return;}
     if(item.sus){advRunSus(name);return;}
     if(item.sensitive){
         advLrnShow('🔑','⚠️ File nhạy cảm — Mật khẩu lưu dạng text!',
@@ -2046,6 +2222,167 @@ function advRwLearn() {
         ['KHÔNG mở file .exe từ nguồn không rõ','File PDF/Word thật KHÔNG BAO GIỜ là .exe','Backup theo quy tắc 3-2-1 (3 bản, 2 phương tiện, 1 offline)','Nếu bị nhiễm: ngắt mạng NGAY, KHÔNG trả tiền','Đường dây: Phòng An ninh mạng và PCTP sử dụng CNC - Công an tỉnh Quảng Ninh - 069.247.247']);
 }
 function advP(n){return String(n).padStart(2,'0');}
+
+// ── MUSTANG PANDA USB SIMULATION ──────────────────────────
+function advPlugUSB() {
+    if(advUsbPlugged) { advNotify('🔌','USB đã cắm','KINGSTON (E:) đã sẵn sàng. Mở File Explorer để xem.','info'); return; }
+    advUsbPlugged=true;
+    // Add E: to VFS
+    ADV_VFS['E:']={ type:'dir', children:{
+        'Tài liệu công việc.lnk': {type:'file',icon:'📂',size:'1 KB',lnk:true,  note:'Shortcut'},
+        'AdobeUpdate.exe':         {type:'file',icon:'📄',size:'2.1 MB',hidden:true,sus:false},
+        'libcef.dll':              {type:'file',icon:'⚙️',size:'890 KB',hidden:true,sus:true},
+        'data.dat':                {type:'file',icon:'🔒',size:'287 KB',hidden:true},
+    }};
+    // Add E: to terminal filesystem
+    ADV_TFS['E:/']=['Tài liệu công việc.lnk','AdobeUpdate.exe (hidden)','libcef.dll (hidden)','data.dat (hidden)'];
+    // Show USB icon on desktop and sidebar
+    const usbIcon=document.getElementById('adv-usb-icon');
+    const usbSide=document.getElementById('adv-side-usb');
+    if(usbIcon) usbIcon.style.display='flex';
+    if(usbSide) usbSide.style.display='flex';
+    // Hide plug button
+    const btn=document.getElementById('adv-usb-btn'); if(btn) btn.style.display='none';
+    // Notifications
+    advNotify('🔌','USB được phát hiện','KINGSTON (E:) — 16GB. Bấm đúp để mở.','info');
+    setTimeout(()=>advNotify('⚠️','Cảnh báo bảo mật','Phát hiện file .lnk trên USB — hãy cẩn thận!','warning'),1800);
+    // Open file explorer on E:\
+    setTimeout(()=>{advOpenWin('adv-win-exp'); advExpNav('E:\\');},2800);
+}
+
+let advMpChainStep=0, advMpInterval=null;
+const ADV_MP_LOGS=[
+    {cls:'mp-gray', t:'[08:14:32] AutoPlay: USB device connected — KINGSTON DataTraveler 16GB'},
+    {cls:'',        t:'[08:14:33] Explorer: Opening E:\\ — 1 visible object found'},
+    {cls:'mp-yellow',t:'[08:14:35] User opened: "Tài liệu công việc.lnk" (shortcut)'},
+    {cls:'mp-yellow',t:'[08:14:35] LNK target: cmd /c start AdobeUpdate.exe & attrib +h +s *.exe *.dll *.dat'},
+    {cls:'',         t:'[08:14:35] Process created: cmd.exe (PID 3814) — parent: explorer.exe'},
+    {cls:'',         t:'[08:14:36] Process created: AdobeUpdate.exe (PID 4921) — Adobe Systems [Signed]'},
+    {cls:'mp-yellow',t:'[08:14:36] LoadLibrary call: AdobeUpdate.exe → libcef.dll (search: current dir first)'},
+    {cls:'mp-red',   t:'[08:14:36] ALERT: libcef.dll loaded from E:\\ — hash mismatch with known-good Adobe libcef'},
+    {cls:'mp-red',   t:'[08:14:36] DLL injected into AdobeUpdate.exe (PID 4921) — parent process trusted by AV'},
+    {cls:'',         t:'[08:14:37] File read: data.dat — XOR decryption in memory (key: 0xA3)'},
+    {cls:'',         t:'[08:14:37] Shellcode allocated: RWX memory region in svchost.exe (PID 892) — process hollowing'},
+    {cls:'mp-red',   t:'[08:14:37] PlugX/Korplug backdoor initialized in memory — no file written to disk'},
+    {cls:'mp-red',   t:'[08:14:38] DNS query: update.adobe-cdn[.]info → 45.77.178.99'},
+    {cls:'mp-red',   t:'[08:14:38] CONNECT 45.77.178.99:443 — TLS handshake OK (disguised as Adobe traffic)'},
+    {cls:'mp-cyan',  t:'[08:14:38] C2 beacon: GET /api/check-in → {"cmd":"survey","interval":300}'},
+    {cls:'mp-red',   t:'[08:14:39] File scan: C:\\Users\\NguoiDung\\Documents — 3 sensitive files found'},
+    {cls:'mp-red',   t:'[08:14:39] Exfil: MatKhau_Backup.txt + BaoCao2024.docx + HoSoLyLich.pdf (4.6MB)'},
+    {cls:'mp-red',   t:'[08:14:40] PUT /api/upload — 4.6MB → 45.77.178.99 — UPLOAD COMPLETE'},
+    {cls:'mp-yellow',t:'[08:14:41] REG ADD HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v "Adobe Update Service"'},
+    {cls:'mp-yellow',t:'[08:14:41] SCHTASKS /Create /SC ONLOGON /TN "Adobe Updater" — persistence established'},
+    {cls:'mp-red',   t:'[08:14:42] COMPROMISE COMPLETE — máy tính bị kiểm soát từ xa. Attacker có toàn quyền.'},
+];
+const ADV_MP_STEP_AT=[0,2,5,8,11,14,17,19]; // log index to activate each step
+
+function advMpRunChain() {
+    document.getElementById('adv-mp-start-area').style.display='none';
+    advMpChainStep=0;
+    const logEl=document.getElementById('adv-mp-log'); if(logEl) logEl.innerHTML='';
+    // Reset all steps
+    for(let i=0;i<7;i++) {
+        const s=document.getElementById('adv-mps-'+i);
+        if(s){s.classList.remove('mp-active','mp-done');}
+    }
+    document.getElementById('adv-mp-ioc-section').style.display='none';
+    let logIdx=0;
+    advMpInterval=setInterval(()=>{
+        if(logIdx>=ADV_MP_LOGS.length){
+            clearInterval(advMpInterval);
+            // Show IOC section
+            setTimeout(()=>{
+                document.getElementById('adv-mp-ioc-section').style.display='block';
+                document.getElementById('adv-mp-ioc-section').scrollIntoView({behavior:'smooth'});
+                // Mark docs as exfiltrated in VFS
+                advMpExfilDocs();
+                // Add C2 traffic to network monitor
+                advMpAddNetTraffic();
+            },800);
+            return;
+        }
+        // Add log line
+        const entry=ADV_MP_LOGS[logIdx];
+        const logEl=document.getElementById('adv-mp-log');
+        if(logEl){
+            const p=document.createElement('p');
+            p.className='adv-mp-log-line'+(entry.cls?' '+entry.cls:'');
+            p.textContent=entry.t; logEl.appendChild(p);
+            logEl.scrollTop=logEl.scrollHeight;
+        }
+        // Advance chain step
+        const stepIdx=ADV_MP_STEP_AT.indexOf(logIdx);
+        if(stepIdx>=0){
+            if(stepIdx>0){
+                const prev=document.getElementById('adv-mps-'+(stepIdx-1));
+                if(prev){prev.classList.remove('mp-active');prev.classList.add('mp-done');}
+            }
+            const cur=document.getElementById('adv-mps-'+stepIdx);
+            if(cur){cur.classList.add('mp-active');cur.scrollIntoView({behavior:'smooth',block:'nearest'});}
+            advMpChainStep=stepIdx;
+        }
+        // Update progress bar
+        const pct=Math.round(logIdx/ADV_MP_LOGS.length*100);
+        const prog=document.getElementById('adv-mp-prog'); if(prog) prog.style.width=pct+'%';
+        logIdx++;
+    },280);
+}
+
+function advMpExfilDocs() {
+    // Mark Documents files as exfiltrated in VFS display
+    const docs=ADV_VFS['C:']?.children?.Users?.children?.NguoiDung?.children?.Documents?.children;
+    if(docs){Object.values(docs).forEach(f=>f.exfil=true);}
+    if(advExpCwd.includes('Documents')) advExpNav(advExpCwd);
+    advNotify('📤','Dữ liệu bị đánh cắp!','3 file Documents đã bị tải lên C2 của Mustang Panda.','danger');
+}
+
+function advMpAddNetTraffic() {
+    // Add malicious traffic rows to network monitor table if open
+    const tbody=document.getElementById('adv-net-tbody'); if(!tbody) return;
+    const rows=[
+        {src:'192.168.1.105',dst:'45.77.178.99',port:'443',proto:'HTTPS',info:'PlugX C2 beacon',danger:true},
+        {src:'192.168.1.105',dst:'45.77.178.99',port:'443',proto:'HTTPS',info:'Data exfiltration (4.6MB)',danger:true},
+        {src:'8.8.8.8',dst:'192.168.1.105',port:'53',proto:'DNS',info:'update.adobe-cdn[.]info resolved',danger:true},
+    ];
+    rows.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.className='adv-rdanger';
+        tr.innerHTML=`<td>${r.src}</td><td>${r.dst}</td><td>${r.port}</td><td>${r.proto}</td><td><span class="adv-sbadge adv-sdng">⚠ ${r.info}</span></td>`;
+        tbody.prepend(tr);
+    });
+}
+
+function advMpShow() {
+    document.getElementById('adv-mp').classList.add('adv-show');
+    document.getElementById('adv-mp-start-area').style.display='block';
+    document.getElementById('adv-mp-ioc-section').style.display='none';
+    document.getElementById('adv-mp-log').innerHTML='';
+    document.getElementById('adv-mp-prog').style.width='0%';
+    for(let i=0;i<7;i++){const s=document.getElementById('adv-mps-'+i);if(s)s.classList.remove('mp-active','mp-done');}
+    document.getElementById('adv-mp').scrollTop=0;
+}
+
+function advMpClose() {
+    document.getElementById('adv-mp').classList.remove('adv-show');
+    if(advMpInterval) clearInterval(advMpInterval);
+    // Mark last step done
+    const last=document.getElementById('adv-mps-6'); if(last){last.classList.remove('mp-active');last.classList.add('mp-done');}
+    advNotify('🐼','Mustang Panda','Kịch bản hoàn tất. Kiểm tra Network Monitor và Documents.','info');
+    // Open terminal with Mustang Panda analysis
+    advOpenWin('adv-win-trm');
+}
+
+function advMpTerminal() {
+    advMpClose();
+    if(!advTrmInit) advInitTrm();
+    setTimeout(()=>{
+        advTOut('<span class="adv-ti">══ PHÂN TÍCH MUSTANG PANDA ══</span>');
+        advTOut('<span class="adv-tw">Gõ: tasklist | tìm process bất thường</span>');
+        advTOut('<span class="adv-tw">Gõ: netstat | xem C2 connection</span>');
+        advTOut('<span class="adv-tw">Gõ: scan libcef.dll | phân tích DLL độc hại</span>');
+        advTOut('');
+    },400);
+}
 
 // ── BROWSER ───────────────────────────────────────────────
 const ADV_BPAGES={
@@ -2113,6 +2450,7 @@ const ADV_TFS={
     'C:/':['Users','Windows','Program Files'],
     'C:/Windows':['System32','Temp'],
     'C:/Windows/System32':['cmd.exe','notepad.exe','explorer.exe'],
+    'E:/':['Tài liệu công việc.lnk','AdobeUpdate.exe (hidden)','libcef.dll (hidden)','data.dat (hidden)'],
 };
 const ADV_TFILES={
     'MatKhau_Backup.txt':'facebook.com: user=nguyenvana | pass=P@ssw0rd123\nemail: pass=myEmail456!\nVietcombank PIN: 123456',
@@ -2164,7 +2502,7 @@ function advRunCmd(raw) {
             [['dir / ls','Liệt kê file'],['cd [path]','Chuyển thư mục'],['cat [file]','Xem nội dung file'],
              ['pwd','Thư mục hiện tại'],['whoami','Tên người dùng'],['tasklist / ps','Danh sách tiến trình'],
              ['netstat','Kết nối mạng'],['ipconfig','Thông tin IP'],['ping [host]','Kiểm tra kết nối'],
-             ['scan [file]','Quét virus'],['history','Lịch sử lệnh'],['cls','Xóa màn hình']]
+             ['scan [file]','Quét virus (thử: libcef.dll, data.dat)'],['history','Lịch sử lệnh'],['cls','Xóa màn hình']]
             .forEach(([n,d])=>advTOut(`  <span class="adv-tw">${n.padEnd(18)}</span><span class="adv-to"> ${d}</span>`));
             break;
         case 'cls':case 'clear': document.getElementById('adv-term-out').innerHTML=''; break;
@@ -2208,14 +2546,6 @@ function advRunCmd(raw) {
             ADV_PROCS.forEach(p=>advTOut(`<span class="${p.sus?'adv-tsu':'adv-to'}">${String(p.pid).padEnd(7)}${p.name.padEnd(22)}${p.cpu.padEnd(8)}${p.mem}${p.sus?' ⚠️ NGHI NGỜ':''}</span>`));
             advTOut('<br><span class="adv-tw">⚠️ 3 tiến trình nghi ngờ! Dùng: scan [filename]</span>');
             break;
-        case 'netstat':
-            advTOut('<span class="adv-ti">Kết nối mạng đang hoạt động:</span>');
-            [{p:'TCP',l:'192.168.1.5:49152',r:'142.250.80.46:443',  ok:true},
-             {p:'TCP',l:'192.168.1.5:49200',r:'185.220.101.47:4444',ok:false},
-             {p:'TCP',l:'192.168.1.5:49201',r:'91.121.37.69:9001',  ok:false}]
-            .forEach(c=>advTOut(`<span class="${c.ok?'adv-to':'adv-tsu'}">${c.p.padEnd(5)}${c.l.padEnd(24)}${c.r}${!c.ok?' ← C2 SERVER!':''}</span>`));
-            advTOut('<br><span class="adv-te">⚠️ Kết nối đến C2 server bị phát hiện!</span>');
-            break;
         case 'ipconfig':
             ['IPv4 Address    : 192.168.1.5','Subnet Mask     : 255.255.255.0','Default Gateway : 192.168.1.1','DNS             : 8.8.8.8']
             .forEach(l=>advTOut(`<span class="adv-to">   ${l}</span>`));
@@ -2230,10 +2560,28 @@ function advRunCmd(raw) {
         case 'scan':{
             const t=args[0]||'system';
             advTOut(`<span class="adv-ti">🔍 Đang quét: ${advE(t)}...</span>`);
-            setTimeout(()=>advTOut('<span class="adv-tw">[ 50%] Phân tích hành vi...</span>'),500);
+            setTimeout(()=>advTOut('<span class="adv-tw">[ 25%] Kiểm tra hash...</span>'),400);
+            setTimeout(()=>advTOut('<span class="adv-tw">[ 50%] Phân tích hành vi...</span>'),800);
+            setTimeout(()=>advTOut('<span class="adv-tw">[ 75%] So sánh signature...</span>'),1100);
+            const isLibcef=t.toLowerCase()==='libcef.dll';
+            const isData=t.toLowerCase()==='data.dat';
             const sus=t.endsWith('.exe')&&!['cmd.exe','notepad.exe','explorer.exe'].includes(t);
             setTimeout(()=>{
-                if(sus){
+                if(isLibcef){
+                    advTOut(`<span class="adv-te">[100%] ⚠️ PHÁT HIỆN DLL ĐỘC HẠI!</span>`);
+                    advTOut(`<span class="adv-te">  File: libcef.dll</span>`);
+                    advTOut(`<span class="adv-te">  Hash: 9d71f3a2c88e4b1d... (KHÔNG khớp Adobe libcef)</span>`);
+                    advTOut(`<span class="adv-te">  Loại: Trojan.DLLSideLoad.MustangPanda</span>`);
+                    advTOut(`<span class="adv-tsu">  Kỹ thuật: MITRE T1574.002 — DLL Side-Loading</span>`);
+                    advTOut(`<span class="adv-te">  Liên quan: Mustang Panda / Bronze President (APT Trung Quốc)</span>`);
+                    advNotify('🐼','Mustang Panda!','libcef.dll là DLL Side-Loading của nhóm APT','danger');
+                } else if(isData){
+                    advTOut(`<span class="adv-te">[100%] ⚠️ PAYLOAD MÃ HÓA PHÁT HIỆN!</span>`);
+                    advTOut(`<span class="adv-te">  File: data.dat</span>`);
+                    advTOut(`<span class="adv-te">  Mã hóa: XOR (key: 0xA3) — PlugX/Korplug shellcode</span>`);
+                    advTOut(`<span class="adv-te">  Size sau giải mã: 287KB — backdoor hoàn chỉnh</span>`);
+                    advTOut(`<span class="adv-tsu">  C2: 45.77.178.99 (update.adobe-cdn[.]info)</span>`);
+                } else if(sus){
                     advTOut(`<span class="adv-te">[100%] ⚠️ PHÁT HIỆN MÃ ĐỘC!</span>`);
                     advTOut(`<span class="adv-te">  Loại: Ransomware.Win32.Cryptor</span>`);
                     advTOut(`<span class="adv-te">  Khuyến nghị: XÓA NGAY</span>`);
@@ -2241,7 +2589,21 @@ function advRunCmd(raw) {
                 } else {
                     advTOut(`<span class="adv-ts">[100%] ✓ Không phát hiện mối đe dọa trong ${advE(t)}</span>`);
                 }
-            },1200);
+            },1400);
+            break;
+        }
+        case 'netstat':{
+            advTOut('<span class="adv-ti">Kết nối mạng đang hoạt động:</span>');
+            const conns=[
+                {p:'TCP',l:'192.168.1.5:49152',r:'142.250.80.46:443',  label:'',ok:true},
+                {p:'TCP',l:'192.168.1.5:49200',r:'185.220.101.47:4444',label:'← C2 SERVER!',ok:false},
+                {p:'TCP',l:'192.168.1.5:49201',r:'91.121.37.69:9001',  label:'← TOR RELAY',ok:false},
+            ];
+            if(advUsbPlugged){
+                conns.push({p:'TCP',l:'192.168.1.5:49300',r:'45.77.178.99:443',label:'← MUSTANG PANDA C2!',ok:false});
+            }
+            conns.forEach(c=>advTOut(`<span class="${c.ok?'adv-to':'adv-tsu'}">${c.p.padEnd(5)}${c.l.padEnd(26)}${c.r} ${c.label}</span>`));
+            advTOut('<br><span class="adv-te">⚠️ Kết nối đến C2 server bị phát hiện!</span>');
             break;
         }
         case 'history': advTrmHist.slice().reverse().forEach((c,i)=>advTOut(`<span class="adv-to">${String(i+1).padStart(3)}  ${advE(c)}</span>`)); break;
