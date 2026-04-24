@@ -553,6 +553,88 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
 /* USB plug button on desktop */
 #adv-usb-btn{position:absolute;right:20px;bottom:20px;padding:9px 18px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:#fbbf24;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.15s;}
 #adv-usb-btn:hover{background:rgba(251,191,36,.22);}
+
+/* ── WiFi MitM Overlay ── */
+#wifi-sb{display:none;position:fixed;inset:0;background:var(--bg);z-index:9000;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#wifi-sb.wifi-show{display:block;}
+.wifi-header{position:sticky;top:0;z-index:10;background:rgba(7,9,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;height:52px;gap:12px;}
+.wifi-header-title{font-size:14px;font-weight:700;color:#fb923c;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wifi-header-step{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);white-space:nowrap;flex-shrink:0;}
+.wifi-close-btn{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);color:#f85149;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;flex-shrink:0;}
+.wifi-body{max-width:800px;margin:0 auto;padding:24px 20px 80px;}
+.wifi-steps{display:flex;gap:4px;margin-bottom:28px;}
+.wifi-step-dot{flex:1;height:3px;border-radius:2px;background:var(--border2);transition:background .3s;}
+.wifi-step-dot.wdot-active{background:#fb923c;}
+.wifi-step-dot.wdot-done{background:rgba(251,146,60,.4);}
+.wifi-screen{display:none;}
+.wifi-screen.active{display:block;}
+.wifi-scenario-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);border-radius:20px;padding:5px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#fb923c;margin-bottom:16px;}
+.wifi-screen-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:6px;}
+.wifi-screen-sub{font-size:13px;color:var(--text2);margin-bottom:22px;line-height:1.7;}
+.wifi-network-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.wifi-network-item{display:flex;align-items:center;gap:14px;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;}
+.wifi-network-item:hover{border-color:rgba(251,146,60,.4);background:rgba(251,146,60,.04);}
+.wifi-network-item.wifi-evil{border-color:rgba(248,81,73,.15);}
+.wifi-network-item.wifi-evil:hover{border-color:rgba(248,81,73,.5);background:rgba(248,81,73,.04);}
+.wifi-network-item.wifi-locked{opacity:.5;cursor:default;}
+.wifi-net-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--bg3);flex-shrink:0;}
+.wifi-net-info{flex:1;}
+.wifi-net-name{font-size:14px;font-weight:600;color:#fff;}
+.wifi-net-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.wifi-net-signal{display:flex;align-items:center;gap:4px;font-size:13px;flex-shrink:0;}
+.wifi-hint-box{display:flex;align-items:flex-start;gap:8px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:12px 14px;font-size:12px;color:#e2c97e;line-height:1.6;}
+.wifi-url-bar{background:var(--bg3);border-radius:6px;padding:7px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:6px;}
+.wifi-url-http{color:#f85149;font-weight:700;}
+.wifi-portal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;}
+.wifi-portal-header{background:linear-gradient(135deg,#1a1f2e,#0d1117);padding:20px;border-bottom:1px solid var(--border2);text-align:center;}
+.wifi-portal-logo{font-size:28px;margin-bottom:8px;}
+.wifi-portal-name{font-size:16px;font-weight:700;color:#fff;}
+.wifi-portal-sub{font-size:12px;color:var(--text3);margin-top:4px;}
+.wifi-portal-body{padding:24px;}
+.wifi-portal-label{font-size:12px;color:var(--text3);margin-bottom:6px;display:block;}
+.wifi-portal-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-size:14px;color:#fff;outline:none;margin-bottom:14px;font-family:'Inter',sans-serif;-webkit-appearance:none;appearance:none;}
+.wifi-portal-input:focus{border-color:rgba(251,146,60,.5);}
+.wifi-portal-btn{width:100%;background:linear-gradient(135deg,#fb923c,#f97316);border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;}
+.wifi-portal-note{font-size:11px;color:var(--text3);text-align:center;margin-top:12px;}
+.wifi-dual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:580px){.wifi-dual{grid-template-columns:1fr;}}
+.wifi-pane{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;}
+.wifi-pane-header{padding:9px 14px;border-bottom:1px solid var(--border2);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:6px;}
+.wifi-pane-victim .wifi-pane-header{color:#94a3b8;}
+.wifi-pane-hacker .wifi-pane-header{color:#f85149;}
+.wifi-pane-body{padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;min-height:120px;}
+.wt-line{margin-bottom:1px;}
+.wt-green{color:#00d084;}.wt-red{color:#f85149;}.wt-yellow{color:#fbbf24;}
+.wt-cyan{color:#22d3ee;}.wt-gray{color:#4a5568;}.wt-white{color:#e2e8f0;}.wt-orange{color:#fb923c;}
+.wifi-sniff-title{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#f85149;margin:14px 0 8px;}
+.wifi-sniff-table{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:11px;}
+.wifi-sniff-row{display:grid;grid-template-columns:60px 1fr 80px;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text2);}
+.wifi-sniff-row:last-child{border-bottom:none;}
+.wifi-sniff-row.wsrow-post{color:#f85149;}
+.wifi-sniff-row.wsrow-head{color:var(--text3);font-size:10px;background:var(--bg3);}
+.wifi-browser{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.wifi-browser-bar{background:var(--bg2);padding:8px 12px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:8px;}
+.wifi-browser-dots{display:flex;gap:4px;}
+.wifi-browser-dot{width:10px;height:10px;border-radius:50%;}
+.wifi-browser-url{flex:1;background:var(--bg3);border-radius:4px;padding:4px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text2);}
+.wifi-browser-body{padding:16px;}
+.wifi-terminal-mini{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;min-height:60px;}
+.wifi-lesson-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.wifi-lesson-card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
+.wifi-lesson-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.wifi-lesson-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.wifi-lesson-text{font-size:12px;color:var(--text2);line-height:1.65;}
+.wifi-quiz{background:rgba(251,146,60,.05);border:1px solid rgba(251,146,60,.2);border-radius:10px;padding:20px;}
+.wifi-quiz-q{font-size:14px;font-weight:600;color:#fff;margin-bottom:14px;}
+.wifi-quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.wifi-quiz-opt{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .2s;}
+.wifi-quiz-opt:hover{border-color:rgba(251,146,60,.4);color:#fff;}
+.wifi-quiz-opt.wq-correct{background:rgba(0,208,132,.1);border-color:rgba(0,208,132,.5);color:#00d084;cursor:default;}
+.wifi-quiz-opt.wq-wrong{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.4);color:#f85149;cursor:default;}
+.wifi-next-btn{background:linear-gradient(135deg,#fb923c,#f97316);border:none;border-radius:8px;padding:11px 24px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.wifi-connect-anim{display:flex;flex-direction:column;align-items:center;padding:32px 20px;gap:14px;}
+.wifi-spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:#fb923c;border-radius:50%;animation:wifiSpin .7s linear infinite;}
+@keyframes wifiSpin{to{transform:rotate(360deg)}}
 </style>
 
 <!-- Sandbox bar -->
@@ -1985,6 +2067,7 @@ function startScenario(type) {
     if (type === 'advanced') { openAdvancedSandbox(); return; }
     if (type === 'mobile')   { openMobileSandbox();   return; }
     if (type === 'phishing') { openEmailSandbox();    return; }
+    if (type === 'wifi')     { openWifiSandbox();     return; }
     const names = {
         ransomware:'Mã Độc Tống Tiền',
         wifi:'Mạng Wi-Fi Công Cộng', social:'Kỹ Thuật Xã Hội',
@@ -3912,6 +3995,246 @@ function esbEscape(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── WIFI MitM SANDBOX ─────────────────────────
+let wifiCurStep = 0;
+let wifiEmail   = 'can.bo@congandan.vn';
+let wifiPass    = 'Abc@12345';
+let wifiHackTimer = null;
+
+function openWifiSandbox() {
+    _hideLanding();
+    const sb = document.getElementById('wifi-sb');
+    sb.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    wifiRestart();
+}
+function closeWifiSandbox() {
+    document.getElementById('wifi-sb').style.display = 'none';
+    document.body.style.overflow = '';
+    _showLanding();
+    if (wifiHackTimer) { clearTimeout(wifiHackTimer); wifiHackTimer = null; }
+}
+function wifiRestart() {
+    wifiEmail = 'can.bo@congandan.vn';
+    wifiPass  = 'Abc@12345';
+    document.getElementById('wifi-sb').scrollTop = 0;
+    // reset quiz
+    document.getElementById('wifi-quiz-result').style.display = 'none';
+    document.querySelectorAll('.wifi-quiz-opt').forEach(o => { o.classList.remove('wq-correct','wq-wrong'); o.style.pointerEvents = ''; });
+    // reset inputs
+    const em = document.getElementById('wf-email'), pw = document.getElementById('wf-pass');
+    if (em) em.value = '';
+    if (pw) pw.value = '';
+    // reset hacker pane
+    const hp = document.getElementById('w-hacker-pane');
+    if (hp) hp.innerHTML = '';
+    // reset sniff panel
+    const sp = document.getElementById('w-sniff-panel');
+    if (sp) sp.style.display = 'none';
+    const nh = document.getElementById('w-next-hack');
+    if (nh) nh.style.display = 'none';
+    // reset connecting
+    const wc = document.getElementById('wifi-connecting');
+    if (wc) wc.style.display = 'none';
+    wifiGoTo(0);
+}
+function wifiGoTo(step) {
+    wifiCurStep = step;
+    document.querySelectorAll('.wifi-screen').forEach((s,i) => {
+        s.classList.toggle('active', i === step);
+    });
+    for (let i = 0; i < 5; i++) {
+        const d = document.getElementById('wdot-'+i);
+        if (!d) continue;
+        d.classList.remove('wdot-active','wdot-done');
+        if (i < step)       d.classList.add('wdot-done');
+        else if (i === step) d.classList.add('wdot-active');
+    }
+    const lbl = document.getElementById('wifi-step-label');
+    if (lbl) lbl.textContent = 'Bước '+(step+1)+' / 5';
+    document.getElementById('wifi-sb').scrollTop = 0;
+    if (step === 2) wifiStartHackAnim();
+    if (step === 3) wifiStartHijack();
+}
+function wifiSelectNetwork(isEvil, type, el) {
+    if (type === 'locked') return;
+    if (!isEvil) {
+        // real AP — show brief success then explain
+        el.style.borderColor = 'rgba(0,208,132,.5)';
+        el.style.background  = 'rgba(0,208,132,.06)';
+        setTimeout(() => {
+            el.style.borderColor = '';
+            el.style.background  = '';
+            alert('✓ Kết nối tới Horizon_Cafe_Free thành công!\n\nĐây là AP thật của quán. Bạn an toàn lần này.\n\n🎯 Hãy thử chọn mạng có tín hiệu MẠNH HƠN để xem điều gì xảy ra khi bị tấn công.');
+        }, 600);
+        return;
+    }
+    // evil twin selected
+    const networkList = document.querySelector('.wifi-network-list');
+    const hint = document.querySelector('.wifi-hint-box');
+    if (networkList) networkList.style.display = 'none';
+    if (hint) hint.style.display = 'none';
+    const wc = document.getElementById('wifi-connecting');
+    if (wc) {
+        wc.style.display = 'block';
+        const msg = document.getElementById('wifi-connect-msg');
+        let msgs = ['Đang kết nối tới Horizon_Cafe_Free...','Xác thực AP...','Nhận địa chỉ IP...','Kết nối thành công!'];
+        let mi = 0;
+        const tick = setInterval(() => {
+            if (msg) msg.textContent = msgs[mi];
+            mi++;
+            if (mi >= msgs.length) {
+                clearInterval(tick);
+                setTimeout(() => wifiGoTo(1), 700);
+            }
+        }, 600);
+    }
+}
+function wifiSubmitPortal() {
+    const em = document.getElementById('wf-email');
+    const pw = document.getElementById('wf-pass');
+    const emailVal = em ? em.value.trim() : '';
+    const passVal  = pw ? pw.value.trim() : '';
+    if (!emailVal || !passVal) {
+        alert('Vui lòng nhập email và mật khẩu để tiếp tục mô phỏng.');
+        return;
+    }
+    wifiEmail = emailVal;
+    wifiPass  = passVal;
+    wifiGoTo(2);
+}
+
+// ── Hacker terminal animation (Screen 2) ──
+const WIFI_HACK_LOGS = [
+    ['wt-gray',   '$ sudo python3 evil_twin.py --ssid "Horizon_Cafe_Free"'],
+    ['wt-green',  '[+] AP giả đang chạy — channel 6, tín hiệu +5dBm'],
+    ['wt-gray',   '$ sudo arpspoof -i wlan1 -t 192.168.0.105 192.168.0.1'],
+    ['wt-green',  '[+] ARP Spoofing active — nạn nhân: 192.168.0.105'],
+    ['wt-gray',   '$ sudo sslstrip -l 8080 &'],
+    ['wt-yellow', '[!] SSL Stripping enabled — hạ HTTPS → HTTP'],
+    ['wt-gray',   '$ sudo tcpdump -i wlan1 -A port 80'],
+    ['wt-cyan',   '[*] Bắt đầu chặn traffic HTTP...'],
+    ['wt-red',    ''],   // placeholder for dynamic credential line
+    ['wt-yellow', '[!] ====== CREDENTIALS CAPTURED ======'],
+    ['wt-green',  '[+] Lưu vào: /tmp/credentials.txt'],
+    ['wt-gray',   '$ cat /tmp/credentials.txt'],
+];
+
+function wifiStartHackAnim() {
+    const pane = document.getElementById('w-hacker-pane');
+    if (!pane) return;
+    pane.innerHTML = '';
+    if (wifiHackTimer) clearTimeout(wifiHackTimer);
+    let i = 0;
+    function appendLine() {
+        if (i >= WIFI_HACK_LOGS.length) {
+            // Show sniff panel and credential lines
+            const credLine = WIFI_HACK_LOGS[8];
+            const credEl = pane.querySelector('.wifi-cred-dynamic');
+            if (!credEl) {
+                const d = document.createElement('div');
+                d.className = 'wt-line wt-red';
+                d.textContent = '[+] POST /connect — email='+wifiEmail+' pass='+wifiPass;
+                // insert at position 8
+                const lines = pane.querySelectorAll('.wt-line');
+                if (lines[8]) pane.insertBefore(d, lines[8]);
+                else pane.appendChild(d);
+            }
+            // Show packet sniff
+            const sp = document.getElementById('w-sniff-panel');
+            if (sp) {
+                sp.style.display = 'block';
+                const wc = document.getElementById('wsniff-cred');
+                const wck= document.getElementById('wsniff-cookie');
+                const wg = document.getElementById('wsniff-get');
+                if (wc) { wc.innerHTML = '<span>POST</span><span>email='+_wesc(wifiEmail)+' pass='+_wesc(wifiPass)+'</span><span>192.168.0.105</span>'; }
+                if (wck){ wck.innerHTML = '<span>GET</span><span>Cookie: session=eyJhbGciOiJIUzI1NiJ9...</span><span>192.168.0.105</span>'; }
+                if (wg) { wg.innerHTML = '<span>GET</span><span>/inbox — Host: mail.google.com</span><span>192.168.0.105</span>'; }
+            }
+            const nh = document.getElementById('w-next-hack');
+            if (nh) nh.style.display = 'block';
+            return;
+        }
+        const [cls, txt] = WIFI_HACK_LOGS[i];
+        if (i === 8) { i++; appendLine(); return; } // skip placeholder, filled later
+        const d = document.createElement('div');
+        d.className = 'wt-line ' + cls;
+        d.textContent = txt;
+        pane.appendChild(d);
+        i++;
+        wifiHackTimer = setTimeout(appendLine, i <= 2 ? 350 : i <= 6 ? 280 : 220);
+    }
+    appendLine();
+}
+
+// ── Session hijack animation (Screen 3) ──
+function wifiStartHijack() {
+    const term  = document.getElementById('w-hijack-term');
+    const urlEl = document.getElementById('w-browser-url');
+    const body  = document.getElementById('w-browser-body');
+    if (!term || !urlEl || !body) return;
+    term.innerHTML = '';
+    urlEl.textContent = 'about:blank';
+    body.innerHTML   = '<div style="color:var(--text3);text-align:center;padding:20px;font-size:13px">Đang tải...</div>';
+
+    const steps = [
+        [0,   'wt-gray',   '$ cat /tmp/credentials.txt'],
+        [400, 'wt-green',  '  email = '+wifiEmail],
+        [700, 'wt-green',  '  pass  = '+wifiPass],
+        [1100,'wt-gray',   '$ python3 cookie_inject.py --cookie "session=eyJhbGciOiJIUzI1NiJ9.eyJ1IjoiY2FuLmJvQGNvbmdhbmRhbi52biIsImV4cCI6MTc0NTk0MDQwMH0.abc123" --url mail.google.com'],
+        [2200,'wt-yellow', '[!] Cookie được nạp vào browser...'],
+        [2900,'wt-green',  '[+] Đăng nhập thành công — không cần mật khẩu!'],
+    ];
+
+    steps.forEach(([delay, cls, txt]) => {
+        setTimeout(() => {
+            const d = document.createElement('div');
+            d.className = 'wt-line ' + cls;
+            d.style.fontFamily = "'JetBrains Mono',monospace";
+            d.style.fontSize   = '11px';
+            d.style.lineHeight = '1.8';
+            d.textContent = txt;
+            term.appendChild(d);
+        }, delay);
+    });
+
+    // Browser animation
+    setTimeout(() => { urlEl.textContent = 'mail.google.com — Đang tải...'; }, 3100);
+    setTimeout(() => {
+        urlEl.innerHTML = '<span style="color:#00d084">🔓 </span>mail.google.com/inbox';
+        body.innerHTML = `
+          <div style="font-size:12px;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:8px">
+            <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#fb923c,#f97316);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0">${_wesc(wifiEmail.charAt(0).toUpperCase())}</span>
+            <span><strong style="color:#fff">${_wesc(wifiEmail)}</strong><br>Đã đăng nhập thành công (không cần mật khẩu)</span>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:10px">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:'JetBrains Mono',monospace">HỘP THƯ ĐẾN</div>
+            ${['📧 Ban chỉ đạo — <b>KH công tác tháng 5</b> — Kính gửi...','📧 IT Nội bộ — <b>[QUAN TRỌNG] Đổi mật khẩu</b> — Theo chỉ đạo...','📧 Phòng HC — <b>Lịch họp tuần 18</b> — Mời đồng chí tham dự...'].map(m=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)">${m}</div>`).join('')}
+          </div>
+          <div style="margin-top:10px;padding:8px 10px;background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:6px;font-size:11px;color:#f85149">
+            ⚠ Kẻ tấn công đang đọc toàn bộ hộp thư của bạn.
+          </div>`;
+    }, 3700);
+}
+
+function _wesc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function wifiQuiz(el, isCorrect) {
+    const opts = document.querySelectorAll('.wifi-quiz-opt');
+    opts.forEach(o => { o.style.pointerEvents = 'none'; });
+    el.classList.add(isCorrect ? 'wq-correct' : 'wq-wrong');
+    if (!isCorrect) {
+        opts.forEach(o => { if (o.getAttribute('onclick').includes('true')) o.classList.add('wq-correct'); });
+    }
+    const res = document.getElementById('wifi-quiz-result');
+    if (res) {
+        res.style.display = 'block';
+        res.innerHTML = isCorrect
+            ? '<span style="color:#00d084">✓ Đúng!</span> Chọn mạng có tín hiệu mạnh nhất là <strong>nguy hiểm</strong> — kẻ tấn công cố tình phát AP với tín hiệu mạnh hơn để bạn tự động kết nối vào.'
+            : '<span style="color:#f85149">✗ Chưa đúng.</span> Đáp án đúng là <strong style="color:#00d084">B</strong> — Chọn mạng tín hiệu mạnh nhất <em>không</em> giúp bạn an toàn hơn, ngược lại đây chính là bẫy của Evil Twin.';
+    }
+}
+
 // ── TOAST ─────────────────────────────────────
 function mobToast(icon, app, msg, color='#333') {
     const c = document.getElementById('mob-toast-container'); if (!c) return;
@@ -3925,6 +4248,242 @@ function mobToast(icon, app, msg, color='#333') {
     },4000);
 }
 </script>
+
+<!-- ── WiFi MitM Overlay ── -->
+<div id="wifi-sb">
+  <div class="wifi-header">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="#fb923c" stroke="none"/></svg>
+    <span class="wifi-header-title">Mạng Wi-Fi Công Cộng — Evil Twin Attack</span>
+    <span class="wifi-header-step" id="wifi-step-label">Bước 1 / 5</span>
+    <button class="wifi-close-btn" onclick="closeWifiSandbox()">✕ Thoát</button>
+  </div>
+  <div class="wifi-body">
+    <div class="wifi-steps">
+      <div class="wifi-step-dot wdot-active" id="wdot-0"></div>
+      <div class="wifi-step-dot" id="wdot-1"></div>
+      <div class="wifi-step-dot" id="wdot-2"></div>
+      <div class="wifi-step-dot" id="wdot-3"></div>
+      <div class="wifi-step-dot" id="wdot-4"></div>
+    </div>
+
+    <!-- ── Screen 0: Chọn WiFi ── -->
+    <div class="wifi-screen active" id="wscr-0">
+      <div class="wifi-scenario-badge">📍 Quán cà phê Horizon — 14:32 chiều</div>
+      <div class="wifi-screen-title">Kết nối Wi-Fi</div>
+      <div class="wifi-screen-sub">Bạn vừa ngồi xuống quán và mở điện thoại. Chọn một mạng để vào internet.</div>
+      <div class="wifi-network-list">
+        <div class="wifi-network-item wifi-locked">
+          <div class="wifi-net-icon">🏠</div>
+          <div class="wifi-net-info">
+            <div class="wifi-net-name">VNPT_GiaDinh_5G</div>
+            <div class="wifi-net-meta">WPA2 · Tín hiệu yếu</div>
+          </div>
+          <div class="wifi-net-signal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a5568" stroke-width="2"><rect x="3" y="14" width="3" height="6" fill="#4a5568"/><rect x="9.5" y="10" width="3" height="10" fill="none"/><rect x="16" y="5" width="3" height="15" fill="none"/></svg>
+            🔒
+          </div>
+        </div>
+        <div class="wifi-network-item" onclick="wifiSelectNetwork(false,'real',this)">
+          <div class="wifi-net-icon">☕</div>
+          <div class="wifi-net-info">
+            <div class="wifi-net-name">Horizon_Cafe_Free</div>
+            <div class="wifi-net-meta">Mở · Tín hiệu trung bình</div>
+          </div>
+          <div class="wifi-net-signal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="14" width="3" height="6" fill="#94a3b8"/><rect x="9.5" y="10" width="3" height="10" fill="#94a3b8"/><rect x="16" y="5" width="3" height="15" fill="none" stroke="#4a5568"/></svg>
+          </div>
+        </div>
+        <div class="wifi-network-item wifi-evil" onclick="wifiSelectNetwork(true,'evil',this)" id="wifi-evil-item">
+          <div class="wifi-net-icon">☕</div>
+          <div class="wifi-net-info">
+            <div class="wifi-net-name">Horizon_Cafe_Free</div>
+            <div class="wifi-net-meta">Mở · Tín hiệu <strong style="color:#22d3ee">mạnh nhất</strong></div>
+          </div>
+          <div class="wifi-net-signal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><rect x="3" y="14" width="3" height="6" fill="#22d3ee"/><rect x="9.5" y="10" width="3" height="10" fill="#22d3ee"/><rect x="16" y="5" width="3" height="15" fill="#22d3ee"/></svg>
+          </div>
+        </div>
+        <div class="wifi-network-item wifi-locked">
+          <div class="wifi-net-icon">📱</div>
+          <div class="wifi-net-info">
+            <div class="wifi-net-name">AndroidHotspot_A7F2</div>
+            <div class="wifi-net-meta">WPA2 · Điện thoại cá nhân</div>
+          </div>
+          <div class="wifi-net-signal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a5568" stroke-width="2"><rect x="3" y="14" width="3" height="6" fill="#4a5568"/><rect x="9.5" y="10" width="3" height="10" fill="none"/><rect x="16" y="5" width="3" height="15" fill="none"/></svg>
+            🔒
+          </div>
+        </div>
+      </div>
+      <div class="wifi-hint-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Điện thoại thường <strong>tự chọn mạng có tín hiệu mạnh nhất</strong> khi SSID trùng tên — kẻ tấn công lợi dụng điều này.
+      </div>
+      <!-- Connecting animation (hidden by default) -->
+      <div id="wifi-connecting" style="display:none">
+        <div class="wifi-connect-anim">
+          <div class="wifi-spinner"></div>
+          <div style="color:var(--text2);font-size:13px" id="wifi-connect-msg">Đang kết nối tới Horizon_Cafe_Free...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Screen 1: Captive Portal ── -->
+    <div class="wifi-screen" id="wscr-1">
+      <div class="wifi-screen-title">Cổng đăng nhập WiFi</div>
+      <div class="wifi-screen-sub">Trình duyệt tự động mở trang yêu cầu đăng nhập. Chú ý thanh địa chỉ.</div>
+      <div class="wifi-url-bar">
+        <span class="wifi-url-http">⚠ http://</span><span>192.168.0.1/connect</span>
+        <span style="margin-left:auto;color:#f85149;font-size:10px">Không bảo mật</span>
+      </div>
+      <div class="wifi-portal">
+        <div class="wifi-portal-header">
+          <div class="wifi-portal-logo">☕</div>
+          <div class="wifi-portal-name">Horizon Café</div>
+          <div class="wifi-portal-sub">Đăng nhập để truy cập WiFi miễn phí</div>
+        </div>
+        <div class="wifi-portal-body">
+          <label class="wifi-portal-label">Email</label>
+          <input class="wifi-portal-input" id="wf-email" type="email" placeholder="email@gmail.com" autocomplete="off"/>
+          <label class="wifi-portal-label">Mật khẩu</label>
+          <input class="wifi-portal-input" id="wf-pass" type="password" placeholder="••••••••" autocomplete="off"/>
+          <button class="wifi-portal-btn" onclick="wifiSubmitPortal()">Đăng nhập &amp; Kết nối WiFi</button>
+          <div class="wifi-portal-note">Bằng cách đăng nhập bạn đồng ý với điều khoản sử dụng</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Screen 2: Hacker Dashboard ── -->
+    <div class="wifi-screen" id="wscr-2">
+      <div class="wifi-screen-title">Hacker nhìn thấy gì?</div>
+      <div class="wifi-screen-sub">Đây là màn hình của kẻ tấn công khi bạn điền thông tin vào cổng đăng nhập giả.</div>
+      <div class="wifi-dual">
+        <div class="wifi-pane wifi-pane-victim">
+          <div class="wifi-pane-header">📱 Màn hình NẠN NHÂN</div>
+          <div class="wifi-pane-body">
+            <div class="wt-line wt-white">☕ Horizon_Cafe_Free</div>
+            <div class="wt-line wt-gray">────────────────</div>
+            <div class="wt-line wt-green">✓ Kết nối thành công!</div>
+            <div class="wt-line wt-gray" style="margin-top:6px">🌐 Đang duyệt web bình thường...</div>
+            <div class="wt-line wt-gray" style="margin-top:6px">📧 Mở Gmail...</div>
+            <div class="wt-line wt-white" style="margin-top:6px">Hộp thư đến (3 thư mới)</div>
+            <div class="wt-line wt-gray" style="margin-top:10px;font-size:10px">Người dùng không biết gì đang xảy ra.</div>
+          </div>
+        </div>
+        <div class="wifi-pane wifi-pane-hacker">
+          <div class="wifi-pane-header">💻 Terminal HACKER</div>
+          <div class="wifi-pane-body" id="w-hacker-pane"></div>
+        </div>
+      </div>
+      <div id="w-sniff-panel" style="display:none">
+        <div class="wifi-sniff-title">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f85149" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Packet Capture — HTTP Traffic (Wireshark-style)
+        </div>
+        <div class="wifi-sniff-table">
+          <div class="wifi-sniff-row wsrow-head"><span>Method</span><span>Data</span><span>Src IP</span></div>
+          <div class="wifi-sniff-row wsrow-post" id="wsniff-cred"></div>
+          <div class="wifi-sniff-row" id="wsniff-cookie"></div>
+          <div class="wifi-sniff-row" id="wsniff-get"></div>
+        </div>
+      </div>
+      <div id="w-next-hack" style="display:none;margin-top:20px">
+        <button class="wifi-next-btn" onclick="wifiGoTo(3)">
+          Xem kẻ tấn công chiếm tài khoản
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Screen 3: Session Hijack ── -->
+    <div class="wifi-screen" id="wscr-3">
+      <div class="wifi-screen-title">Chiếm quyền truy cập</div>
+      <div class="wifi-screen-sub">Dùng cookie đánh cắp được, kẻ tấn công đăng nhập vào tài khoản mà không cần mật khẩu.</div>
+      <div class="wifi-terminal-mini" id="w-hijack-term" style="margin-bottom:14px"></div>
+      <div class="wifi-browser">
+        <div class="wifi-browser-bar">
+          <div class="wifi-browser-dots">
+            <div class="wifi-browser-dot" style="background:#f85149"></div>
+            <div class="wifi-browser-dot" style="background:#fbbf24"></div>
+            <div class="wifi-browser-dot" style="background:#00d084"></div>
+          </div>
+          <div class="wifi-browser-url" id="w-browser-url">about:blank</div>
+        </div>
+        <div class="wifi-browser-body" id="w-browser-body">
+          <div style="color:var(--text3);text-align:center;padding:20px;font-size:13px">Đang tải...</div>
+        </div>
+      </div>
+      <div style="margin-top:20px">
+        <button class="wifi-next-btn" onclick="wifiGoTo(4)">
+          Xem bài học &amp; phòng tránh
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Screen 4: Bài học ── -->
+    <div class="wifi-screen" id="wscr-4">
+      <div class="wifi-screen-title">Tổng kết &amp; Phòng tránh</div>
+      <div class="wifi-screen-sub">Những gì vừa xảy ra và cách bảo vệ bản thân trước tấn công Evil Twin.</div>
+      <div class="wifi-lesson-cards">
+        <div class="wifi-lesson-card">
+          <div class="wifi-lesson-icon">👿</div>
+          <div>
+            <div class="wifi-lesson-title">Evil Twin AP — AP giả cùng tên</div>
+            <div class="wifi-lesson-text">Kẻ tấn công dùng card WiFi (như Alfa AWUS036) để phát AP giả với SSID giống quán thật nhưng tín hiệu mạnh hơn. Thiết bị tự động kết nối vào AP có tín hiệu mạnh nhất — không phân biệt được.</div>
+          </div>
+        </div>
+        <div class="wifi-lesson-card">
+          <div class="wifi-lesson-icon">🔓</div>
+          <div>
+            <div class="wifi-lesson-title">SSL Stripping — Hạ HTTPS xuống HTTP</div>
+            <div class="wifi-lesson-text">Công cụ <code style="color:#22d3ee">sslstrip</code> + <code style="color:#22d3ee">mitmproxy</code> chặn kết nối HTTPS và trả về HTTP. Nạn nhân thấy trang web hiển thị bình thường nhưng mọi dữ liệu đều truyền không mã hóa.</div>
+          </div>
+        </div>
+        <div class="wifi-lesson-card">
+          <div class="wifi-lesson-icon">🍪</div>
+          <div>
+            <div class="wifi-lesson-title">Session Cookie Hijacking</div>
+            <div class="wifi-lesson-text">Cookie xác thực (session token) gửi qua HTTP bị capture bởi Wireshark/tcpdump. Hacker paste cookie vào trình duyệt → truy cập tài khoản mà không cần mật khẩu, bypass cả 2FA SMS.</div>
+          </div>
+        </div>
+        <div class="wifi-lesson-card" style="border-color:rgba(0,208,132,.3);background:rgba(0,208,132,.04)">
+          <div class="wifi-lesson-icon">🛡️</div>
+          <div>
+            <div class="wifi-lesson-title">Cách phòng tránh</div>
+            <div class="wifi-lesson-text">
+              <span style="color:#00d084">✓ Dùng VPN</span> — mã hóa toàn bộ traffic trước khi ra khỏi thiết bị<br>
+              <span style="color:#00d084">✓ Kiểm tra ổ khóa HTTPS</span> trước khi nhập bất kỳ thông tin nào<br>
+              <span style="color:#00d084">✓ Không dùng WiFi công cộng</span> cho email công việc, ngân hàng<br>
+              <span style="color:#00d084">✓ Hỏi nhân viên</span> tên WiFi chính xác + xác nhận địa chỉ MAC<br>
+              <span style="color:#00d084">✓ Dùng 4G/5G</span> khi làm việc nhạy cảm ở ngoài cơ quan
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wifi-quiz" id="wifi-quiz-box">
+        <div class="wifi-quiz-q">❓ Kiểm tra: Hành động nào KHÔNG giúp bạn an toàn hơn trên WiFi công cộng?</div>
+        <div class="wifi-quiz-opts" id="wifi-quiz-opts">
+          <div class="wifi-quiz-opt" onclick="wifiQuiz(this,false)">A. Bật VPN trước khi kết nối</div>
+          <div class="wifi-quiz-opt" onclick="wifiQuiz(this,true)">B. Chọn mạng WiFi có tín hiệu mạnh nhất</div>
+          <div class="wifi-quiz-opt" onclick="wifiQuiz(this,false)">C. Hỏi nhân viên quán tên WiFi chính xác</div>
+          <div class="wifi-quiz-opt" onclick="wifiQuiz(this,false)">D. Chỉ truy cập website có HTTPS (ổ khóa xanh)</div>
+        </div>
+        <div id="wifi-quiz-result" style="display:none;margin-top:14px;font-size:12px;line-height:1.7;padding:12px;background:var(--bg3);border-radius:8px;"></div>
+      </div>
+      <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="wifi-next-btn" onclick="wifiRestart()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.36"/></svg>
+          Làm lại từ đầu
+        </button>
+        <button class="wifi-next-btn" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text2)" onclick="closeWifiSandbox()">
+          Quay về trang chủ
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /wifi-body -->
+</div><!-- /wifi-sb -->
 
 </body>
 </html>
