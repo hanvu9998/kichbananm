@@ -592,11 +592,11 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
     </div>
     <!-- USB Drive icon — hidden until plugged in -->
     <div class="adv-dicon" id="adv-usb-icon" style="right:90px;top:228px;display:none" ondblclick="advExpNav('E:\\')&&advOpenWin('adv-win-exp')">
-        <div class="adv-dicon-img" style="background:linear-gradient(135deg,#b45309,#92400e)">🔌</div>
+        <div class="adv-dicon-img" style="background:linear-gradient(135deg,#b45309,#92400e)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="12" rx="2"/><path d="M9 2v3M15 2v3"/><path d="M12 14v8"/><path d="M8 22h8"/><rect x="10" y="6" width="4" height="3" rx=".5" fill="#fff" stroke="none"/></svg></div>
         <span class="adv-dicon-label" style="color:#fbbf24">KINGSTON (E:)</span>
     </div>
     <!-- USB plug simulation button -->
-    <button id="adv-usb-btn" onclick="advPlugUSB()">🔌 Giả lập cắm USB</button>
+    <button id="adv-usb-btn" onclick="advPlugUSB()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="7" y="2" width="10" height="12" rx="2"/><path d="M9 2v3M15 2v3M12 14v8M8 22h8"/><rect x="10" y="6" width="4" height="3" rx=".5" fill="currentColor" stroke="none"/></svg>Giả lập cắm USB</button>
 </div>
 
 <!-- FILE EXPLORER -->
@@ -625,7 +625,7 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
                 <div class="adv-exp-side-item" onclick="advExpNav('C:\\Users\\NguoiDung')">👤 NguoiDung</div>
                 <div class="adv-exp-side-item" onclick="advExpNav('C:\\Users\\NguoiDung\\Pictures')">🖼️ Pictures</div>
                 <div class="adv-exp-side-item" onclick="advExpNav('C:\\Windows\\System32')">⚙️ System32</div>
-                <div class="adv-exp-side-item" id="adv-side-usb" style="display:none;color:#fbbf24" onclick="advExpNav('E:\\')">🔌 KINGSTON (E:)</div>
+                <div class="adv-exp-side-item" id="adv-side-usb" style="display:none;color:#fbbf24" onclick="advExpNav('E:\\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" style="vertical-align:middle;margin-right:4px;flex-shrink:0"><rect x="7" y="2" width="10" height="12" rx="2"/><path d="M9 2v3M15 2v3M12 14v8M8 22h8"/><rect x="10" y="6" width="4" height="3" rx=".5" fill="#fbbf24" stroke="none"/></svg>KINGSTON (E:)</div>
             </div>
             <div class="adv-exp-main" id="adv-exp-files"></div>
         </div>
@@ -2250,7 +2250,7 @@ function advP(n){return String(n).padStart(2,'0');}
 
 // ── MUSTANG PANDA USB SIMULATION ──────────────────────────
 function advPlugUSB() {
-    if(advUsbPlugged) { advNotify('🔌','USB đã cắm','KINGSTON (E:) đã sẵn sàng. Mở File Explorer để xem.','info'); return; }
+    if(advUsbPlugged) { advNotify('💾','USB đã cắm','KINGSTON (E:) đã sẵn sàng. Mở File Explorer để xem.','info'); return; }
     advUsbPlugged=true;
     // Add E: to VFS
     ADV_VFS['E:']={ type:'dir', children:{
@@ -2269,7 +2269,7 @@ function advPlugUSB() {
     // Hide plug button
     const btn=document.getElementById('adv-usb-btn'); if(btn) btn.style.display='none';
     // Notifications
-    advNotify('🔌','USB được phát hiện','KINGSTON (E:) — 16GB. Bấm đúp để mở.','info');
+    advNotify('💾','USB được phát hiện','KINGSTON (E:) — 16GB. Bấm đúp để mở.','info');
     setTimeout(()=>advNotify('⚠️','Cảnh báo bảo mật','Phát hiện file .lnk trên USB — hãy cẩn thận!','warning'),1800);
     // Open file explorer on E:\
     setTimeout(()=>{advOpenWin('adv-win-exp'); advExpNav('E:\\');},2800);
