@@ -614,6 +614,7 @@ document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
             <button onclick="advExpBack()">◀</button><button onclick="advExpFwd()">▶</button>
             <button onclick="advExpUp()">▲</button><button onclick="advExpRef()" style="font-size:15px">↻</button>
             <input class="adv-exp-addr" id="adv-exp-addr" value="C:\Users\NguoiDung\Desktop" onkeydown="if(event.key==='Enter')advExpNav(this.value)"/>
+            <button id="adv-exp-hidden-btn" onclick="advToggleHidden()" title="Hiện/ẩn file ẩn" style="width:auto;padding:0 8px;font-size:11px;color:#777;white-space:nowrap">👁 File ẩn: Tắt</button>
         </div>
         <div class="adv-exp-body">
             <div class="adv-exp-side">
@@ -2150,6 +2151,20 @@ function advVfsGet(path) {
     for(let i=0;i<parts.length;i++){const p=parts[i];if(i===0){cur=ADV_VFS[p]||ADV_VFS[p+':'];}else{if(!cur||!cur.children)return null;cur=cur.children[p];}if(!cur)return null;}
     return cur;
 }
+let advShowHidden=false;
+function advToggleHidden(){
+    advShowHidden=!advShowHidden;
+    const btn=document.getElementById('adv-exp-hidden-btn');
+    if(btn) btn.style.color=advShowHidden?'#fbbf24':'#777';
+    if(btn) btn.textContent='👁 File ẩn: '+(advShowHidden?'Bật':'Tắt');
+    advExpNav(advExpCwd);
+}
+// Known extensions hidden by Windows by default
+const ADV_HIDE_EXT=['.exe','.dll','.dat','.lnk','.bat','.com','.vbs','.ps1'];
+function advStripExt(name){
+    for(const ext of ADV_HIDE_EXT){if(name.endsWith(ext))return name.slice(0,-ext.length);}
+    return name;
+}
 function advExpNav(path) {
     advExpCwd=path;
     const addrEl=document.getElementById('adv-exp-addr'); if(addrEl) addrEl.value=path;
@@ -2157,17 +2172,27 @@ function advExpNav(path) {
     const c=document.getElementById('adv-exp-files'); if(!c) return;
     c.innerHTML='';
     if(!node||node.type!=='dir'){c.innerHTML='<div style="color:#666;padding:20px;font-size:12px">Không thể truy cập.</div>';return;}
-    const entries=Object.entries(node.children||{});
+    const allEntries=Object.entries(node.children||{});
+    // Filter hidden files unless toggle is on
+    const entries=allEntries.filter(([,item])=>advShowHidden||!item.hidden);
+    let visible=0;
     entries.forEach(([name,item])=>{
         const d=document.createElement('div');
         d.className='adv-fitem'+(item.sus?' adv-sus':'')+(item.lnk?' adv-lnk':'')+(item.hidden?' adv-hidden':'')+(item.exfil?' adv-exfil':'');
-        d.innerHTML=`<div class="afi">${item.icon||(item.type==='dir'?'📁':'📄')}</div><div class="afn">${name}</div>`;
+        // Hide file extensions (Windows default behavior)
+        const displayName = item.type==='dir' ? name : advStripExt(name);
+        d.innerHTML=`<div class="afi">${item.icon||(item.type==='dir'?'📁':'📄')}</div><div class="afn">${displayName}</div>`;
         if(item.type==='dir') d.ondblclick=()=>advExpNav(path+'\\'+name);
         else d.ondblclick=()=>advOpenFile(name,item);
         d.onclick=()=>{c.querySelectorAll('.adv-fitem').forEach(x=>x.classList.remove('adv-sel'));d.classList.add('adv-sel');const st=document.getElementById('adv-exp-status');if(st)st.textContent=name+(item.size?' — '+item.size:'');};
         c.appendChild(d);
+        visible++;
     });
-    const st=document.getElementById('adv-exp-status'); if(st) st.textContent=entries.length+' mục';
+    const st=document.getElementById('adv-exp-status');
+    if(st){
+        const hiddenCount=allEntries.length-visible;
+        st.textContent=visible+' mục'+(hiddenCount>0&&!advShowHidden?' ('+hiddenCount+' file ẩn không hiển thị)':'');
+    }
 }
 function advOpenFile(name,item) {
     if(item.lnk){advMpShow();return;}
