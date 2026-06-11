@@ -343,8 +343,11 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
   .setup-title{font-size:18px}
   .av-opt{width:52px;height:52px;font-size:22px}
 
+  /* Prevent any horizontal overflow */
+  #scr-feed{overflow-x:hidden;width:100%}
+
   /* SN Header — simplified for mobile */
-  #sn-header{padding:0 10px;height:48px;gap:0}
+  #sn-header{padding:0 10px;height:48px;gap:0;width:100%}
   .sn-logo{font-size:20px;flex:0 0 auto}
   .sn-search{display:none}
   /* Move nav tabs to bottom; hide from header */
@@ -355,21 +358,35 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
   /* Show mobile back btn inside header */
   #sn-header-back{display:flex}
 
-  /* Feed layout */
-  #sn-body{padding:6px 0 66px}
-  .sn-feed{padding:0;max-width:100%;width:100%}
+  /* Feed layout — switch grid → block to fill full screen */
+  #sn-body{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    padding:0 0 66px !important;
+    margin:0 !important;
+  }
+  .sn-sidebar-left,.sn-sidebar-right{display:none !important}
+  .sn-feed{
+    display:block;
+    width:100% !important;
+    max-width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
 
   /* Story bar */
-  .story-bar{border-radius:0;margin-bottom:6px;padding:10px 8px;gap:6px}
+  .story-bar{border-radius:0;margin-bottom:6px;padding:10px 8px;gap:6px;width:100%;box-sizing:border-box}
   .story-item{width:76px;height:124px;border-radius:8px}
 
   /* Post composer */
-  .post-composer{border-radius:0;margin-bottom:6px;padding:10px 12px}
+  .post-composer{border-radius:0;margin-bottom:6px;padding:10px 12px;width:100%;box-sizing:border-box}
   .composer-actions{gap:0}
   .composer-btn{font-size:11px;padding:6px 2px;gap:4px}
 
   /* Post cards */
-  .post-card{border-radius:0;margin-bottom:6px}
+  .post-card{border-radius:0;margin-bottom:6px;width:100%;box-sizing:border-box}
+  .mob-fr-card{width:100%;box-sizing:border-box}
   .post-body{font-size:13.5px;padding:10px 12px}
   .post-header{padding:10px 12px 0}
   .post-reactions{padding:0 12px 4px;font-size:12px}
