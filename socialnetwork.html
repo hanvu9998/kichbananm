@@ -104,78 +104,8 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 
 /* SN Layout */
 #sn-body{display:grid;grid-template-columns:280px 1fr 300px;gap:0;max-width:1200px;margin:0 auto;padding:16px 8px;min-height:calc(100vh - 56px)}
-@media(max-width:900px){#sn-body{grid-template-columns:1fr;padding:8px 0 64px;} .sn-sidebar-left,.sn-sidebar-right{display:none}}
+@media(max-width:900px){#sn-body{grid-template-columns:1fr;} .sn-sidebar-left,.sn-sidebar-right{display:none}}
 @media(max-width:1100px){#sn-body{grid-template-columns:240px 1fr;} .sn-sidebar-right{display:none}}
-
-/* ── MOBILE OVERRIDES ── */
-@media(max-width:600px){
-  /* Back button */
-  .btn-back-top{top:8px;left:8px;padding:5px 10px;font-size:12px}
-
-  /* Intro screen */
-  #scr-intro{padding:80px 16px 40px}
-  .intro-traps{grid-template-columns:1fr}
-  .intro-desc,.warn-box{font-size:13px}
-  .btn-start{width:100%;padding:14px}
-
-  /* Setup screen */
-  .setup-card{padding:24px 18px;border-radius:12px}
-  .setup-title{font-size:19px}
-
-  /* SN Header — mobile layout */
-  #sn-header{padding:0 8px;gap:4px;height:50px}
-  .sn-logo{font-size:22px}
-  .sn-search{display:none}
-  .sn-nav{gap:0}
-  .sn-nav-btn{padding:6px 10px;font-size:20px}
-  .sn-icon-btn{width:32px;height:32px;font-size:14px}
-  .sn-avatar-sm{width:32px;height:32px;font-size:16px}
-
-  /* Feed */
-  .sn-feed{padding:0;max-width:100%}
-  #sn-body{padding:8px 0 68px}
-
-  /* Story bar */
-  .story-bar{border-radius:0;margin-bottom:8px;padding:10px 8px}
-  .story-item{width:80px;height:130px}
-
-  /* Post composer */
-  .post-composer{border-radius:0;margin-bottom:8px}
-  .composer-actions{flex-wrap:wrap}
-  .composer-btn{font-size:12px}
-
-  /* Post card */
-  .post-card{border-radius:0;margin-bottom:8px}
-  .post-body{font-size:13.5px}
-  .post-link-preview .link-preview-img{height:130px;font-size:36px}
-  .post-action-btn{font-size:12px;padding:8px 4px}
-  .post-image{min-height:160px;font-size:60px}
-
-  /* Mobile bottom nav */
-  #mob-nav{display:flex}
-
-  /* Panels — full width on mobile */
-  #notif-panel,#msg-panel{
-    top:50px;left:0;right:0;width:100%;border-radius:0;
-    max-height:70vh;
-  }
-
-  /* Modals — full screen on mobile */
-  .modal-overlay{align-items:flex-end;padding:0}
-  .modal-box{border-radius:16px 16px 0 0;max-width:100%;width:100%;max-height:92vh;overflow-y:auto}
-
-  /* Chat messages */
-  .chat-messages{height:220px}
-
-  /* Results */
-  #scr-results{padding:48px 12px 80px}
-  .trap-result-item{flex-wrap:wrap;gap:8px}
-  .trap-result-score{min-width:40px;text-align:right}
-  .lesson-cards{grid-template-columns:1fr}
-
-  /* Mobile friend-requests card in feed */
-  .mob-fr-card{display:block}
-}
 
 /* Mobile bottom navigation */
 #mob-nav{
@@ -390,6 +320,96 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 /* Trap highlight */
 .trap-glow{animation:trapGlow 2s infinite}
 @keyframes trapGlow{0%,100%{box-shadow:0 0 0 rgba(248,81,73,0)}50%{box-shadow:0 0 12px rgba(248,81,73,.4)}}
+
+/* ══ MOBILE — must be LAST in stylesheet to override above ══ */
+@media(max-width:768px){
+  /* Hide fixed back button inside feed (handled by header back btn) */
+  body[data-screen="scr-feed"] .btn-back-top{display:none}
+
+  /* Intro */
+  #scr-intro{padding:72px 16px 36px}
+  .intro-traps{grid-template-columns:1fr 1fr}
+  .intro-desc,.warn-box{font-size:13px}
+  .btn-start{width:100%;padding:14px;font-size:15px}
+}
+
+@media(max-width:480px){
+  /* Intro */
+  .intro-traps{grid-template-columns:1fr}
+  .intro-title{font-size:26px}
+
+  /* Setup */
+  .setup-card{padding:22px 16px;border-radius:12px;margin:0 8px}
+  .setup-title{font-size:18px}
+  .av-opt{width:52px;height:52px;font-size:22px}
+
+  /* SN Header — simplified for mobile */
+  #sn-header{padding:0 10px;height:48px;gap:0}
+  .sn-logo{font-size:20px;flex:0 0 auto}
+  .sn-search{display:none}
+  /* Move nav tabs to bottom; hide from header */
+  .sn-nav{display:none}
+  .sn-right{gap:4px;margin-left:auto}
+  .sn-icon-btn{width:34px;height:34px;font-size:15px}
+  .sn-avatar-sm{width:34px;height:34px;font-size:16px}
+  /* Show mobile back btn inside header */
+  #sn-header-back{display:flex}
+
+  /* Feed layout */
+  #sn-body{padding:6px 0 66px}
+  .sn-feed{padding:0;max-width:100%;width:100%}
+
+  /* Story bar */
+  .story-bar{border-radius:0;margin-bottom:6px;padding:10px 8px;gap:6px}
+  .story-item{width:76px;height:124px;border-radius:8px}
+
+  /* Post composer */
+  .post-composer{border-radius:0;margin-bottom:6px;padding:10px 12px}
+  .composer-actions{gap:0}
+  .composer-btn{font-size:11px;padding:6px 2px;gap:4px}
+
+  /* Post cards */
+  .post-card{border-radius:0;margin-bottom:6px}
+  .post-body{font-size:13.5px;padding:10px 12px}
+  .post-header{padding:10px 12px 0}
+  .post-reactions{padding:0 12px 4px;font-size:12px}
+  .post-actions{padding:2px 4px}
+  .post-action-btn{font-size:12px;padding:8px 2px;gap:3px}
+  .link-preview-img{height:120px;font-size:32px}
+  .post-image{min-height:150px;font-size:52px}
+
+  /* Mobile fr card */
+  .mob-fr-card{display:none}
+
+  /* Show bottom nav */
+  #mob-nav{display:flex}
+
+  /* Panels */
+  #notif-panel,#msg-panel{
+    top:48px;left:0;right:0;width:100%;
+    border-radius:0;max-height:72vh;
+    box-shadow:0 4px 24px rgba(0,0,0,.25);
+  }
+
+  /* Modals — bottom sheet */
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-box{
+    border-radius:20px 20px 0 0;
+    max-width:100%;width:100%;
+    max-height:90vh;overflow-y:auto;
+  }
+  .modal-header{padding:14px 16px}
+  .modal-body{padding:16px}
+  .chat-messages{height:200px}
+
+  /* Results */
+  #scr-results{padding:48px 12px 80px}
+  .trap-result-item{flex-wrap:wrap;gap:6px}
+  .trap-result-score{min-width:44px;text-align:right}
+
+  /* Toast position above bottom nav */
+  #sn-toast{bottom:68px}
+}
 </style>
 </head>
 <body>
@@ -449,6 +469,7 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 
 <!-- SN Header -->
 <div id="sn-header">
+  <a id="sn-header-back" href="index.html" style="display:none;align-items:center;gap:4px;color:var(--sn-text2);font-size:13px;font-weight:600;text-decoration:none;padding:6px 8px;border-radius:8px;background:var(--sn-bg3);white-space:nowrap;flex-shrink:0">←</a>
   <div class="sn-logo">Phây Búc</div>
   <div class="sn-search">
     <span class="sn-search-icon">🔍</span>
@@ -1052,7 +1073,12 @@ function showScreen(id) {
   if (!el) return;
   el.classList.add('active');
   el.style.display = FLEX_SCREENS.includes(id) ? 'flex' : 'block';
-  // Scroll after paint so new content is in DOM
+  // Track current screen for CSS targeting
+  document.body.dataset.screen = id;
+  // Show/hide back btn inside SN header on mobile
+  const hdrBack = document.getElementById('sn-header-back');
+  if (hdrBack) hdrBack.style.display = id === 'scr-feed' ? 'flex' : 'none';
+  // Scroll after paint
   requestAnimationFrame(() => {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
@@ -1478,15 +1504,14 @@ function retryModule() {
 // INIT — force correct initial state
 // ══════════════════════════════
 (function init() {
-  // Force all screens hidden via inline style first
   document.querySelectorAll('.screen').forEach(s => {
     s.style.display = 'none';
     s.classList.remove('active');
   });
-  // Show intro
   const intro = document.getElementById('scr-intro');
   intro.style.display = 'flex';
   intro.classList.add('active');
+  document.body.dataset.screen = 'scr-intro';
 })();
 </script>
 </body>
