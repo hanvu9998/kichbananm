@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mạng Xã Hội Ảo — Module 9 | Phòng An ninh mạng & PCTP sử dụng CNC</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090f;--bg2:#0d1117;--bg3:#161b22;
+  --border:#1e2d3d;--border2:#30363d;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;
+  --green:#00d084;--green-dim:rgba(0,208,132,.08);
+  --blue:#38bdf8;--blue-dim:rgba(56,189,248,.08);
+  --red:#f85149;--red-dim:rgba(248,81,73,.08);
+  --yellow:#fbbf24;--purple:#a78bfa;--orange:#fb923c;
+  /* Social network theme */
+  --sn-bg:#f0f2f5;--sn-bg2:#fff;--sn-bg3:#e4e6ea;
+  --sn-text:#050505;--sn-text2:#65676b;
+  --sn-blue:#1877f2;--sn-blue2:#e7f3ff;
+  --sn-border:#ced0d4;--sn-hover:#f2f2f2;
+}
+html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ══════════════════════════════
+   SCREEN 0: INTRO
+══════════════════════════════ */
+#scr-intro{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:40px 20px;
+  background:radial-gradient(ellipse 80% 60% at 50% 20%,rgba(56,189,248,.07) 0%,transparent 70%);
+}
+.intro-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:20px;padding:5px 16px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--blue);margin-bottom:24px}
+.intro-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.intro-title{font-size:clamp(24px,4vw,42px);font-weight:800;color:#fff;text-align:center;margin-bottom:12px;line-height:1.2}
+.intro-title span{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.intro-desc{font-size:15px;color:var(--text2);text-align:center;max-width:560px;line-height:1.7;margin-bottom:32px}
+.intro-traps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;max-width:700px;width:100%;margin-bottom:36px}
+.trap-chip{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start}
+.trap-chip-icon{font-size:20px;flex-shrink:0}
+.trap-chip-text{font-size:12.5px;color:var(--text2);line-height:1.5}
+.trap-chip-text strong{color:var(--text);font-weight:600;display:block;margin-bottom:2px}
+.warn-box{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:14px 18px;max-width:560px;width:100%;margin-bottom:28px;font-size:13px;color:var(--text2);line-height:1.6}
+.warn-box strong{color:var(--yellow)}
+.btn-start{padding:14px 40px;background:var(--sn-blue);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;box-shadow:0 0 24px rgba(24,119,242,.3)}
+.btn-start:hover{background:#1565d8;box-shadow:0 0 36px rgba(24,119,242,.5)}
+.btn-back-top{position:fixed;top:16px;left:16px;display:flex;align-items:center;gap:6px;color:var(--text3);font-size:13px;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);transition:.15s;z-index:9999}
+.btn-back-top:hover{color:var(--blue);border-color:var(--blue)}
+
+/* ══════════════════════════════
+   SCREEN 1: PROFILE SETUP
+══════════════════════════════ */
+#scr-setup{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:40px 20px;
+}
+.setup-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:36px;max-width:440px;width:100%;text-align:center}
+.setup-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px}
+.setup-sub{font-size:13px;color:var(--text2);margin-bottom:28px;line-height:1.6}
+.avatars{display:flex;gap:12px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
+.av-opt{width:60px;height:60px;border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:3px solid transparent;transition:.15s;background:var(--bg3)}
+.av-opt.selected{border-color:var(--sn-blue);box-shadow:0 0 0 3px rgba(24,119,242,.2)}
+.setup-field{text-align:left;margin-bottom:18px}
+.setup-field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+.setup-field input{width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:.15s}
+.setup-field input:focus{border-color:var(--sn-blue)}
+.btn-setup{width:100%;padding:12px;background:var(--sn-blue);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;margin-top:8px}
+.btn-setup:hover{background:#1565d8}
+
+/* ══════════════════════════════
+   SCREEN 2: SOCIAL NETWORK FEED
+══════════════════════════════ */
+#scr-feed{background:var(--sn-bg);min-height:100vh;display:none}
+#scr-feed.active{display:block}
+
+/* SN Header */
+#sn-header{
+  position:sticky;top:0;z-index:200;background:#fff;
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
+  display:flex;align-items:center;padding:0 12px;height:56px;gap:8px;
+}
+.sn-logo{font-size:28px;font-weight:900;color:var(--sn-blue);font-family:'Inter',sans-serif;letter-spacing:-1px;flex-shrink:0}
+.sn-search{flex:1;max-width:240px;margin:0 8px;position:relative}
+.sn-search input{width:100%;padding:8px 14px 8px 36px;background:var(--sn-bg);border:none;border-radius:20px;font-size:13px;color:var(--sn-text);font-family:'Inter',sans-serif;outline:none}
+.sn-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--sn-text2);font-size:14px}
+.sn-nav{display:flex;gap:2px;flex:1;justify-content:center}
+.sn-nav-btn{padding:6px 16px;border-radius:8px;border:none;background:transparent;cursor:pointer;color:var(--sn-text2);font-size:22px;position:relative;transition:.15s;display:flex;align-items:center}
+.sn-nav-btn:hover{background:var(--sn-hover)}
+.sn-nav-btn.active{color:var(--sn-blue)}
+.sn-nav-btn.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:var(--sn-blue);border-radius:2px}
+.sn-nav-btn .badge{position:absolute;top:2px;right:6px;background:#f02849;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;font-family:'Inter',sans-serif}
+.sn-right{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.sn-icon-btn{width:36px;height:36px;border-radius:50%;background:var(--sn-bg3);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;transition:.15s}
+.sn-icon-btn:hover{background:#d0d2d4}
+.sn-icon-btn .badge{position:absolute;top:-2px;right:-2px;background:#f02849;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px}
+.sn-avatar-sm{width:36px;height:36px;border-radius:50%;background:var(--sn-blue);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0}
+
+/* SN Layout */
+#sn-body{display:grid;grid-template-columns:280px 1fr 300px;gap:0;max-width:1200px;margin:0 auto;padding:16px 8px;min-height:calc(100vh - 56px)}
+@media(max-width:900px){#sn-body{grid-template-columns:1fr;} .sn-sidebar-left,.sn-sidebar-right{display:none}}
+@media(max-width:1100px){#sn-body{grid-template-columns:240px 1fr;} .sn-sidebar-right{display:none}}
+
+/* Left Sidebar */
+.sn-sidebar-left{padding:8px 8px;position:sticky;top:72px;align-self:start}
+.sn-profile-link{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:.15s;text-decoration:none;color:var(--sn-text)}
+.sn-profile-link:hover{background:var(--sn-hover)}
+.sn-profile-link .av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--sn-blue);flex-shrink:0}
+.sn-profile-link span{font-size:14px;font-weight:600}
+.sn-nav-link{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:.15s;color:var(--sn-text);font-size:14px;font-weight:500}
+.sn-nav-link:hover{background:var(--sn-hover)}
+.sn-nav-link-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sn-section-title{font-size:17px;font-weight:700;color:var(--sn-text);padding:8px 8px 4px;margin-top:8px}
+
+/* Center Feed */
+.sn-feed{padding:0 8px;max-width:680px;width:100%}
+
+/* Story bar */
+.story-bar{background:#fff;border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.1);display:flex;gap:8px;overflow-x:auto}
+.story-item{flex-shrink:0;width:96px;height:160px;border-radius:10px;overflow:hidden;cursor:pointer;position:relative;border:1px solid rgba(0,0,0,.1)}
+.story-add{background:linear-gradient(180deg,#fff 50%,var(--sn-bg) 50%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:10px}
+.story-add-plus{position:absolute;top:50%;left:50%;transform:translate(-50%,-70%);width:36px;height:36px;border-radius:50%;background:var(--sn-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;border:3px solid #fff}
+.story-add span{font-size:12px;font-weight:600;color:var(--sn-text)}
+.story-img{width:100%;height:100%;object-fit:cover;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:flex-end;padding:8px}
+.story-img span{font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);line-height:1.2}
+.story-ring{position:absolute;top:8px;left:8px;width:32px;height:32px;border-radius:50%;border:3px solid var(--sn-blue);display:flex;align-items:center;justify-content:center;font-size:16px}
+
+/* Post composer */
+.post-composer{background:#fff;border-radius:10px;padding:12px 16px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.post-composer-top{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.composer-av{width:40px;height:40px;border-radius:50%;background:var(--sn-blue);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.composer-input{flex:1;padding:8px 14px;background:var(--sn-bg);border:none;border-radius:20px;font-size:14px;color:var(--sn-text2);cursor:pointer;font-family:'Inter',sans-serif}
+.composer-actions{display:flex;gap:4px;border-top:1px solid var(--sn-bg3);padding-top:8px}
+.composer-btn{flex:1;padding:6px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;color:var(--sn-text2);font-family:'Inter',sans-serif;transition:.15s}
+.composer-btn:hover{background:var(--sn-hover)}
+
+/* Post card */
+.post-card{background:#fff;border-radius:10px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.1);overflow:hidden}
+.post-header{display:flex;align-items:center;gap:10px;padding:12px 16px 0}
+.post-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:2px solid transparent}
+.post-av.fake{border-color:#f85149}
+.post-info{flex:1}
+.post-name{font-size:14px;font-weight:700;color:var(--sn-text);cursor:pointer;display:flex;align-items:center;gap:6px}
+.post-name:hover{text-decoration:underline}
+.fake-badge{font-size:10px;background:#fff0f0;color:#f85149;border:1px solid #fbb;padding:1px 6px;border-radius:10px;font-weight:600;display:none}
+.post-meta{font-size:12px;color:var(--sn-text2)}
+.post-more{width:32px;height:32px;border-radius:50%;border:none;background:transparent;cursor:pointer;font-size:18px;color:var(--sn-text2);display:flex;align-items:center;justify-content:center}
+.post-more:hover{background:var(--sn-hover)}
+.post-body{padding:12px 16px;font-size:14px;color:var(--sn-text);line-height:1.6}
+.post-link-preview{margin:8px 0;border:1px solid var(--sn-border);border-radius:8px;overflow:hidden;cursor:pointer;transition:.15s}
+.post-link-preview:hover{box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.link-preview-img{height:160px;background:linear-gradient(135deg,#1877f2,#42b72a);display:flex;align-items:center;justify-content:center;font-size:48px}
+.link-preview-info{padding:10px 12px;background:#f0f2f5}
+.link-preview-domain{font-size:11px;color:var(--sn-text2);text-transform:uppercase;margin-bottom:2px}
+.link-preview-title{font-size:14px;font-weight:600;color:var(--sn-text);line-height:1.3}
+.link-preview-desc{font-size:12px;color:var(--sn-text2);margin-top:2px;line-height:1.4}
+.post-image{width:100%;max-height:400px;object-fit:cover;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:80px;min-height:200px}
+.post-actions{display:flex;gap:4px;border-top:1px solid var(--sn-bg3);padding:4px 8px;margin-top:4px}
+.post-action-btn{flex:1;padding:6px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;color:var(--sn-text2);font-family:'Inter',sans-serif;transition:.15s}
+.post-action-btn:hover{background:var(--sn-hover)}
+.post-action-btn.liked{color:var(--sn-blue)}
+.post-reactions{padding:0 16px 4px;font-size:13px;color:var(--sn-text2);display:flex;justify-content:space-between}
+
+/* Right Sidebar */
+.sn-sidebar-right{padding:8px;position:sticky;top:72px;align-self:start}
+.sidebar-section{background:#fff;border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.sidebar-title{font-size:17px;font-weight:700;color:var(--sn-text);margin-bottom:12px}
+.friend-item{display:flex;align-items:center;gap:10px;padding:6px 0}
+.friend-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--sn-bg3)}
+.friend-info{flex:1}
+.friend-name{font-size:13px;font-weight:600;color:var(--sn-text);margin-bottom:1px}
+.friend-mutual{font-size:11px;color:var(--sn-text2)}
+.friend-btns{display:flex;gap:4px}
+.btn-accept{padding:5px 10px;background:var(--sn-blue2);color:var(--sn-blue);border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+.btn-accept:hover{background:#d0e8ff}
+.btn-decline{padding:5px 10px;background:var(--sn-bg3);color:var(--sn-text2);border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+.btn-decline:hover{background:#d0d2d4}
+.group-item{display:flex;align-items:center;gap:10px;padding:6px 0}
+.group-av{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--sn-bg3)}
+.group-name{font-size:13px;font-weight:600;color:var(--sn-text);margin-bottom:1px}
+.group-members{font-size:11px;color:var(--sn-text2)}
+.btn-join{padding:5px 12px;background:var(--sn-blue2);color:var(--sn-blue);border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+.btn-join:hover{background:#d0e8ff}
+
+/* ── MODAL overlays ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:12px;max-width:480px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--sn-border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:20px;font-weight:700;color:var(--sn-text)}
+.modal-close{width:36px;height:36px;border-radius:50%;border:none;background:var(--sn-bg3);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;color:var(--sn-text2);transition:.15s}
+.modal-close:hover{background:#d0d2d4}
+.modal-body{padding:20px}
+
+/* Phishing modal */
+.phish-warning{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:14px;margin-bottom:16px;font-size:13px;color:#856404;display:none}
+.phish-form .form-group{margin-bottom:14px}
+.phish-form label{display:block;font-size:13px;font-weight:600;color:var(--sn-text);margin-bottom:6px}
+.phish-form input{width:100%;padding:10px 12px;border:1px solid var(--sn-border);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;color:var(--sn-text)}
+.phish-form input:focus{border-color:var(--sn-blue);box-shadow:0 0 0 3px rgba(24,119,242,.15)}
+.btn-phish-submit{width:100%;padding:12px;background:var(--sn-blue);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+.btn-phish-submit:hover{background:#1565d8}
+
+/* Chat modal */
+.chat-messages{height:280px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:75%;padding:8px 12px;border-radius:18px;font-size:13px;line-height:1.5}
+.chat-msg.them{background:var(--sn-bg3);color:var(--sn-text);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.me{background:var(--sn-blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--sn-border)}
+.chat-input{flex:1;padding:8px 14px;border:1px solid var(--sn-border);border-radius:20px;font-size:13px;font-family:'Inter',sans-serif;outline:none;color:var(--sn-text)}
+.chat-input:focus{border-color:var(--sn-blue)}
+.btn-chat-send{padding:8px 16px;background:var(--sn-blue);color:#fff;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+
+/* Alert toast */
+#sn-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center}
+#sn-toast.show{opacity:1}
+
+/* ══════════════════════════════
+   SCREEN 3: RESULTS
+══════════════════════════════ */
+#scr-results{
+  min-height:100vh;background:var(--bg);
+  padding:60px 20px 80px;
+  display:none;
+}
+#scr-results.active{display:block}
+.results-inner{max-width:720px;margin:0 auto}
+.results-header{text-align:center;margin-bottom:40px}
+.results-badge{display:inline-flex;align-items:center;gap:8px;border-radius:20px;padding:5px 16px;font-size:11px;font-family:'JetBrains Mono',monospace;margin-bottom:20px;border:1px solid}
+.results-title{font-size:clamp(22px,4vw,36px);font-weight:800;color:#fff;margin-bottom:8px}
+.results-sub{font-size:14px;color:var(--text2)}
+.score-circle-wrap{display:flex;justify-content:center;margin-bottom:32px}
+.score-circle{width:140px;height:140px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid;position:relative}
+.score-num{font-size:42px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1}
+.score-label{font-size:12px;font-weight:600;margin-top:4px;font-family:'JetBrains Mono',monospace}
+.score-grade{font-size:18px;font-weight:800;margin-top:8px}
+
+.trap-results{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.trap-result-item{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.trap-result-icon{font-size:22px;flex-shrink:0}
+.trap-result-info{flex:1}
+.trap-result-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.trap-result-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.trap-result-score{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;flex-shrink:0}
+.trap-result-score.neg{color:var(--red)}
+.trap-result-score.ok{color:var(--green)}
+
+.data-leak-section{background:var(--bg2);border:1px solid rgba(248,81,73,.25);border-radius:12px;padding:20px;margin-bottom:24px}
+.data-leak-title{font-size:14px;font-weight:700;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.data-leak-items{display:flex;flex-wrap:wrap;gap:8px}
+.data-chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.3)}
+.data-chip.safe{background:var(--green-dim);color:var(--green);border-color:rgba(0,208,132,.3)}
+
+.lesson-cards{display:grid;gap:10px;margin-bottom:32px}
+.lesson-card{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start}
+.lesson-icon{font-size:20px;flex-shrink:0}
+.lesson-text{font-size:13px;color:var(--text2);line-height:1.6}
+.lesson-text strong{color:var(--text);display:block;margin-bottom:2px}
+.btn-retry{display:block;width:100%;padding:14px;background:var(--sn-blue);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;text-align:center;margin-bottom:10px}
+.btn-retry:hover{background:#1565d8}
+.btn-home{display:block;width:100%;padding:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;text-align:center;text-decoration:none}
+.btn-home:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Notification panel */
+#notif-panel{display:none;position:fixed;top:60px;right:12px;width:360px;background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.2);z-index:500;max-height:80vh;overflow-y:auto}
+#notif-panel.open{display:block}
+.notif-header{padding:12px 16px;font-size:18px;font-weight:700;color:var(--sn-text);border-bottom:1px solid var(--sn-bg3)}
+.notif-item{padding:12px 16px;display:flex;gap:10px;align-items:flex-start;cursor:pointer;transition:.15s;border-bottom:1px solid var(--sn-bg3)}
+.notif-item:hover{background:var(--sn-bg)}
+.notif-item.unread{background:#e7f3ff}
+.notif-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--sn-bg3)}
+.notif-text{flex:1;font-size:13px;color:var(--sn-text);line-height:1.5}
+.notif-time{font-size:11px;color:var(--sn-blue);margin-top:2px}
+.notif-dot{width:10px;height:10px;border-radius:50%;background:var(--sn-blue);flex-shrink:0;margin-top:4px}
+
+/* Messages panel */
+#msg-panel{display:none;position:fixed;top:60px;right:12px;width:360px;background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.2);z-index:500;max-height:80vh;overflow-y:auto}
+#msg-panel.open{display:block}
+.msg-thread{padding:12px 16px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:.15s;border-bottom:1px solid var(--sn-bg3)}
+.msg-thread:hover{background:var(--sn-bg)}
+.msg-thread.unread .msg-preview{font-weight:700;color:var(--sn-text)}
+.msg-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--sn-bg3);position:relative}
+.msg-online-dot{position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:#31a24c;border:2px solid #fff}
+.msg-preview{font-size:13px;color:var(--sn-text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.msg-time{font-size:11px;color:var(--sn-text2);flex-shrink:0}
+
+/* Trap highlight */
+.trap-glow{animation:trapGlow 2s infinite}
+@keyframes trapGlow{0%,100%{box-shadow:0 0 0 rgba(248,81,73,0)}50%{box-shadow:0 0 12px rgba(248,81,73,.4)}}
+</style>
+</head>
+<body>
+
+<a class="btn-back-top" href="index.html">← Trang chủ</a>
+
+<!-- ══════════════════════════════
+     SCREEN 0: INTRO
+══════════════════════════════ -->
+<div id="scr-intro" class="screen active">
+  <div class="intro-badge"><div class="intro-badge-dot"></div> MODULE 9 — MẠNG XÃ HỘI ẢO</div>
+  <h1 class="intro-title">Giả lập <span>Mạng Xã Hội</span><br>Nguy Hiểm</h1>
+  <p class="intro-desc">Bạn sẽ tham gia vào mạng xã hội "Phây Búc" — môi trường giả lập có chứa tài khoản giả mạo, link phishing, tin giả và những kẻ xấu tìm cách thu thập thông tin cá nhân của bạn.</p>
+
+  <div class="intro-traps">
+    <div class="trap-chip"><div class="trap-chip-icon">👤</div><div class="trap-chip-text"><strong>Tài khoản giả mạo</strong>Hồ sơ giả kết bạn để thu thập dữ liệu</div></div>
+    <div class="trap-chip"><div class="trap-chip-icon">🔗</div><div class="trap-chip-text"><strong>Link phishing</strong>Liên kết nhử mồi đánh cắp thông tin</div></div>
+    <div class="trap-chip"><div class="trap-chip-icon">📰</div><div class="trap-chip-text"><strong>Tin giả (Fake news)</strong>Thông tin sai lệch kích động chia sẻ</div></div>
+    <div class="trap-chip"><div class="trap-chip-icon">💬</div><div class="trap-chip-text"><strong>Người lạ xin thông tin</strong>Nhắn tin hỏi số điện thoại, địa chỉ</div></div>
+    <div class="trap-chip"><div class="trap-chip-icon">💰</div><div class="trap-chip-text"><strong>Nhóm lừa đảo</strong>Nhóm đầu tư, trúng thưởng giả</div></div>
+    <div class="trap-chip"><div class="trap-chip-icon">📋</div><div class="trap-chip-text"><strong>Form thu thập dữ liệu</strong>Khảo sát, quiz nhử điền thông tin</div></div>
+  </div>
+
+  <div class="warn-box">⚠️ <strong>Lưu ý:</strong> Đây là môi trường mô phỏng hoàn toàn an toàn. Mọi tương tác chỉ xảy ra trong trình duyệt của bạn, không có dữ liệu nào được gửi ra bên ngoài. Hãy hành động tự nhiên như trên mạng xã hội thật để nhận đánh giá chính xác nhất.
+  </div>
+
+  <button class="btn-start" onclick="showScreen('scr-setup')">Vào thử thách →</button>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 1: SETUP
+══════════════════════════════ -->
+<div id="scr-setup" class="screen">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:var(--bg)">
+  <div class="setup-card">
+    <div class="setup-title">Tạo hồ sơ của bạn</div>
+    <div class="setup-sub">Chọn avatar và nhập tên để bắt đầu. Thông tin này chỉ dùng trong trò chơi, không lưu trữ.</div>
+    <div class="avatars" id="avatar-grid">
+      <div class="av-opt selected" data-av="👦" onclick="selectAv(this)">👦</div>
+      <div class="av-opt" data-av="👩" onclick="selectAv(this)">👩</div>
+      <div class="av-opt" data-av="🧑" onclick="selectAv(this)">🧑</div>
+      <div class="av-opt" data-av="👮" onclick="selectAv(this)">👮</div>
+      <div class="av-opt" data-av="👨‍💼" onclick="selectAv(this)">👨‍💼</div>
+      <div class="av-opt" data-av="👩‍💼" onclick="selectAv(this)">👩‍💼</div>
+    </div>
+    <div class="setup-field">
+      <label>Tên hiển thị</label>
+      <input type="text" id="inp-name" placeholder="Nhập tên của bạn..." maxlength="30" value="Người dùng">
+    </div>
+    <button class="btn-setup" onclick="startSocialNetwork()">Vào mạng xã hội →</button>
+  </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 2: SOCIAL NETWORK FEED
+══════════════════════════════ -->
+<div id="scr-feed" class="screen">
+
+<!-- SN Header -->
+<div id="sn-header">
+  <div class="sn-logo">Phây Búc</div>
+  <div class="sn-search">
+    <span class="sn-search-icon">🔍</span>
+    <input type="text" placeholder="Tìm kiếm...">
+  </div>
+  <div class="sn-nav">
+    <button class="sn-nav-btn active" title="Trang chủ" onclick="showTab('home')">🏠</button>
+    <button class="sn-nav-btn" title="Bạn bè" onclick="showTab('friends')">👥<span class="badge" id="fr-badge">3</span></button>
+    <button class="sn-nav-btn" title="Nhóm" onclick="showTab('groups')">👨‍👩‍👧‍👦</button>
+  </div>
+  <div class="sn-right">
+    <button class="sn-icon-btn" title="Tin nhắn" onclick="togglePanel('msg-panel')">💬<span class="badge" id="msg-badge">2</span></button>
+    <button class="sn-icon-btn" title="Thông báo" onclick="togglePanel('notif-panel')">🔔<span class="badge" id="notif-badge">5</span></button>
+    <div class="sn-avatar-sm" id="hdr-av">👦</div>
+  </div>
+</div>
+
+<!-- Notifications Panel -->
+<div id="notif-panel">
+  <div class="notif-header">Thông báo</div>
+  <div class="notif-item unread" onclick="handleFriendReq('nguyen-thi-hoa')">
+    <div class="notif-av">🌸</div>
+    <div style="flex:1"><div class="notif-text"><strong>Nguyễn Thị Hoa</strong> đã gửi cho bạn lời mời kết bạn.</div><div class="notif-time">2 phút trước</div></div>
+    <div class="notif-dot"></div>
+  </div>
+  <div class="notif-item unread" onclick="handleFriendReq('tran-van-phuc')">
+    <div class="notif-av">👨‍💻</div>
+    <div style="flex:1"><div class="notif-text"><strong>Trần Văn Phúc</strong> đã gửi cho bạn lời mời kết bạn.</div><div class="notif-time">15 phút trước</div></div>
+    <div class="notif-dot"></div>
+  </div>
+  <div class="notif-item unread">
+    <div class="notif-av">🎁</div>
+    <div style="flex:1"><div class="notif-text"><strong>Phây Búc</strong>: Tài khoản của bạn đủ điều kiện nhận <strong>thưởng 500,000đ</strong>! Xác minh ngay.</div><div class="notif-time">1 giờ trước</div></div>
+    <div class="notif-dot"></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-av">👍</div>
+    <div style="flex:1"><div class="notif-text"><strong>Lê Minh Tuấn</strong> và 12 người khác đã thích ảnh của bạn.</div><div class="notif-time">3 giờ trước</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-av">💬</div>
+    <div style="flex:1"><div class="notif-text"><strong>Nguyễn Văn Hùng</strong> đã bình luận bài viết của bạn: "Bạn ơi cho mình hỏi thăm..."</div><div class="notif-time">5 giờ trước</div></div>
+  </div>
+</div>
+
+<!-- Messages Panel -->
+<div id="msg-panel">
+  <div class="notif-header">Tin nhắn</div>
+  <div class="msg-thread unread" onclick="openChat('stranger1')">
+    <div class="msg-av">😊<div class="msg-online-dot"></div></div>
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:700;color:#050505">Lê Thị Bích</span><span class="msg-time">2p</span></div>
+      <div class="msg-preview">Bạn ơi, cho mình hỏi số điện thoại của bạn với...</div>
+    </div>
+  </div>
+  <div class="msg-thread unread" onclick="openChat('stranger2')">
+    <div class="msg-av">🧔<div class="msg-online-dot"></div></div>
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:700;color:#050505">Phạm Văn Đức</span><span class="msg-time">1h</span></div>
+      <div class="msg-preview">Tôi đang xử lý hồ sơ cho bạn, cần xác nhận CCCD...</div>
+    </div>
+  </div>
+  <div class="msg-thread" onclick="openChat('friend1')">
+    <div class="msg-av">👩‍🏫</div>
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:600;color:#050505">Mai Phương</span><span class="msg-time">3h</span></div>
+      <div class="msg-preview">Hôm nay bạn có đi làm không?</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Body -->
+<div id="sn-body">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sn-sidebar-left">
+    <a class="sn-profile-link" href="#" onclick="return false">
+      <div class="av" id="sidebar-av" style="background:var(--sn-blue)">👦</div>
+      <span id="sidebar-name">Người dùng</span>
+    </a>
+    <div class="sn-nav-link"><div class="sn-nav-link-icon" style="background:#e7f3ff">👥</div>Bạn bè</div>
+    <div class="sn-nav-link"><div class="sn-nav-link-icon" style="background:#fff0f0">👥</div>Nhóm</div>
+    <div class="sn-nav-link"><div class="sn-nav-link-icon" style="background:#f0fff0">🛒</div>Marketplace</div>
+    <div class="sn-nav-link"><div class="sn-nav-link-icon" style="background:#fff8e1">▶️</div>Video</div>
+    <div class="sn-nav-link"><div class="sn-nav-link-icon" style="background:#f3e8ff">📅</div>Sự kiện</div>
+    <hr style="border:none;border-top:1px solid var(--sn-border);margin:10px 0">
+    <div class="sn-section-title">Lối tắt</div>
+    <div class="sn-nav-link"><div class="sn-nav-link-icon" style="background:#e1f5fe">💹</div>Đầu tư Crypto VN</div>
+    <div class="sn-nav-link"><div class="sn-nav-link-icon" style="background:#fce4ec">🎰</div>Mini Games — Nhận quà</div>
+  </div>
+
+  <!-- FEED CENTER -->
+  <div class="sn-feed" id="feed-home">
+    <!-- Story Bar -->
+    <div class="story-bar">
+      <div class="story-item story-add">
+        <div class="story-add-plus">+</div>
+        <span>Tạo tin</span>
+      </div>
+      <div class="story-item"><div class="story-img" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><div style="position:absolute;top:8px;left:8px;width:32px;height:32px;border-radius:50%;border:3px solid var(--sn-blue);display:flex;align-items:center;justify-content:center;font-size:16px">🌸</div><span>Nguyễn Thị Hoa</span></div></div>
+      <div class="story-item"><div class="story-img" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><div style="position:absolute;top:8px;left:8px;width:32px;height:32px;border-radius:50%;border:3px solid #31a24c;display:flex;align-items:center;justify-content:center;font-size:16px">🏃</div><span>Minh Tuấn</span></div></div>
+      <div class="story-item"><div class="story-img" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><div style="position:absolute;top:8px;left:8px;width:32px;height:32px;border-radius:50%;border:3px solid #f02849;display:flex;align-items:center;justify-content:center;font-size:16px">👩‍💼</div><span>Thu Hà</span></div></div>
+    </div>
+
+    <!-- Post Composer -->
+    <div class="post-composer">
+      <div class="post-composer-top">
+        <div class="composer-av" id="composer-av">👦</div>
+        <div class="composer-input" onclick="showToast('Chức năng đăng bài không khả dụng trong chế độ diễn tập')">Bạn đang nghĩ gì thế?</div>
+      </div>
+      <div class="composer-actions">
+        <button class="composer-btn">🎥 Video trực tiếp</button>
+        <button class="composer-btn">🖼️ Ảnh/video</button>
+        <button class="composer-btn">😊 Cảm xúc</button>
+      </div>
+    </div>
+
+    <!-- POST 1: Fake prize / phishing -->
+    <div class="post-card trap-glow" id="post-prize">
+      <div class="post-header">
+        <div class="post-av fake">🎁</div>
+        <div class="post-info">
+          <div class="post-name">Phây Búc Chính thức ✅ <span class="fake-badge" id="fake-badge-prize">TÀI KHOẢN GIẢ</span></div>
+          <div class="post-meta">Được tài trợ · 🌐 Công khai</div>
+        </div>
+        <button class="post-more">···</button>
+      </div>
+      <div class="post-body">
+        🎉 <strong>CHÚC MỪNG! Tài khoản của bạn được chọn ngẫu nhiên để nhận THƯỞNG 500,000đ!</strong><br><br>
+        Đây là chương trình kỷ niệm 10 năm thành lập Phây Búc. <strong>Chỉ còn 47 phần quà</strong>, nhận ngay trước khi hết!<br><br>
+        👇 Nhấn vào đường dẫn bên dưới để xác nhận danh tính và nhận thưởng:
+        <div class="post-link-preview" onclick="trapClick('phishing-link')">
+          <div class="link-preview-img">🎁</div>
+          <div class="link-preview-info">
+            <div class="link-preview-domain">phaybuc-thuong.blogspot.com</div>
+            <div class="link-preview-title">Nhận thưởng 500,000đ — Chương trình tri ân người dùng Phây Búc 2026</div>
+            <div class="link-preview-desc">Xác nhận danh tính để nhận phần quà. Cần cung cấp số điện thoại và số tài khoản.</div>
+          </div>
+        </div>
+      </div>
+      <div class="post-reactions"><span>👍❤️😮 Nguyễn Văn A và 1.2k người khác</span><span>847 bình luận · 2.3k lượt chia sẻ</span></div>
+      <div class="post-actions">
+        <button class="post-action-btn" onclick="likePost('post-prize')">👍 Thích</button>
+        <button class="post-action-btn">💬 Bình luận</button>
+        <button class="post-action-btn" onclick="trapClick('share-prize')">↗️ Chia sẻ</button>
+      </div>
+    </div>
+
+    <!-- POST 2: Normal friend post -->
+    <div class="post-card">
+      <div class="post-header">
+        <div class="post-av">🏃</div>
+        <div class="post-info">
+          <div class="post-name">Lê Minh Tuấn</div>
+          <div class="post-meta">3 giờ trước · 🌐 Công khai</div>
+        </div>
+        <button class="post-more">···</button>
+      </div>
+      <div class="post-body">Buổi sáng đi bộ quanh hồ thật tuyệt! Ai muốn tham gia câu lạc bộ thể dục sáng không? 🏃‍♂️☀️</div>
+      <div class="post-image">🌅</div>
+      <div class="post-reactions"><span>👍❤️ 34 người</span><span>12 bình luận</span></div>
+      <div class="post-actions">
+        <button class="post-action-btn" onclick="likePost('post-2')">👍 Thích</button>
+        <button class="post-action-btn">💬 Bình luận</button>
+        <button class="post-action-btn">↗️ Chia sẻ</button>
+      </div>
+    </div>
+
+    <!-- POST 3: Fake news -->
+    <div class="post-card" id="post-fakenews">
+      <div class="post-header">
+        <div class="post-av fake">📰</div>
+        <div class="post-info">
+          <div class="post-name">Tin Tức Nóng 24h <span class="fake-badge" id="fake-badge-news">TIN GIẢ</span></div>
+          <div class="post-meta">5 giờ trước · 🌐 Công khai</div>
+        </div>
+        <button class="post-more">···</button>
+      </div>
+      <div class="post-body">
+        🚨 <strong>KHẨN CẤP: Sóng 5G gây ung thư não — Nghiên cứu mới nhất từ WHO</strong><br><br>
+        Theo tài liệu mật vừa bị rò rỉ, tổ chức Y tế Thế giới (WHO) đã xác nhận sóng 5G có khả năng gây đột biến tế bào não sau 6 tháng sử dụng. Chính phủ nhiều nước đã âm thầm tắt hạ tầng 5G nhưng không công bố để tránh hoảng loạn.<br><br>
+        <em>Chia sẻ để cảnh báo người thân! ⚠️</em>
+        <div class="post-link-preview" onclick="trapClick('fakenews-link')" style="margin-top:8px">
+          <div class="link-preview-img" style="background:linear-gradient(135deg,#f00,#900)">⚠️</div>
+          <div class="link-preview-info">
+            <div class="link-preview-domain">tintucnong-vn.net</div>
+            <div class="link-preview-title">WHO xác nhận 5G gây ung thư não — Tài liệu mật bị rò rỉ</div>
+            <div class="link-preview-desc">Đọc toàn bộ báo cáo được cho là từ WHO. Chia sẻ ngay trước khi bị gỡ!</div>
+          </div>
+        </div>
+      </div>
+      <div class="post-reactions"><span>😮😡👍 Hùng, Lan và 4.5k người</span><span>3.2k chia sẻ</span></div>
+      <div class="post-actions">
+        <button class="post-action-btn">👍 Thích</button>
+        <button class="post-action-btn">💬 Bình luận</button>
+        <button class="post-action-btn" onclick="trapClick('share-fakenews')">↗️ Chia sẻ</button>
+      </div>
+    </div>
+
+    <!-- POST 4: Data harvesting quiz -->
+    <div class="post-card" id="post-quiz">
+      <div class="post-header">
+        <div class="post-av fake">🎯</div>
+        <div class="post-info">
+          <div class="post-name">Trắc Nghiệm Vui VN <span class="fake-badge" id="fake-badge-quiz">THU THẬP DỮ LIỆU</span></div>
+          <div class="post-meta">Được tài trợ · 🌐 Công khai</div>
+        </div>
+        <button class="post-more">···</button>
+      </div>
+      <div class="post-body">
+        🎯 <strong>"Bạn sinh ra để làm gì? Trắc nghiệm tính cách siêu chính xác!"</strong><br><br>
+        Hàng triệu người đã thử! Chỉ 5 câu hỏi, khám phá ngay bản thân bạn. Kết quả sẽ được chia sẻ lên tường của bạn tự động!
+        <div class="post-link-preview" onclick="trapClick('quiz-click')" style="margin-top:8px">
+          <div class="link-preview-img" style="background:linear-gradient(135deg,#f7971e,#ffd200)">🎯</div>
+          <div class="link-preview-info">
+            <div class="link-preview-domain">tracnghiem-tinhnach.com</div>
+            <div class="link-preview-title">Trắc nghiệm tính cách — Bạn sinh ra để làm gì?</div>
+            <div class="link-preview-desc">Cần quyền truy cập: danh sách bạn bè, thông tin cá nhân, email và ngày sinh.</div>
+          </div>
+        </div>
+      </div>
+      <div class="post-reactions"><span>😊👍 2.1k người</span><span>9.8k lượt chia sẻ</span></div>
+      <div class="post-actions">
+        <button class="post-action-btn">👍 Thích</button>
+        <button class="post-action-btn">💬 Bình luận</button>
+        <button class="post-action-btn" onclick="trapClick('share-quiz')">↗️ Chia sẻ</button>
+      </div>
+    </div>
+
+    <!-- POST 5: Normal post -->
+    <div class="post-card">
+      <div class="post-header">
+        <div class="post-av">👩‍🏫</div>
+        <div class="post-info">
+          <div class="post-name">Nguyễn Mai Phương</div>
+          <div class="post-meta">Hôm qua lúc 20:15 · 👥 Bạn bè</div>
+        </div>
+        <button class="post-more">···</button>
+      </div>
+      <div class="post-body">Vừa xem xong bộ phim hay quá! Ai có gợi ý phim tương tự không? 🎬🍿</div>
+      <div class="post-reactions"><span>❤️👍 18 người</span><span>7 bình luận</span></div>
+      <div class="post-actions">
+        <button class="post-action-btn">👍 Thích</button>
+        <button class="post-action-btn">💬 Bình luận</button>
+        <button class="post-action-btn">↗️ Chia sẻ</button>
+      </div>
+    </div>
+
+    <!-- POST 6: Account verification phishing -->
+    <div class="post-card trap-glow" id="post-verify">
+      <div class="post-header">
+        <div class="post-av fake">🔐</div>
+        <div class="post-info">
+          <div class="post-name">Bộ phận Bảo mật Phây Búc ✅ <span class="fake-badge" id="fake-badge-verify">TÀI KHOẢN GIẢ</span></div>
+          <div class="post-meta">8 giờ trước · 🌐 Công khai</div>
+        </div>
+        <button class="post-more">···</button>
+      </div>
+      <div class="post-body">
+        🔒 <strong>THÔNG BÁO: Tài khoản của bạn cần được xác minh trong 24 giờ</strong><br><br>
+        Chúng tôi phát hiện hoạt động đáng ngờ từ tài khoản của bạn. Để đảm bảo an toàn, vui lòng xác minh danh tính ngay bằng cách điền thông tin bên dưới. Nếu không xác minh, tài khoản sẽ bị tạm khóa.
+      </div>
+      <div style="padding:0 16px 16px">
+        <button style="width:100%;padding:10px;background:var(--sn-blue);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer" onclick="trapClick('verify-account')">🔒 Xác minh tài khoản ngay</button>
+      </div>
+      <div class="post-actions">
+        <button class="post-action-btn">👍 Thích</button>
+        <button class="post-action-btn">💬 Bình luận</button>
+        <button class="post-action-btn">↗️ Chia sẻ</button>
+      </div>
+    </div>
+
+    <!-- Finish Button -->
+    <div style="background:#fff;border-radius:10px;padding:20px;margin-bottom:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.1)">
+      <div style="font-size:14px;font-weight:600;color:var(--sn-text);margin-bottom:8px">Bạn đã khám phá đủ mạng xã hội này</div>
+      <div style="font-size:13px;color:var(--sn-text2);margin-bottom:14px">Nhấn nút bên dưới để xem kết quả đánh giá bảo mật của bạn</div>
+      <button style="padding:12px 32px;background:#1877f2;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer" onclick="showResults()">📊 Xem kết quả →</button>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="sn-sidebar-right">
+    <!-- Friend Requests -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">Lời mời kết bạn</div>
+      <div class="friend-item" id="fr-item-hoa">
+        <div class="friend-av" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🌸</div>
+        <div class="friend-info">
+          <div class="friend-name">Nguyễn Thị Hoa</div>
+          <div class="friend-mutual">2 bạn chung</div>
+        </div>
+        <div class="friend-btns">
+          <button class="btn-accept" onclick="trapClick('accept-fake1')">Xác nhận</button>
+          <button class="btn-decline" onclick="declineFriend('fr-item-hoa', 'nguyen-thi-hoa')">Xóa</button>
+        </div>
+      </div>
+      <div class="friend-item" id="fr-item-phuc">
+        <div class="friend-av" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">👨‍💻</div>
+        <div class="friend-info">
+          <div class="friend-name">Trần Văn Phúc</div>
+          <div class="friend-mutual">0 bạn chung</div>
+        </div>
+        <div class="friend-btns">
+          <button class="btn-accept" onclick="trapClick('accept-fake2')">Xác nhận</button>
+          <button class="btn-decline" onclick="declineFriend('fr-item-phuc', 'tran-van-phuc')">Xóa</button>
+        </div>
+      </div>
+      <div class="friend-item" id="fr-item-duc">
+        <div class="friend-av" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">🧔</div>
+        <div class="friend-info">
+          <div class="friend-name">Phạm Văn Đức</div>
+          <div class="friend-mutual">0 bạn chung</div>
+        </div>
+        <div class="friend-btns">
+          <button class="btn-accept" onclick="trapClick('accept-fake3')">Xác nhận</button>
+          <button class="btn-decline" onclick="declineFriend('fr-item-duc', 'pham-van-duc')">Xóa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Groups -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">Nhóm gợi ý</div>
+      <div class="group-item">
+        <div class="group-av" style="background:linear-gradient(135deg,#f7971e,#ffd200)">💹</div>
+        <div style="flex:1">
+          <div class="group-name">Đầu tư Bitcoin — Lợi nhuận 500%/tháng</div>
+          <div class="group-members">128,430 thành viên</div>
+        </div>
+        <button class="btn-join" onclick="trapClick('join-group-invest')">Tham gia</button>
+      </div>
+      <div class="group-item">
+        <div class="group-av" style="background:linear-gradient(135deg,#a8edea,#fed6e3)">🎁</div>
+        <div style="flex:1">
+          <div class="group-name">Nhận quà miễn phí — Hàng ngày</div>
+          <div class="group-members">89,234 thành viên</div>
+        </div>
+        <button class="btn-join" onclick="trapClick('join-group-gift')">Tham gia</button>
+      </div>
+      <div class="group-item">
+        <div class="group-av" style="background:linear-gradient(135deg,#667eea,#764ba2)">📚</div>
+        <div style="flex:1">
+          <div class="group-name">CLB Đọc sách Quảng Ninh</div>
+          <div class="group-members">2,340 thành viên</div>
+        </div>
+        <button class="btn-join" onclick="joinSafeGroup()">Tham gia</button>
+      </div>
+    </div>
+
+    <!-- Ad / Scam -->
+    <div class="sidebar-section trap-glow">
+      <div style="font-size:11px;color:var(--sn-text2);margin-bottom:6px">Được tài trợ</div>
+      <div style="background:linear-gradient(135deg,#f7971e,#ffd200);border-radius:8px;padding:16px;cursor:pointer;text-align:center" onclick="trapClick('ad-click')">
+        <div style="font-size:24px;margin-bottom:6px">💰</div>
+        <div style="font-size:14px;font-weight:700;color:#000">Kiếm 5 TRIỆU/ngày tại nhà!</div>
+        <div style="font-size:12px;color:#333;margin-top:4px">Không cần kinh nghiệm. Đăng ký NGAY!</div>
+        <div style="margin-top:10px;padding:6px;background:#000;color:#ffd200;border-radius:4px;font-size:13px;font-weight:700">Đăng ký ngay →</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /sn-body -->
+</div><!-- /scr-feed -->
+
+<!-- ══════════════════════════════
+     MODALS
+══════════════════════════════ -->
+
+<!-- Phishing Modal -->
+<div class="modal-overlay" id="modal-phishing">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">🎁 Nhận thưởng 500,000đ</div>
+      <button class="modal-close" onclick="closeModal('modal-phishing')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:48px">🎉</div>
+        <div style="font-size:16px;font-weight:700;color:#050505;margin:8px 0">Chúc mừng! Bạn đã được chọn!</div>
+        <div style="font-size:13px;color:#65676b">Điền thông tin để nhận phần quà 500,000đ về tài khoản</div>
+      </div>
+      <div class="phish-form">
+        <div class="form-group">
+          <label>Họ và tên đầy đủ</label>
+          <input type="text" id="phish-name" placeholder="Nguyễn Văn A">
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại</label>
+          <input type="tel" id="phish-phone" placeholder="0912 345 678">
+        </div>
+        <div class="form-group">
+          <label>Số tài khoản ngân hàng</label>
+          <input type="text" id="phish-bank" placeholder="1234567890">
+        </div>
+        <div class="form-group">
+          <label>Mã OTP (gửi qua SMS)</label>
+          <input type="text" id="phish-otp" placeholder="Nhập mã OTP...">
+        </div>
+        <button class="btn-phish-submit" onclick="submitPhishing()">Xác nhận nhận thưởng →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Verify Account Modal -->
+<div class="modal-overlay" id="modal-verify">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">🔐 Xác minh tài khoản</div>
+      <button class="modal-close" onclick="closeModal('modal-verify')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#856404">
+        ⚠️ Tài khoản của bạn sẽ bị <strong>khóa vĩnh viễn</strong> nếu không xác minh trong <strong id="countdown">00:47</strong>
+      </div>
+      <div class="phish-form">
+        <div class="form-group">
+          <label>Tên đăng nhập</label>
+          <input type="text" placeholder="Email hoặc số điện thoại">
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu hiện tại</label>
+          <input type="password" id="verify-pw" placeholder="Nhập mật khẩu...">
+        </div>
+        <div class="form-group">
+          <label>Số CCCD/CMND</label>
+          <input type="text" id="verify-cccd" placeholder="012345678901">
+        </div>
+        <button class="btn-phish-submit" onclick="submitVerify()">Xác minh ngay →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Modal — Stranger 1 -->
+<div class="modal-overlay" id="modal-chat-stranger1">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--sn-bg3);display:flex;align-items:center;justify-content:center;font-size:20px">😊</div>
+        <div><div class="modal-title" style="font-size:16px">Lê Thị Bích</div><div style="font-size:12px;color:#31a24c">● Đang hoạt động</div></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-chat-stranger1')">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-stranger1-msgs">
+      <div class="chat-msg them">Xin chào bạn! 😊</div>
+      <div class="chat-msg them">Mình thấy hồ sơ của bạn rất thú vị. Mình tên Bích, hiện đang làm việc tại Hà Nội.</div>
+      <div class="chat-msg them">Bạn có thể cho mình số điện thoại không? Mình muốn kết nối thêm bên ngoài đây 📱</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-inp-stranger1" placeholder="Aa" onkeydown="if(event.key==='Enter')sendChat('stranger1')">
+      <button class="btn-chat-send" onclick="sendChat('stranger1')">Gửi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Modal — Stranger 2 -->
+<div class="modal-overlay" id="modal-chat-stranger2">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--sn-bg3);display:flex;align-items:center;justify-content:center;font-size:20px">🧔</div>
+        <div><div class="modal-title" style="font-size:16px">Phạm Văn Đức</div><div style="font-size:12px;color:#31a24c">● Đang hoạt động</div></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-chat-stranger2')">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-stranger2-msgs">
+      <div class="chat-msg them">Chào bạn. Mình là nhân viên hỗ trợ Phây Búc.</div>
+      <div class="chat-msg them">Tài khoản của bạn đang được nâng cấp lên VIP miễn phí theo chương trình khuyến mãi.</div>
+      <div class="chat-msg them">Để hoàn tất, bạn vui lòng cung cấp số CCCD và ngày sinh để chúng tôi xác nhận danh tính nhé? 🙏</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-inp-stranger2" placeholder="Aa" onkeydown="if(event.key==='Enter')sendChat('stranger2')">
+      <button class="btn-chat-send" onclick="sendChat('stranger2')">Gửi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="sn-toast"></div>
+
+<!-- ══════════════════════════════
+     SCREEN 3: RESULTS
+══════════════════════════════ -->
+<div id="scr-results" class="screen">
+  <div class="results-inner">
+    <div class="results-header">
+      <div class="results-badge" id="result-badge" style="background:rgba(248,81,73,.08);color:var(--red);border-color:rgba(248,81,73,.25)">
+        ⚠️ KẾT QUẢ DIỄN TẬP — MODULE 9
+      </div>
+      <h1 class="results-title" id="result-title">Phân tích bảo mật mạng xã hội</h1>
+      <p class="results-sub" id="result-sub">Dưới đây là chi tiết những gì đã xảy ra trong phiên diễn tập của bạn</p>
+    </div>
+
+    <div class="score-circle-wrap">
+      <div class="score-circle" id="score-circle">
+        <div class="score-num" id="score-num">0</div>
+        <div class="score-label">/100</div>
+        <div class="score-grade" id="score-grade">...</div>
+      </div>
+    </div>
+
+    <div class="trap-results" id="trap-results-list">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="data-leak-section" id="data-leak-section">
+      <div class="data-leak-title">🔓 Dữ liệu cá nhân có thể đã bị lộ</div>
+      <div class="data-leak-items" id="data-leak-items">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <div class="lesson-cards" id="lesson-cards">
+      <!-- Populated by JS -->
+    </div>
+
+    <button class="btn-retry" onclick="retryModule()">🔄 Thử lại từ đầu</button>
+    <a href="index.html" class="btn-home">← Về trang chủ</a>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+const state = {
+  userName: 'Người dùng',
+  userAv: '👦',
+  traps: {
+    'accept-fake1': false,
+    'accept-fake2': false,
+    'accept-fake3': false,
+    'phishing-link': false,
+    'share-prize': false,
+    'fakenews-link': false,
+    'share-fakenews': false,
+    'quiz-click': false,
+    'share-quiz': false,
+    'verify-account': false,
+    'join-group-invest': false,
+    'join-group-gift': false,
+    'ad-click': false,
+    'chat-phone': false,
+    'chat-cccd': false,
+    'phish-submitted': false,
+    'verify-submitted': false,
+  },
+  declined: {},
+  safeGroup: false,
+};
+
+// ══════════════════════════════
+// NAVIGATION
+// ══════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function selectAv(el) {
+  document.querySelectorAll('.av-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function startSocialNetwork() {
+  const name = document.getElementById('inp-name').value.trim() || 'Người dùng';
+  const av = document.querySelector('.av-opt.selected')?.dataset.av || '👦';
+  state.userName = name;
+  state.userAv = av;
+  document.getElementById('hdr-av').textContent = av;
+  document.getElementById('sidebar-av').textContent = av;
+  document.getElementById('sidebar-name').textContent = name;
+  document.getElementById('composer-av').textContent = av;
+  showScreen('scr-feed');
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.sn-nav-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function togglePanel(id) {
+  const el = document.getElementById(id);
+  const other = id === 'msg-panel' ? 'notif-panel' : 'msg-panel';
+  document.getElementById(other).classList.remove('open');
+  el.classList.toggle('open');
+}
+
+// Close panels on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('#notif-panel') && !e.target.closest('.sn-icon-btn')) {
+    document.getElementById('notif-panel').classList.remove('open');
+  }
+  if (!e.target.closest('#msg-panel') && !e.target.closest('.sn-icon-btn')) {
+    document.getElementById('msg-panel').classList.remove('open');
+  }
+});
+
+// ══════════════════════════════
+// TRAP HANDLING
+// ══════════════════════════════
+function trapClick(trapId) {
+  state.traps[trapId] = true;
+
+  if (trapId === 'phishing-link') {
+    openModal('modal-phishing');
+    return;
+  }
+  if (trapId === 'verify-account') {
+    openModal('modal-verify');
+    startCountdown();
+    return;
+  }
+  if (trapId === 'accept-fake1') {
+    document.getElementById('fr-item-hoa').innerHTML = '<div style="color:#31a24c;font-size:13px;padding:6px 0">✓ Đã kết bạn với Nguyễn Thị Hoa</div>';
+    updateBadge('fr-badge');
+    showToast('Đã chấp nhận lời mời kết bạn từ Nguyễn Thị Hoa');
+    return;
+  }
+  if (trapId === 'accept-fake2') {
+    document.getElementById('fr-item-phuc').innerHTML = '<div style="color:#31a24c;font-size:13px;padding:6px 0">✓ Đã kết bạn với Trần Văn Phúc</div>';
+    updateBadge('fr-badge');
+    showToast('Đã chấp nhận lời mời kết bạn từ Trần Văn Phúc');
+    return;
+  }
+  if (trapId === 'accept-fake3') {
+    document.getElementById('fr-item-duc').innerHTML = '<div style="color:#31a24c;font-size:13px;padding:6px 0">✓ Đã kết bạn với Phạm Văn Đức</div>';
+    updateBadge('fr-badge');
+    showToast('Đã chấp nhận lời mời kết bạn từ Phạm Văn Đức');
+    return;
+  }
+  if (trapId === 'share-prize') { showToast('Đã chia sẻ bài viết nhận thưởng'); return; }
+  if (trapId === 'fakenews-link') { showToast('Đang mở liên kết...'); return; }
+  if (trapId === 'share-fakenews') { showToast('Đã chia sẻ tin tức'); return; }
+  if (trapId === 'quiz-click') { showToast('Đang chuyển đến trang trắc nghiệm...'); return; }
+  if (trapId === 'share-quiz') { showToast('Đã chia sẻ trắc nghiệm'); return; }
+  if (trapId === 'join-group-invest') { showToast('Đã tham gia nhóm Đầu tư Bitcoin'); return; }
+  if (trapId === 'join-group-gift') { showToast('Đã tham gia nhóm Nhận quà miễn phí'); return; }
+  if (trapId === 'ad-click') { showToast('Đang mở trang đăng ký...'); return; }
+}
+
+function declineFriend(itemId, name) {
+  state.declined[name] = true;
+  document.getElementById(itemId).style.opacity = '0.4';
+  document.getElementById(itemId).style.pointerEvents = 'none';
+  updateBadge('fr-badge');
+  showToast('Đã từ chối lời mời kết bạn');
+}
+
+function joinSafeGroup() {
+  state.safeGroup = true;
+  showToast('Đã tham gia CLB Đọc sách Quảng Ninh');
+}
+
+function handleFriendReq(name) {
+  document.getElementById('notif-panel').classList.remove('open');
+}
+
+function updateBadge(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const n = parseInt(el.textContent) - 1;
+  if (n <= 0) el.style.display = 'none';
+  else el.textContent = n;
+}
+
+function likePost(id) {
+  showToast('Đã thích bài viết');
+}
+
+// ══════════════════════════════
+// MODALS
+// ══════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function submitPhishing() {
+  const phone = document.getElementById('phish-phone').value.trim();
+  const bank = document.getElementById('phish-bank').value.trim();
+  if (phone) state.traps['chat-phone'] = true;
+  if (bank) state.traps['phish-submitted'] = true;
+  closeModal('modal-phishing');
+  showToast('Đang xử lý... Cảm ơn bạn đã cung cấp thông tin!');
+}
+
+function submitVerify() {
+  const pw = document.getElementById('verify-pw').value.trim();
+  const cccd = document.getElementById('verify-cccd').value.trim();
+  if (pw || cccd) state.traps['verify-submitted'] = true;
+  if (cccd) state.traps['chat-cccd'] = true;
+  closeModal('modal-verify');
+  showToast('Xác minh thành công! Tài khoản đã được khôi phục.');
+}
+
+let countdownTimer;
+function startCountdown() {
+  let secs = 47;
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    secs--;
+    const el = document.getElementById('countdown');
+    if (el) el.textContent = '00:' + String(secs).padStart(2,'0');
+    if (secs <= 0) clearInterval(countdownTimer);
+  }, 1000);
+}
+
+// ══════════════════════════════
+// CHAT
+// ══════════════════════════════
+function openChat(id) {
+  document.getElementById('msg-panel').classList.remove('open');
+  openModal('modal-chat-' + id);
+  if (id === 'stranger1' || id === 'stranger2') {
+    const badge = document.getElementById('msg-badge');
+    const n = parseInt(badge.textContent||'0') - 1;
+    if (n <= 0) badge.style.display='none'; else badge.textContent=n;
+  }
+}
+
+const chatReplies = {
+  stranger1: [
+    'Cảm ơn bạn đã nhắn tin! Cho mình hỏi thêm bạn đang ở tỉnh thành nào vậy? 😊',
+    'Thú vị quá! Bạn có thể cho mình địa chỉ nhà không? Mình muốn gửi quà nhỏ cho bạn 🎁',
+    'Bạn đang dùng ngân hàng nào? Mình có thể chuyển tiền ủng hộ nếu bạn cần 💕',
+  ],
+  stranger2: [
+    'Cảm ơn bạn đã phản hồi! Để hoàn tất nâng cấp VIP, bạn vui lòng cung cấp số CCCD nhé?',
+    'Ngoài ra cần thêm mật khẩu tài khoản để đồng bộ dữ liệu VIP. Bạn yên tâm, chúng tôi bảo mật tuyệt đối!',
+    'Cuối cùng, vui lòng cung cấp mã OTP được gửi đến số điện thoại của bạn để hoàn tất quá trình.',
+  ],
+};
+const chatReplyIdx = { stranger1: 0, stranger2: 0 };
+
+function sendChat(id) {
+  const inp = document.getElementById('chat-inp-' + id);
+  const msgs = document.getElementById('chat-' + id + '-msgs');
+  const val = inp.value.trim();
+  if (!val) return;
+
+  // Check for personal info disclosure
+  const lower = val.toLowerCase();
+  if (/\d{9,12}/.test(val) || lower.includes('cccd') || lower.includes('cmnd')) state.traps['chat-cccd'] = true;
+  if (/0[3-9]\d{8}/.test(val) || lower.includes('điện thoại') || lower.includes('phone')) state.traps['chat-phone'] = true;
+  if (lower.includes('địa chỉ') || lower.includes('đường') || lower.includes('phường') || lower.includes('quận')) state.traps['chat-cccd'] = true;
+  if (/\d{6}/.test(val) && lower.includes('otp')) state.traps['phish-submitted'] = true;
+
+  const meMsg = document.createElement('div');
+  meMsg.className = 'chat-msg me';
+  meMsg.textContent = val;
+  msgs.appendChild(meMsg);
+  inp.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  setTimeout(() => {
+    const replies = chatReplies[id];
+    const idx = chatReplyIdx[id];
+    if (idx < replies.length) {
+      const themMsg = document.createElement('div');
+      themMsg.className = 'chat-msg them';
+      themMsg.textContent = replies[idx];
+      msgs.appendChild(themMsg);
+      msgs.scrollTop = msgs.scrollHeight;
+      chatReplyIdx[id]++;
+    }
+  }, 800);
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('sn-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ══════════════════════════════
+// RESULTS
+// ══════════════════════════════
+const TRAPS_CONFIG = [
+  { key: 'accept-fake1', name: 'Kết bạn với tài khoản giả (Nguyễn Thị Hoa)', desc: 'Tài khoản giả mạo dùng ảnh đẹp để tạo lòng tin, sau đó khai thác thông tin cá nhân hoặc phát tán nội dung độc hại qua bạn bè của bạn.', penalty: -10, icon: '👤' },
+  { key: 'accept-fake2', name: 'Kết bạn với tài khoản giả (Trần Văn Phúc)', desc: 'Tài khoản 0 bạn chung, hồ sơ mới tạo — dấu hiệu điển hình của tài khoản ảo được tạo hàng loạt.', penalty: -10, icon: '👤' },
+  { key: 'accept-fake3', name: 'Kết bạn với tài khoản giả (Phạm Văn Đức)', desc: 'Tài khoản này cũng chính là kẻ đang nhắn tin yêu cầu cung cấp số CCCD để "nâng cấp VIP".', penalty: -10, icon: '👤' },
+  { key: 'phishing-link', name: 'Nhấn vào link phishing nhận thưởng 500k', desc: 'Link dẫn đến trang giả mạo thu thập số điện thoại và số tài khoản. Domain "blogspot.com" không phải trang chính thức.', penalty: -15, icon: '🔗' },
+  { key: 'phish-submitted', name: 'Điền thông tin ngân hàng/OTP vào form giả', desc: 'Đây là kỹ thuật phishing nguy hiểm nhất — kẻ tấn công đã có đủ thông tin để đánh cắp tiền hoặc chiếm đoạt tài khoản.', penalty: -25, icon: '💳' },
+  { key: 'share-fakenews', name: 'Chia sẻ tin giả về 5G gây ung thư', desc: 'WHO không có báo cáo nào như vậy. Chia sẻ tin giả vô tình biến bạn thành công cụ phát tán thông tin sai lệch.', penalty: -12, icon: '📰' },
+  { key: 'quiz-click', name: 'Nhấn vào trắc nghiệm thu thập dữ liệu', desc: 'Các quiz "tính cách" thực chất thu thập danh sách bạn bè, ngày sinh và dữ liệu hành vi của bạn để bán cho bên thứ ba.', penalty: -10, icon: '📋' },
+  { key: 'verify-submitted', name: 'Điền mật khẩu/CCCD vào form "xác minh tài khoản"', desc: 'Mạng xã hội thật KHÔNG BAO GIỜ yêu cầu mật khẩu qua bài viết. Đây là dấu hiệu của cuộc tấn công credential harvesting.', penalty: -20, icon: '🔐' },
+  { key: 'chat-phone', name: 'Cung cấp số điện thoại cho người lạ qua chat', desc: 'Số điện thoại là dữ liệu cá nhân nhạy cảm — kẻ xấu dùng để SIM swap, gọi điện lừa đảo hoặc bán cho danh sách spam.', penalty: -15, icon: '📱' },
+  { key: 'chat-cccd', name: 'Cung cấp số CCCD hoặc địa chỉ cho người lạ', desc: 'Số CCCD kết hợp với thông tin khác có thể dùng để mạo danh, mở tài khoản ngân hàng hoặc vay tín dụng đen nhân danh bạn.', penalty: -20, icon: '🪪' },
+  { key: 'join-group-invest', name: 'Tham gia nhóm "Đầu tư Bitcoin 500%/tháng"', desc: 'Không có khoản đầu tư hợp pháp nào cho lợi nhuận 500%/tháng. Đây là mô hình Ponzi hoặc bẫy đầu tư lừa đảo.', penalty: -8, icon: '💹' },
+  { key: 'join-group-gift', name: 'Tham gia nhóm "Nhận quà miễn phí hàng ngày"', desc: 'Nhóm dùng để phát tán link phishing và thu thập thông tin thành viên. Không có gì là miễn phí.', penalty: -8, icon: '🎁' },
+  { key: 'ad-click', name: 'Nhấn vào quảng cáo "Kiếm 5 triệu/ngày tại nhà"', desc: 'Quảng cáo việc làm giả mạo dẫn đến trang thu thập thông tin hoặc cài malware.', penalty: -5, icon: '💰' },
+];
+
+const DATA_TYPES = {
+  'phish-submitted': ['Số tài khoản ngân hàng', 'Mã OTP', 'Số điện thoại'],
+  'verify-submitted': ['Mật khẩu tài khoản', 'Số CCCD'],
+  'chat-phone': ['Số điện thoại'],
+  'chat-cccd': ['Số CCCD / Địa chỉ nhà'],
+  'quiz-click': ['Danh sách bạn bè', 'Ngày sinh', 'Lịch sử hoạt động'],
+  'accept-fake1': ['Danh sách bạn bè (hiển thị cho tài khoản giả)'],
+};
+
+const LESSONS = [
+  { icon: '🔍', title: 'Kiểm tra URL trước khi nhấn', text: 'Domain của bài viết thưởng là "blogspot.com" — không phải trang chính thức. Luôn kiểm tra địa chỉ web trước khi điền thông tin.' },
+  { icon: '👤', title: 'Thận trọng với lời mời kết bạn lạ', text: '0 bạn chung + tài khoản mới = dấu hiệu tài khoản ảo. Đừng chấp nhận kết bạn với người bạn không quen biết ngoài đời thực.' },
+  { icon: '📰', title: 'Kiểm chứng trước khi chia sẻ', text: 'Tin tức giật gân, khẩn cấp, kêu gọi chia sẻ ngay — thường là tin giả. Tìm nguồn chính thống trước khi lan truyền.' },
+  { icon: '💬', title: 'Không cung cấp thông tin cá nhân qua chat', text: 'Số điện thoại, CCCD, mật khẩu, OTP — không bao giờ chia sẻ với người lạ dù bất kỳ lý do gì.' },
+  { icon: '🔐', title: 'Mạng xã hội thật không hỏi mật khẩu qua bài viết', text: 'Thông báo "xác minh tài khoản" qua bài đăng là 100% giả mạo. Xác minh chính thống chỉ xảy ra trong cài đặt tài khoản.' },
+];
+
+function showResults() {
+  let score = 100;
+  const triggered = [];
+  const leaked = new Set();
+
+  TRAPS_CONFIG.forEach(trap => {
+    if (state.traps[trap.key]) {
+      score += trap.penalty;
+      triggered.push(trap);
+      if (DATA_TYPES[trap.key]) DATA_TYPES[trap.key].forEach(d => leaked.add(d));
+    }
+  });
+  score = Math.max(0, score);
+
+  // Score circle
+  const circle = document.getElementById('score-circle');
+  const numEl = document.getElementById('score-num');
+  const gradeEl = document.getElementById('score-grade');
+  numEl.textContent = score;
+
+  let color, grade, badgeText;
+  if (score >= 80) { color = '#00d084'; grade = 'AN TOÀN'; badgeText = '✅ KẾT QUẢ TỐT'; }
+  else if (score >= 60) { color = '#fbbf24'; grade = 'CẦN CẨN THẬN'; badgeText = '⚠️ CẦN CẢI THIỆN'; }
+  else if (score >= 40) { color = '#fb923c'; grade = 'NGUY HIỂM'; badgeText = '🚨 MỨC ĐỘ CAO'; }
+  else { color = '#f85149'; grade = 'RẤT NGUY HIỂM'; badgeText = '🔴 CỰC KỲ NGUY HIỂM'; }
+
+  circle.style.borderColor = color;
+  circle.style.boxShadow = `0 0 32px ${color}40`;
+  numEl.style.color = color;
+  gradeEl.style.color = color;
+  gradeEl.textContent = grade;
+
+  document.getElementById('result-badge').textContent = badgeText;
+  document.getElementById('result-title').textContent = score >= 80
+    ? 'Bạn đã xử lý khá tốt!'
+    : score >= 60
+    ? 'Bạn mắc một số bẫy phổ biến'
+    : 'Dữ liệu của bạn đã bị khai thác nhiều';
+
+  // Trap result items
+  const list = document.getElementById('trap-results-list');
+  list.innerHTML = '';
+
+  TRAPS_CONFIG.forEach(trap => {
+    const hit = state.traps[trap.key];
+    const el = document.createElement('div');
+    el.className = 'trap-result-item';
+    el.style.borderColor = hit ? 'rgba(248,81,73,.3)' : 'rgba(0,208,132,.2)';
+    el.innerHTML = `
+      <div class="trap-result-icon">${trap.icon}</div>
+      <div class="trap-result-info">
+        <div class="trap-result-name">${trap.name}</div>
+        ${hit ? `<div class="trap-result-desc">${trap.desc}</div>` : '<div class="trap-result-desc" style="color:#00d084">Bạn đã tránh được bẫy này ✓</div>'}
+      </div>
+      <div class="trap-result-score ${hit ? 'neg' : 'ok'}">${hit ? trap.penalty : '+0'}</div>
+    `;
+    list.appendChild(el);
+  });
+
+  // Data leak
+  const leakEl = document.getElementById('data-leak-items');
+  leakEl.innerHTML = '';
+  if (leaked.size === 0) {
+    leakEl.innerHTML = '<div class="data-chip safe">Không có dữ liệu bị lộ ✓</div>';
+    document.getElementById('data-leak-section').style.borderColor = 'rgba(0,208,132,.25)';
+    document.querySelector('.data-leak-title').style.color = 'var(--green)';
+    document.querySelector('.data-leak-title').textContent = '🔒 Dữ liệu cá nhân được bảo vệ';
+  } else {
+    leaked.forEach(d => {
+      const chip = document.createElement('div');
+      chip.className = 'data-chip';
+      chip.textContent = d;
+      leakEl.appendChild(chip);
+    });
+  }
+
+  // Lessons
+  const lc = document.getElementById('lesson-cards');
+  lc.innerHTML = '<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:12px">📚 Bài học rút ra</div>';
+  LESSONS.forEach(l => {
+    const div = document.createElement('div');
+    div.className = 'lesson-card';
+    div.innerHTML = `<div class="lesson-icon">${l.icon}</div><div class="lesson-text"><strong>${l.title}</strong>${l.text}</div>`;
+    lc.appendChild(div);
+  });
+
+  showScreen('scr-results');
+}
+
+function retryModule() {
+  // Reset state
+  Object.keys(state.traps).forEach(k => state.traps[k] = false);
+  state.declined = {};
+  state.safeGroup = false;
+
+  // Reset UI elements
+  const frHoa = document.getElementById('fr-item-hoa');
+  frHoa.style.opacity=''; frHoa.style.pointerEvents='';
+  frHoa.innerHTML = `
+    <div class="friend-av" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🌸</div>
+    <div class="friend-info"><div class="friend-name">Nguyễn Thị Hoa</div><div class="friend-mutual">2 bạn chung</div></div>
+    <div class="friend-btns">
+      <button class="btn-accept" onclick="trapClick('accept-fake1')">Xác nhận</button>
+      <button class="btn-decline" onclick="declineFriend('fr-item-hoa','nguyen-thi-hoa')">Xóa</button>
+    </div>`;
+  const frPhuc = document.getElementById('fr-item-phuc');
+  frPhuc.style.opacity=''; frPhuc.style.pointerEvents='';
+  frPhuc.innerHTML = `
+    <div class="friend-av" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">👨‍💻</div>
+    <div class="friend-info"><div class="friend-name">Trần Văn Phúc</div><div class="friend-mutual">0 bạn chung</div></div>
+    <div class="friend-btns">
+      <button class="btn-accept" onclick="trapClick('accept-fake2')">Xác nhận</button>
+      <button class="btn-decline" onclick="declineFriend('fr-item-phuc','tran-van-phuc')">Xóa</button>
+    </div>`;
+  const frDuc = document.getElementById('fr-item-duc');
+  frDuc.style.opacity=''; frDuc.style.pointerEvents='';
+  frDuc.innerHTML = `
+    <div class="friend-av" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">🧔</div>
+    <div class="friend-info"><div class="friend-name">Phạm Văn Đức</div><div class="friend-mutual">0 bạn chung</div></div>
+    <div class="friend-btns">
+      <button class="btn-accept" onclick="trapClick('accept-fake3')">Xác nhận</button>
+      <button class="btn-decline" onclick="declineFriend('fr-item-duc','pham-van-duc')">Xóa</button>
+    </div>`;
+
+  document.getElementById('fr-badge').textContent='3'; document.getElementById('fr-badge').style.display='';
+  document.getElementById('msg-badge').textContent='2'; document.getElementById('msg-badge').style.display='';
+  document.getElementById('notif-badge').textContent='5'; document.getElementById('notif-badge').style.display='';
+
+  // Reset chats
+  document.getElementById('chat-stranger1-msgs').innerHTML=`
+    <div class="chat-msg them">Xin chào bạn! 😊</div>
+    <div class="chat-msg them">Mình thấy hồ sơ của bạn rất thú vị. Mình tên Bích, hiện đang làm việc tại Hà Nội.</div>
+    <div class="chat-msg them">Bạn có thể cho mình số điện thoại không? Mình muốn kết nối thêm bên ngoài đây 📱</div>`;
+  document.getElementById('chat-stranger2-msgs').innerHTML=`
+    <div class="chat-msg them">Chào bạn. Mình là nhân viên hỗ trợ Phây Búc.</div>
+    <div class="chat-msg them">Tài khoản của bạn đang được nâng cấp lên VIP miễn phí theo chương trình khuyến mãi.</div>
+    <div class="chat-msg them">Để hoàn tất, bạn vui lòng cung cấp số CCCD và ngày sinh để chúng tôi xác nhận danh tính nhé? 🙏</div>`;
+  chatReplyIdx.stranger1=0; chatReplyIdx.stranger2=0;
+
+  showScreen('scr-setup');
+}
+</script>
+</body>
+</html>

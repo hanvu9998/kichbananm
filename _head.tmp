@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Môi trường giả lập An ninh mạng | Phòng An ninh mạng &amp; PCTP sử dụng CNC</title>
+<meta name="description" content="Môi trường giả lập an ninh mạng — Phòng An ninh mạng &amp; PCTP sử dụng CNC, Công an tỉnh Quảng Ninh">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090f;--bg2:#0d1117;--bg3:#161b22;
+  --border:#1e2d3d;--border2:#30363d;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;
+  --green:#00d084;--green-dim:rgba(0,208,132,.08);
+  --blue:#38bdf8;--blue-dim:rgba(56,189,248,.08);
+  --red:#f85149;--red-dim:rgba(248,81,73,.08);
+  --yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.08);
+  --purple:#a78bfa;--orange:#fb923c;
+  --cyan:#22d3ee;
+}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── SCAN LINE ANIMATION ── */
+@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(0,208,132,.2)}50%{box-shadow:0 0 22px rgba(0,208,132,.5)}}
+@keyframes matrixRain{0%{transform:translateY(-100%);opacity:0}10%{opacity:.6}90%{opacity:.4}100%{transform:translateY(100vh);opacity:0}}
+@keyframes typeIn{from{width:0}to{width:100%}}
+@keyframes borderFlow{0%{border-color:rgba(0,208,132,.2)}50%{border-color:rgba(0,208,132,.6)}100%{border-color:rgba(0,208,132,.2)}}
+
+/* ── TOPBAR ── */
+#top-bar{
+  position:fixed;top:0;left:0;right:0;height:52px;z-index:100;
+  background:rgba(7,9,15,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
+}
+.top-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.top-logo-icon{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#00d084,#38bdf8);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.top-logo-text{font-weight:700;font-size:14px;color:#fff;white-space:nowrap}
+.top-logo-sub{font-size:10px;color:var(--text3);white-space:nowrap;font-family:'JetBrains Mono',monospace}
+.top-divider{width:1px;height:20px;background:var(--border2);flex-shrink:0}
+.top-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.top-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2.5s infinite}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.top-tag{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;border:1px solid rgba(0,208,132,.3);color:var(--green);background:var(--green-dim)}
+
+/* ── HERO ── */
+#hero{
+  padding:120px 24px 60px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+#hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 30%,rgba(0,208,132,.06) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 40% at 80% 80%,rgba(56,189,248,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+/* Grid pattern */
+#hero::after{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,208,132,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,208,132,.04) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;
+}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--green-dim);border:1px solid rgba(0,208,132,.25);border-radius:20px;padding:5px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:24px}
+.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+h1.hero-title{font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.15;margin-bottom:16px;color:#fff}
+h1.hero-title span{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:clamp(14px,2vw,17px);color:var(--text2);max-width:620px;margin:0 auto 40px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:60px}
+.hero-stat{text-align:center}
+.hero-stat-num{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--green)}
+.hero-stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+
+/* ── SECTION LABEL ── */
+.section-label{display:flex;align-items:center;gap:10px;max-width:1100px;margin:0 auto 20px;padding:0 24px}
+.section-label-line{flex:1;height:1px;background:var(--border)}
+.section-label-text{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+
+/* ── CARD GRID ── */
+#modules{padding:0 24px 80px;max-width:1100px;margin:0 auto}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+
+.mod-card{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:12px;
+  padding:24px;cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.mod-card:hover{transform:translateY(-3px);border-color:var(--card-color,var(--green));box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 20px rgba(0,208,132,.08)}
+.mod-card::before{content:'';position:absolute;inset:0;border-radius:12px;background:radial-gradient(circle at 70% 0%,var(--card-glow,rgba(0,208,132,.05)) 0%,transparent 60%);pointer-events:none}
+
+.mod-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.mod-card-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--card-icon-bg,rgba(0,208,132,.1));border:1px solid var(--card-border,rgba(0,208,132,.2))}
+.mod-card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mod-card-level{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace}
+.mod-card-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+
+.mod-card-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.3}
+.mod-card-desc{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+
+.mod-card-btn{
+  width:100%;padding:9px 16px;border-radius:8px;border:none;
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--card-btn-bg,rgba(0,208,132,.12));
+  color:var(--card-btn-color,var(--green));
+  border:1px solid var(--card-btn-border,rgba(0,208,132,.25));
+  transition:all .15s;
+}
+.mod-card-btn:hover{background:var(--card-btn-hover,rgba(0,208,132,.22));filter:brightness(1.1)}
+.mod-card-btn svg{flex-shrink:0}
+
+/* Difficulty colors */
+.lvl-basic{background:rgba(0,208,132,.12);color:var(--green)}
+.lvl-mid{background:rgba(251,191,36,.12);color:var(--yellow)}
+.lvl-adv{background:rgba(248,81,73,.12);color:var(--red)}
+.lvl-expert{background:rgba(167,139,250,.12);color:var(--purple)}
+
+/* ── FOOTER BAR ── */
+#foot-bar{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:20px 24px;text-align:center;
+}
+.foot-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.foot-safe{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;padding:5px 12px;border:1px solid var(--border);border-radius:20px}
+.foot-copy{font-size:11px;color:var(--text3)}
+
+/* ── FADE IN ── */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  #top-bar .top-logo-sub,.top-divider,.top-status{display:none}
+  .hero-stats{gap:20px}
+  .modules-grid{grid-template-columns:1fr}
+  .foot-inner{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="top-bar">
+  <a class="top-logo" href="#">
+    <div class="top-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+    </div>
+    <div>
+      <div class="top-logo-text">Môi trường giả lập An ninh mạng</div>
+      <div class="top-logo-sub">Phòng An ninh mạng &amp; PCTP sử dụng CNC · CA tỉnh Quảng Ninh</div>
+    </div>
+  </a>
+  <div class="top-divider"></div>
+  <div class="top-status">
+    <div class="top-dot"></div>
+    SANDBOX ONLINE
+  </div>
+  <div class="top-right">
+    <div class="top-tag">v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div> MÔI TRƯỜNG MÔ PHỎNG AN TOÀN</div>
+  <h1 class="hero-title">Giả lập <span>Tấn công &amp; Phòng thủ</span><br>An ninh mạng</h1>
+  <p class="hero-desc">Trải nghiệm trực tiếp các tình huống tấn công mạng trong môi trường kiểm soát. Nhận biết mối đe dọa, luyện kỹ năng phòng thủ và nâng cao nhận thức an toàn thông tin.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-lbl">Kịch bản</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-lbl">Cấp độ</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">100%</div><div class="hero-stat-lbl">An toàn</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-lbl">Rủi ro thực</div></div>
+  </div>
+</section>
+
+<!-- MODULE GRID -->
+<section id="modules">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">// chọn kịch bản diễn tập</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="modules-grid">
+
+    <!-- 1: Ransomware -->
+    <div class="mod-card fade-up" style="--card-color:#f85149;--card-glow:rgba(248,81,73,.07);--card-icon-bg:rgba(248,81,73,.1);--card-border:rgba(248,81,73,.2);--card-btn-bg:rgba(248,81,73,.1);--card-btn-color:#f85149;--card-btn-border:rgba(248,81,73,.25);--card-btn-hover:rgba(248,81,73,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🔒</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-basic">Cơ bản</span>
+          <span class="mod-card-time">5–10 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Mã Độc Tống Tiền</div>
+      <div class="mod-card-desc">Trải nghiệm bị tấn công bởi ransomware. Học cách nhận biết file độc hại và bảo vệ dữ liệu cá nhân trước khi quá muộn.</div>
+      <button class="mod-card-btn" onclick="startScenario('ransomware')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 2: Phishing -->
+    <div class="mod-card fade-up" style="--card-color:#38bdf8;--card-glow:rgba(56,189,248,.07);--card-icon-bg:rgba(56,189,248,.1);--card-border:rgba(56,189,248,.2);--card-btn-bg:rgba(56,189,248,.1);--card-btn-color:#38bdf8;--card-btn-border:rgba(56,189,248,.25);--card-btn-hover:rgba(56,189,248,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">📧</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-basic">Cơ bản</span>
+          <span class="mod-card-time">8–12 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Email Lừa Đảo</div>
+      <div class="mod-card-desc">Mô phỏng nhận email phishing giả mạo cơ quan. Học cách phân tích header, kiểm tra domain và nhận biết dấu hiệu giả mạo.</div>
+      <button class="mod-card-btn" onclick="startScenario('phishing')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 3: WiFi -->
+    <div class="mod-card fade-up" style="--card-color:#fb923c;--card-glow:rgba(251,146,60,.07);--card-icon-bg:rgba(251,146,60,.1);--card-border:rgba(251,146,60,.2);--card-btn-bg:rgba(251,146,60,.1);--card-btn-color:#fb923c;--card-btn-border:rgba(251,146,60,.25);--card-btn-hover:rgba(251,146,60,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">📶</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-mid">Trung cấp</span>
+          <span class="mod-card-time">10–15 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Mạng Wi-Fi Công Cộng</div>
+      <div class="mod-card-desc">Mô phỏng tấn công Man-in-the-Middle trên Wi-Fi công cộng. Hiểu vì sao không nên dùng Wi-Fi miễn phí cho giao dịch nhạy cảm.</div>
+      <button class="mod-card-btn" onclick="startScenario('wifi')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 4: Social Engineering -->
+    <div class="mod-card fade-up" style="--card-color:#a78bfa;--card-glow:rgba(167,139,250,.07);--card-icon-bg:rgba(167,139,250,.1);--card-border:rgba(167,139,250,.2);--card-btn-bg:rgba(167,139,250,.1);--card-btn-color:#a78bfa;--card-btn-border:rgba(167,139,250,.25);--card-btn-hover:rgba(167,139,250,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🎭</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-mid">Trung cấp</span>
+          <span class="mod-card-time">12–18 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Kỹ Thuật Xã Hội</div>
+      <div class="mod-card-desc">Mô phỏng cuộc gọi lừa đảo giả danh công an, ngân hàng. Luyện cách nhận biết và đối phó với Social Engineering.</div>
+      <button class="mod-card-btn" onclick="startScenario('social')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 5: Malware Analysis -->
+    <div class="mod-card fade-up" style="--card-color:#94a3b8;--card-glow:rgba(148,163,184,.05);--card-icon-bg:rgba(148,163,184,.08);--card-border:rgba(148,163,184,.15);--card-btn-bg:rgba(148,163,184,.08);--card-btn-color:#94a3b8;--card-btn-border:rgba(148,163,184,.2);--card-btn-hover:rgba(148,163,184,.15)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🔍</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-adv">Nâng cao</span>
+          <span class="mod-card-time">15–20 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Phân Tích Mã Độc</div>
+      <div class="mod-card-desc">Khám phá cách malware hoạt động trong hệ thống. Học kỹ năng phân tích hành vi và ngăn chặn mã độc hiệu quả.</div>
+      <button class="mod-card-btn" onclick="startScenario('malware')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 6: Desktop Sandbox -->
+    <div class="mod-card fade-up" style="--card-color:#a78bfa;--card-glow:rgba(167,139,250,.07);--card-icon-bg:rgba(167,139,250,.1);--card-border:rgba(167,139,250,.2);--card-btn-bg:rgba(167,139,250,.1);--card-btn-color:#a78bfa;--card-btn-border:rgba(167,139,250,.25);--card-btn-hover:rgba(167,139,250,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">🖥️</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-adv">Nâng cao</span>
+          <span class="mod-card-time">20–30 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Desktop Sandbox</div>
+      <div class="mod-card-desc">Môi trường desktop mô phỏng với hệ thống file, trình duyệt, terminal và network simulation đầy đủ.</div>
+      <button class="mod-card-btn" onclick="startScenario('advanced')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 7: Mobile Sandbox -->
+    <div class="mod-card fade-up" style="--card-color:#00d084;--card-glow:rgba(0,208,132,.07);--card-icon-bg:rgba(0,208,132,.1);--card-border:rgba(0,208,132,.2);--card-btn-bg:rgba(0,208,132,.1);--card-btn-color:#00d084;--card-btn-border:rgba(0,208,132,.25);--card-btn-hover:rgba(0,208,132,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">📱</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-adv">Nâng cao</span>
+          <span class="mod-card-time">15–25 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Mobile Sandbox</div>
+      <div class="mod-card-desc">Giả lập điện thoại thông minh. Trải nghiệm lừa đảo qua SMS, cuộc gọi giả mạo, ứng dụng giả và mã QR độc hại.</div>
+      <button class="mod-card-btn" onclick="startScenario('mobile')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu trải nghiệm
+      </button>
+    </div>
+
+    <!-- 8: APT Drill -->
+    <div class="mod-card fade-up" style="--card-color:#f85149;--card-glow:rgba(248,81,73,.07);--card-icon-bg:rgba(248,81,73,.1);--card-border:rgba(248,81,73,.2);--card-btn-bg:rgba(248,81,73,.1);--card-btn-color:#f85149;--card-btn-border:rgba(248,81,73,.25);--card-btn-hover:rgba(248,81,73,.2)">
+      <div class="mod-card-top">
+        <div class="mod-card-icon">⚔️</div>
+        <div class="mod-card-meta">
+          <span class="mod-card-level lvl-expert">Chuyên sâu</span>
+          <span class="mod-card-time">30–45 phút</span>
+        </div>
+      </div>
+      <div class="mod-card-title">Diễn Tập An Ninh Mạng — APT Kill Chain</div>
+      <div class="mod-card-desc">Mô phỏng toàn bộ chuỗi tấn công APT trên 3 máy chủ. Chế độ Red Team + Blue Team, terminal tương tác và quiz kiến thức.</div>
+      <button class="mod-card-btn" onclick="window.location.href='drill.html'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Bắt đầu diễn tập
+      </button>
+    </div>
+
+  </div><!-- /modules-grid -->
+</section>
+
+<!-- FOOTER -->
+<footer id="foot-bar">
+  <div class="foot-inner">
+    <div class="foot-safe">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+      Môi trường mô phỏng an toàn — không gây hại thực tế
+    </div>
+    <div class="foot-copy">© 2026 Phòng An ninh mạng &amp; PCTP sử dụng CNC · Công an tỉnh Quảng Ninh</div>
+  </div>
+</footer>
+
+<script>
+// Fade-up on scroll
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+},{threshold:.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+

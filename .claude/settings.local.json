@@ -8,7 +8,9 @@
       "Bash(python3 -c ':*)",
       "Bash(python -c ':*)",
       "Bash(python -c ' *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Read(//c/Users/minhd/AppData/Local/**)",
+      "Bash(java -version)"
     ]
   }
 }
