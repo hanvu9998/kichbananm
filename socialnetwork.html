@@ -26,12 +26,13 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 /* ── SCREENS ── */
 .screen{display:none;min-height:100vh}
 .screen.active{display:block}
+.screen.active.flex-screen{display:flex}
 
 /* ══════════════════════════════
    SCREEN 0: INTRO
 ══════════════════════════════ */
 #scr-intro{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex-direction:column;align-items:center;justify-content:center;
   min-height:100vh;padding:40px 20px;
   background:radial-gradient(ellipse 80% 60% at 50% 20%,rgba(56,189,248,.07) 0%,transparent 70%);
 }
@@ -57,8 +58,8 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
    SCREEN 1: PROFILE SETUP
 ══════════════════════════════ */
 #scr-setup{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100vh;padding:40px 20px;
+  flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:40px 20px;background:var(--bg);
 }
 .setup-card{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:36px;max-width:440px;width:100%;text-align:center}
 .setup-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px}
@@ -103,8 +104,105 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 
 /* SN Layout */
 #sn-body{display:grid;grid-template-columns:280px 1fr 300px;gap:0;max-width:1200px;margin:0 auto;padding:16px 8px;min-height:calc(100vh - 56px)}
-@media(max-width:900px){#sn-body{grid-template-columns:1fr;} .sn-sidebar-left,.sn-sidebar-right{display:none}}
+@media(max-width:900px){#sn-body{grid-template-columns:1fr;padding:8px 0 64px;} .sn-sidebar-left,.sn-sidebar-right{display:none}}
 @media(max-width:1100px){#sn-body{grid-template-columns:240px 1fr;} .sn-sidebar-right{display:none}}
+
+/* ── MOBILE OVERRIDES ── */
+@media(max-width:600px){
+  /* Back button */
+  .btn-back-top{top:8px;left:8px;padding:5px 10px;font-size:12px}
+
+  /* Intro screen */
+  #scr-intro{padding:80px 16px 40px}
+  .intro-traps{grid-template-columns:1fr}
+  .intro-desc,.warn-box{font-size:13px}
+  .btn-start{width:100%;padding:14px}
+
+  /* Setup screen */
+  .setup-card{padding:24px 18px;border-radius:12px}
+  .setup-title{font-size:19px}
+
+  /* SN Header — mobile layout */
+  #sn-header{padding:0 8px;gap:4px;height:50px}
+  .sn-logo{font-size:22px}
+  .sn-search{display:none}
+  .sn-nav{gap:0}
+  .sn-nav-btn{padding:6px 10px;font-size:20px}
+  .sn-icon-btn{width:32px;height:32px;font-size:14px}
+  .sn-avatar-sm{width:32px;height:32px;font-size:16px}
+
+  /* Feed */
+  .sn-feed{padding:0;max-width:100%}
+  #sn-body{padding:8px 0 68px}
+
+  /* Story bar */
+  .story-bar{border-radius:0;margin-bottom:8px;padding:10px 8px}
+  .story-item{width:80px;height:130px}
+
+  /* Post composer */
+  .post-composer{border-radius:0;margin-bottom:8px}
+  .composer-actions{flex-wrap:wrap}
+  .composer-btn{font-size:12px}
+
+  /* Post card */
+  .post-card{border-radius:0;margin-bottom:8px}
+  .post-body{font-size:13.5px}
+  .post-link-preview .link-preview-img{height:130px;font-size:36px}
+  .post-action-btn{font-size:12px;padding:8px 4px}
+  .post-image{min-height:160px;font-size:60px}
+
+  /* Mobile bottom nav */
+  #mob-nav{display:flex}
+
+  /* Panels — full width on mobile */
+  #notif-panel,#msg-panel{
+    top:50px;left:0;right:0;width:100%;border-radius:0;
+    max-height:70vh;
+  }
+
+  /* Modals — full screen on mobile */
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-box{border-radius:16px 16px 0 0;max-width:100%;width:100%;max-height:92vh;overflow-y:auto}
+
+  /* Chat messages */
+  .chat-messages{height:220px}
+
+  /* Results */
+  #scr-results{padding:48px 12px 80px}
+  .trap-result-item{flex-wrap:wrap;gap:8px}
+  .trap-result-score{min-width:40px;text-align:right}
+  .lesson-cards{grid-template-columns:1fr}
+
+  /* Mobile friend-requests card in feed */
+  .mob-fr-card{display:block}
+}
+
+/* Mobile bottom navigation */
+#mob-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;height:56px;
+  background:#fff;border-top:1px solid var(--sn-border);
+  z-index:300;align-items:center;justify-content:space-around;
+}
+.mob-nav-btn{
+  flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:none;background:transparent;cursor:pointer;font-size:22px;position:relative;color:var(--sn-text2);
+}
+.mob-nav-btn.active{color:var(--sn-blue)}
+.mob-nav-btn .badge{position:absolute;top:6px;right:calc(50% - 18px);background:#f02849;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;font-family:'Inter',sans-serif}
+
+/* Mobile friend-requests in feed */
+.mob-fr-card{display:none;background:#fff;border-radius:0;margin-bottom:8px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.mob-fr-title{font-size:16px;font-weight:700;color:var(--sn-text);margin-bottom:12px}
+.mob-fr-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--sn-bg3)}
+.mob-fr-row:last-child{border-bottom:none}
+.mob-fr-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mob-fr-info{flex:1}
+.mob-fr-name{font-size:13px;font-weight:700;color:var(--sn-text)}
+.mob-fr-mutual{font-size:11px;color:var(--sn-text2)}
+.mob-fr-btns{display:flex;gap:6px}
+.mob-btn-acc{padding:7px 14px;background:var(--sn-blue);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.mob-btn-dec{padding:7px 14px;background:var(--sn-bg3);color:var(--sn-text2);border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
 
 /* Left Sidebar */
 .sn-sidebar-left{padding:8px 8px;position:sticky;top:72px;align-self:start}
@@ -301,7 +399,7 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 <!-- ══════════════════════════════
      SCREEN 0: INTRO
 ══════════════════════════════ -->
-<div id="scr-intro" class="screen active">
+<div id="scr-intro" class="screen flex-screen active">
   <div class="intro-badge"><div class="intro-badge-dot"></div> MODULE 9 — MẠNG XÃ HỘI ẢO</div>
   <h1 class="intro-title">Giả lập <span>Mạng Xã Hội</span><br>Nguy Hiểm</h1>
   <p class="intro-desc">Bạn sẽ tham gia vào mạng xã hội "Phây Búc" — môi trường giả lập có chứa tài khoản giả mạo, link phishing, tin giả và những kẻ xấu tìm cách thu thập thông tin cá nhân của bạn.</p>
@@ -324,8 +422,7 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 <!-- ══════════════════════════════
      SCREEN 1: SETUP
 ══════════════════════════════ -->
-<div id="scr-setup" class="screen">
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:var(--bg)">
+<div id="scr-setup" class="screen flex-screen">
   <div class="setup-card">
     <div class="setup-title">Tạo hồ sơ của bạn</div>
     <div class="setup-sub">Chọn avatar và nhập tên để bắt đầu. Thông tin này chỉ dùng trong trò chơi, không lưu trữ.</div>
@@ -342,7 +439,6 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
       <input type="text" id="inp-name" placeholder="Nhập tên của bạn..." maxlength="30" value="Người dùng">
     </div>
     <button class="btn-setup" onclick="startSocialNetwork()">Vào mạng xã hội →</button>
-  </div>
   </div>
 </div>
 
@@ -446,6 +542,36 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
 
   <!-- FEED CENTER -->
   <div class="sn-feed" id="feed-home">
+
+    <!-- MOBILE: Friend Requests Card -->
+    <div class="mob-fr-card" id="mob-fr-card">
+      <div class="mob-fr-title">👥 Lời mời kết bạn <span style="background:#f02849;color:#fff;font-size:11px;padding:1px 7px;border-radius:10px;margin-left:6px">3</span></div>
+      <div class="mob-fr-row" id="mob-fr-hoa">
+        <div class="mob-fr-av" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🌸</div>
+        <div class="mob-fr-info"><div class="mob-fr-name">Nguyễn Thị Hoa</div><div class="mob-fr-mutual">2 bạn chung</div></div>
+        <div class="mob-fr-btns">
+          <button class="mob-btn-acc" onclick="trapClick('accept-fake1');document.getElementById('mob-fr-hoa').style.display='none'">Xác nhận</button>
+          <button class="mob-btn-dec" onclick="declineFriend('fr-item-hoa','nguyen-thi-hoa');document.getElementById('mob-fr-hoa').style.display='none'">Xóa</button>
+        </div>
+      </div>
+      <div class="mob-fr-row" id="mob-fr-phuc">
+        <div class="mob-fr-av" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">👨‍💻</div>
+        <div class="mob-fr-info"><div class="mob-fr-name">Trần Văn Phúc</div><div class="mob-fr-mutual">0 bạn chung</div></div>
+        <div class="mob-fr-btns">
+          <button class="mob-btn-acc" onclick="trapClick('accept-fake2');document.getElementById('mob-fr-phuc').style.display='none'">Xác nhận</button>
+          <button class="mob-btn-dec" onclick="declineFriend('fr-item-phuc','tran-van-phuc');document.getElementById('mob-fr-phuc').style.display='none'">Xóa</button>
+        </div>
+      </div>
+      <div class="mob-fr-row" id="mob-fr-duc">
+        <div class="mob-fr-av" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">🧔</div>
+        <div class="mob-fr-info"><div class="mob-fr-name">Phạm Văn Đức</div><div class="mob-fr-mutual">0 bạn chung</div></div>
+        <div class="mob-fr-btns">
+          <button class="mob-btn-acc" onclick="trapClick('accept-fake3');document.getElementById('mob-fr-duc').style.display='none'">Xác nhận</button>
+          <button class="mob-btn-dec" onclick="declineFriend('fr-item-duc','pham-van-duc');document.getElementById('mob-fr-duc').style.display='none'">Xóa</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Story Bar -->
     <div class="story-bar">
       <div class="story-item story-add">
@@ -715,6 +841,14 @@ html,body{min-height:100vh;font-family:'Inter',sans-serif;background:var(--bg);c
   </div>
 
 </div><!-- /sn-body -->
+<!-- Mobile Bottom Navigation -->
+<nav id="mob-nav">
+  <button class="mob-nav-btn active" onclick="showMobTab(this,'home')">🏠</button>
+  <button class="mob-nav-btn" onclick="showMobTab(this,'friends')">👥<span class="badge" id="mob-fr-badge">3</span></button>
+  <button class="mob-nav-btn" onclick="togglePanel('msg-panel')">💬<span class="badge" id="mob-msg-badge">2</span></button>
+  <button class="mob-nav-btn" onclick="togglePanel('notif-panel')">🔔<span class="badge" id="mob-notif-badge">5</span></button>
+  <button class="mob-nav-btn" onclick="showResults()">📊</button>
+</nav>
 </div><!-- /scr-feed -->
 
 <!-- ══════════════════════════════
@@ -908,11 +1042,34 @@ const state = {
 // ══════════════════════════════
 // NAVIGATION
 // ══════════════════════════════
+const FLEX_SCREENS = ['scr-intro','scr-setup'];
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
   const el = document.getElementById(id);
-  if (el) el.classList.add('active');
-  window.scrollTo(0,0);
+  if (!el) return;
+  el.classList.add('active');
+  el.style.display = FLEX_SCREENS.includes(id) ? 'flex' : 'block';
+  // Scroll after paint so new content is in DOM
+  requestAnimationFrame(() => {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  });
+}
+
+function showMobTab(btn, tab) {
+  document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const card = document.getElementById('mob-fr-card');
+  if (tab === 'friends') {
+    card.style.display = 'block';
+    card.scrollIntoView({behavior:'smooth',block:'start'});
+  } else {
+    card.style.display = '';
+    document.getElementById('feed-home').scrollIntoView({behavior:'smooth',block:'start'});
+  }
 }
 
 function selectAv(el) {
@@ -1316,6 +1473,21 @@ function retryModule() {
 
   showScreen('scr-setup');
 }
+
+// ══════════════════════════════
+// INIT — force correct initial state
+// ══════════════════════════════
+(function init() {
+  // Force all screens hidden via inline style first
+  document.querySelectorAll('.screen').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+  // Show intro
+  const intro = document.getElementById('scr-intro');
+  intro.style.display = 'flex';
+  intro.classList.add('active');
+})();
 </script>
 </body>
 </html>
